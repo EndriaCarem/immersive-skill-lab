@@ -39,7 +39,9 @@ function ProgramPage() {
           </div>
           <div className="price" style={{ fontSize: 28, fontWeight: 700, color: "var(--plum)", margin: "6px 0 14px" }}>
             {brl(program.price)}
+            {program.fullPrice ? <s>{brl(program.fullPrice)}</s> : null}
           </div>
+          {program.fullPrice ? <div className="badge">Preço de pré-venda</div> : null}
           <button className="btn wide" onClick={start} disabled={!program.activities.length}>
             {enrolled ? "Continuar programa" : "Adquirir programa"}
           </button>

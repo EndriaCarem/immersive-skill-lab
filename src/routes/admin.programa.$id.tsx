@@ -84,6 +84,10 @@ function Editor() {
             <span>Preço (R$)</span>
             <input type="number" value={p.price ?? ""} onChange={(e) => up({ price: e.target.value === "" ? null : Number(e.target.value) })} />
           </label>
+          <label className="field">
+            <span>Preço cheio (R$, opcional)</span>
+            <input type="number" value={p.fullPrice ?? ""} onChange={(e) => up({ fullPrice: e.target.value === "" ? null : Number(e.target.value) })} />
+          </label>
           <T l="Chamada no catálogo" v={p.tagline} on={(v) => up({ tagline: v })} area />
           <T l="Apresentação" v={p.description} on={(v) => up({ description: v })} area />
           <T l="Habilidades (uma por linha)" v={p.skills.join("\n")} on={(v) => up({ skills: lines(v) })} area />

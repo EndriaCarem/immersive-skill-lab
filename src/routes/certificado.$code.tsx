@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { fmt, useStore } from "@/lib/store";
+import logo from "@/assets/empiria-logo.png.asset.json";
 
 export const Route = createFileRoute("/certificado/$code")({
   head: ({ params }) => ({
@@ -38,7 +39,7 @@ function CertPage() {
       </AppShell>
     );
   const issued = new Date(cert.issuedAt);
-  const name = `Estágio Pré-Programado em ${program.title}`;
+  const name = `${program.kind} — ${program.title}`;
   const linkedinAdd =
     "https://www.linkedin.com/profile/add?" +
     new URLSearchParams({
@@ -56,6 +57,7 @@ function CertPage() {
     <AppShell>
       <div className="cert-wrap">
         <div className="cert">
+          <img src={logo.url} alt="Empiria" style={{ height: 40, margin: "0 auto 26px" }} />
           <div className="k">Certificado de conclusão</div>
           <h2>{name}</h2>
           <div className="who">
