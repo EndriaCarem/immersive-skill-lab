@@ -11,3 +11,4 @@
 
 - App data (programs, enrollments, submissions, certificates) lives in a browser-local store in src/lib/store.ts; move it to Lovable Cloud before multi-user use, since nothing is shared between devices yet.
 - Visual styles are ported from the uploaded mockup as plain CSS classes in src/styles.css; reuse those classes so screens stay faithful to the mockup.
+- Marketing pages use SiteShell (floating nav + footer); app screens use AppShell, which wraps SiteShell in a rounded frame, so navigation stays identical everywhere.
