@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore , useEffect, useState } from "react";
 import type { FileRef } from "./files";
 export type { FileRef };
 
@@ -277,6 +277,16 @@ function set(fn: (s: State) => State) {
     /* ignore */
   }
   listeners.forEach((l) => l());
+}
+
+// Read saved data as soon as the module loads in the browser, not after a mount effect.
+if (typeof window !== "undefined") load();
+
+/** True once the component runs in the browser with saved data loaded. */
+export function useStoreReady() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  return ready;
 }
 
 export function hydrateStore() {

@@ -1,7 +1,7 @@
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Bold,
   Eye,
@@ -35,15 +35,23 @@ export function RichEditor({
 }) {
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [tplOpen, setTplOpen] = useState(false);
+  const lastEmitted = useRef(value);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [StarterKit.configure({ link: { openOnClick: false, HTMLAttributes: { target: "_blank", rel: "noopener noreferrer" } } }), Placeholder.configure({ placeholder })],
     content: value,
-    onUpdate: ({ editor }) => onChange(editor.isEmpty ? "" : editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      const html = editor.isEmpty ? "" : editor.getHTML();
+      lastEmitted.current = html;
+      onChange(html);
+    },
   });
   // keep in sync when the value is replaced from outside (e.g. switching activity)
   useEffect(() => {
-    if (editor && value !== editor.getHTML() && !(value === "" && editor.isEmpty)) editor.commands.setContent(value, { emitUpdate: false });
+    // Only push outside changes: skip values this editor just emitted while typing.
+    if (!editor || editor.isDestroyed || value === lastEmitted.current) return;
+    lastEmitted.current = value;
+    if (value !== editor.getHTML() && !(value === "" && editor.isEmpty)) editor.commands.setContent(value, { emitUpdate: false });
   }, [value, editor]);
 
   const st = useEditorState({
