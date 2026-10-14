@@ -520,7 +520,10 @@ function CoverUploader({ program, onChange }: { program: Program; onChange: (f: 
   const pick = async (fs: File[]) => {
     const f = fs[0];
     if (!f) return;
-    if (!f.type.startsWith("image/")) return toast.error("Escolha uma imagem (JPG, PNG ou WebP)");
+    if (!f.type.startsWith("image/")) {
+      toast.error("Escolha uma imagem (JPG, PNG ou WebP)");
+      return;
+    }
     const [ref] = await storeAll([f]);
     if (!ref) return;
     if (program.coverFile) deleteFile(program.coverFile.id);
