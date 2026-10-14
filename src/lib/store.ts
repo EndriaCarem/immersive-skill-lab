@@ -1,0 +1,329 @@
+import { useSyncExternalStore } from "react";
+
+export type Doc = { name: string; content: string };
+export type Criterion = { criterion: string };
+export type Activity = {
+  id: string;
+  title: string;
+  shortTitle: string;
+  duration: string;
+  summary: string;
+  caseParagraphs: string[];
+  caseNote: string;
+  attachments: Doc[];
+  demandFrom: string;
+  demandSubject: string;
+  demandBody: string;
+  demandVideoCaption: string;
+  uploadHint: string;
+  feedbackGuidance: string;
+  reflectionPoints: string[];
+  rubric: Criterion[];
+  answerVideoCaption: string;
+  answerVideoUrl: string;
+  answerIntro: string;
+  referenceDoc: Doc & { description: string };
+  guideDocs: Doc[];
+};
+export type Program = {
+  id: string;
+  slug: string;
+  area: string;
+  kind: string;
+  title: string;
+  tagline: string;
+  description: string;
+  price: number | null;
+  status: "published" | "soon" | "draft";
+  skills: string[];
+  activities: Activity[];
+};
+export type Grade = { criterion: string; score: number; comment: string };
+export type Submission = {
+  id: string;
+  programId: string;
+  activityId: string;
+  student: string;
+  fileName: string;
+  fileSize: number;
+  aiUse: string;
+  submittedAt: string;
+  grades?: Grade[];
+  teacherComment?: string;
+};
+export type Enrollment = { programId: string; student: string; enrolledAt: string };
+export type Certificate = { code: string; programId: string; student: string; issuedAt: string; grade: number | null };
+export type Note = { id: string; programId: string; activityId: string; text: string; at: string };
+
+export type State = {
+  student: string;
+  programs: Program[];
+  enrollments: Enrollment[];
+  submissions: Submission[];
+  certificates: Certificate[];
+  notes: Note[];
+};
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+export const certCode = () => {
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const p = () => Array.from({ length: 4 }, () => c[Math.floor(Math.random() * c.length)]).join("");
+  return `${p()}-${p()}`;
+};
+
+function act(n: number, title: string, shortTitle: string, duration: string, summary: string, extra: Partial<Activity> = {}): Activity {
+  return {
+    id: `a${n}`,
+    title,
+    shortTitle,
+    duration,
+    summary,
+    caseParagraphs: [
+      "A banca representa a Helvetia Componentes S.A., fornecedora de peças industriais. Em março de 2024 a Helvetia celebrou contrato de fornecimento de longo prazo com a Nordeste Montagens Ltda., com cláusula compromissória prevendo arbitragem institucional, sede em São Paulo, três árbitros e idioma português.",
+      "Entre agosto e dezembro de 2025 a Nordeste deixou de pagar sete faturas, totalizando R$ 4,2 milhões, e passou a alegar defeito de qualidade nas peças — sem nunca ter formalizado recusa no prazo contratual de dez dias.",
+      "A Nordeste agora sustenta que a cláusula é inválida, por não indicar a instituição arbitral de forma precisa, e que a disputa deveria correr no Judiciário.",
+    ],
+    caseNote:
+      "Procedimento arbitral é confidencial. Todo material parte de caso construído para o exercício — o que resolve o sigilo e permite plantar deliberadamente os erros que o aluno precisa encontrar.",
+    attachments: [
+      { name: "Contrato de fornecimento", content: "CONTRATO DE FORNECIMENTO — Helvetia Componentes S.A. x Nordeste Montagens Ltda.\n\nCláusula 18 — Arbitragem: as partes elegem a arbitragem institucional, sede em São Paulo, três árbitros, idioma português.\nCláusula 9 — Recusa de mercadoria: no prazo de 10 dias do recebimento." },
+      { name: "Faturas em aberto", content: "Faturas vencidas entre ago/2025 e dez/2025: 7 faturas, total R$ 4.200.000,00." },
+      { name: "Correspondência das partes", content: "E-mail da Nordeste (jan/2026): alega defeito de qualidade e invalidade da cláusula compromissória." },
+    ],
+    demandFrom: "Dra. Helena Vasconcelos, sócia",
+    demandSubject: "Helvetia — providência urgente",
+    demandBody: `Precisamos avançar nesta etapa até sexta. ${summary}. Qualquer dúvida me chama.`,
+    demandVideoCaption: "Sua chefe · 2 min",
+    uploadHint: ".docx ou .pdf · até 5 páginas",
+    feedbackGuidance:
+      "Sua entrega foi recebida. Antes de abrir o gabarito, releia a demanda da sócia e confira se cada instrução expressa foi atendida — é o primeiro ponto que um revisor sênior verifica.",
+    reflectionPoints: [
+      "Você respondeu a todos os pontos que a sócia sinalizou expressamente?",
+      "Cada afirmação de fato está ancorada em um documento do caso?",
+      "Se usou IA, consegue sustentar cada parágrafo se for questionado?",
+    ],
+    rubric: [
+      { criterion: "Atendimento à instrução da demanda" },
+      { criterion: "Fundamentação" },
+      { criterion: "Clareza, concisão e limite" },
+    ],
+    answerVideoCaption: "Prof. comentando · 4 min",
+    answerVideoUrl: "",
+    answerIntro: "O que um revisor sênior olha primeiro nesta peça, e por quê. Assista depois de ler sua ficha.",
+    referenceDoc: {
+      name: `${shortTitle} — versão de referência`,
+      description: "Peça completa com anotações marginais explicando cada escolha de redação e as alternativas possíveis.",
+      content: `VERSÃO DE REFERÊNCIA — ${title}\n\n[Peça modelo com anotações do professor]`,
+    },
+    guideDocs: [
+      { name: "Guia de elaboração — instituição arbitral", content: "Guia de elaboração." },
+      { name: "Checklist de requisitos de validade da cláusula", content: "1. Forma escrita\n2. Indicação da instituição\n3. Sede\n4. Número de árbitros" },
+    ],
+    ...extra,
+  };
+}
+
+const seed: State = {
+  student: "Rebeca Ferreira",
+  programs: [
+    {
+      id: "p1",
+      slug: "arbitragem-comercial",
+      area: "Direito",
+      kind: "Estágio pré-programado",
+      title: "Arbitragem Comercial",
+      tagline: "Seis atividades encadeadas. Correção individual em cada entrega e certificado com nota.",
+      description:
+        "Você assume a posição de estagiário em uma banca de arbitragem e conduz um procedimento do início ao fim — com um sócio te passando as demandas.",
+      price: 890,
+      status: "published",
+      skills: ["Cláusula compromissória", "Peça inaugural", "Conflito de interesses", "Prazos processuais", "Impugnação", "Estruturação de tese"],
+      activities: [
+        act(1, "Análise da cláusula compromissória", "Cláusula compromissória", "30–60 min", "Verificar cabimento, sede e requisitos de validade"),
+        act(2, "Requerimento de arbitragem", "Requerimento de arbitragem", "1–2 h", "Redigir a peça inaugural", {
+          demandBody:
+            "Rebeca, precisamos protocolar o requerimento de arbitragem da Helvetia até sexta. Monta a peça: qualificação das partes, base na cláusula compromissória, síntese dos fatos, o inadimplemento, o pedido e a indicação de árbitro. Atenção à alegação de invalidade que eles levantaram — não deixa isso sem resposta. Máximo cinco páginas. Qualquer dúvida me chama.",
+          rubric: [
+            { criterion: "Qualificação das partes e representação" },
+            { criterion: "Fundamento na cláusula compromissória" },
+            { criterion: "Resposta à alegação de invalidade" },
+            { criterion: "Síntese fática e inadimplemento" },
+            { criterion: "Formulação do pedido" },
+            { criterion: "Indicação de árbitro" },
+            { criterion: "Clareza, concisão e limite" },
+          ],
+        }),
+        act(3, "Indicação de árbitro e conflito de interesses", "Indicação de árbitro", "1 h", "Pesquisa de perfil e checagem de disclosure"),
+        act(4, "Contagem de prazos sob o regulamento", "Contagem de prazos", "30 min", "Montar o calendário processual"),
+        act(5, "Impugnação de árbitro", "Impugnação de árbitro", "1–2 h", "Fundamentar e redigir"),
+        act(6, "Alegações iniciais", "Alegações iniciais", "2 h", "Estruturar tese, fatos e provas"),
+      ],
+    },
+    {
+      id: "p2",
+      slug: "introducao-arbitragem",
+      area: "Direito",
+      kind: "Curso introdutório",
+      title: "Introdução à Arbitragem",
+      tagline: "Gravado, no seu ritmo, com acesso permanente e exercícios corrigidos.",
+      description: "Os fundamentos da arbitragem em exercícios curtos, corrigidos individualmente.",
+      price: 450,
+      status: "published",
+      skills: ["Fundamentos", "Convenção de arbitragem"],
+      activities: [act(1, "Convenção de arbitragem", "Convenção de arbitragem", "40 min", "Identificar os elementos de uma convenção válida")],
+    },
+    {
+      id: "p3",
+      slug: "contencioso-civel",
+      area: "Direito",
+      kind: "Em breve",
+      title: "Contencioso Cível",
+      tagline: "Prazos, estrutura de peça e peticionamento eletrônico. Próximo do catálogo.",
+      description: "",
+      price: null,
+      status: "soon",
+      skills: [],
+      activities: [],
+    },
+  ],
+  enrollments: [{ programId: "p1", student: "Rebeca Ferreira", enrolledAt: "2026-09-02T12:00:00Z" }],
+  submissions: [
+    {
+      id: "s1",
+      programId: "p1",
+      activityId: "a1",
+      student: "Rebeca Ferreira",
+      fileName: "analise-clausula.docx",
+      fileSize: 48211,
+      aiUse: "Pesquisa exploratória inicial",
+      submittedAt: "2026-09-05T15:00:00Z",
+      grades: [
+        { criterion: "Atendimento à instrução da demanda", score: 8, comment: "Respondeu aos três pontos pedidos." },
+        { criterion: "Fundamentação", score: 7.5, comment: "Faltou citar o requisito de forma escrita." },
+        { criterion: "Clareza, concisão e limite", score: 8.2, comment: "Objetivo e dentro do limite." },
+      ],
+    },
+  ],
+  certificates: [],
+  notes: [{ id: "n1", programId: "p1", activityId: "a2", text: "Verificar sempre se houve recusa formal no prazo contratual antes de alegar inadimplemento puro.", at: "2026-09-08T10:00:00Z" }],
+};
+
+const KEY = "formacao-pratica-v1";
+let state: State = seed;
+let loaded = false;
+const listeners = new Set<() => void>();
+
+function load() {
+  if (loaded || typeof window === "undefined") return;
+  loaded = true;
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) state = JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
+}
+function set(fn: (s: State) => State) {
+  state = fn(state);
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    /* ignore */
+  }
+  listeners.forEach((l) => l());
+}
+
+export function hydrateStore() {
+  load();
+  listeners.forEach((l) => l());
+}
+
+export function useStore<T>(sel: (s: State) => T): T {
+  return useSyncExternalStore(
+    (l) => {
+      listeners.add(l);
+      return () => listeners.delete(l);
+    },
+    () => sel(state),
+    () => sel(seed),
+  );
+}
+
+// ---- derived helpers ----
+export const avg = (ns: number[]) => (ns.length ? ns.reduce((a, b) => a + b, 0) / ns.length : null);
+export const fmt = (n: number | null | undefined) => (n == null ? "—" : n.toFixed(1).replace(".", ","));
+export const brl = (n: number | null) => (n == null ? "—" : `R$ ${n.toLocaleString("pt-BR")}`);
+export const subScore = (s?: Submission) => (s?.grades?.length ? avg(s.grades.map((g) => g.score)) : null);
+
+export function latestSubmission(s: State, programId: string, activityId: string, student = s.student) {
+  return s.submissions.filter((x) => x.programId === programId && x.activityId === activityId && x.student === student).at(-1);
+}
+export function programAverage(s: State, p: Program, student = s.student) {
+  const scores = p.activities.map((a) => subScore(latestSubmission(s, p.id, a.id, student))).filter((x): x is number => x != null);
+  return avg(scores);
+}
+export function completedCount(s: State, p: Program, student = s.student) {
+  return p.activities.filter((a) => latestSubmission(s, p.id, a.id, student)).length;
+}
+
+// ---- actions ----
+export const actions = {
+  setStudent: (name: string) => set((s) => ({ ...s, student: name })),
+  enroll: (programId: string) =>
+    set((s) =>
+      s.enrollments.some((e) => e.programId === programId && e.student === s.student)
+        ? s
+        : { ...s, enrollments: [...s.enrollments, { programId, student: s.student, enrolledAt: new Date().toISOString() }] },
+    ),
+  submit: (programId: string, activityId: string, fileName: string, fileSize: number, aiUse: string) =>
+    set((s) => ({
+      ...s,
+      submissions: [
+        ...s.submissions,
+        { id: uid(), programId, activityId, student: s.student, fileName, fileSize, aiUse, submittedAt: new Date().toISOString() },
+      ],
+    })),
+  grade: (submissionId: string, grades: Grade[], teacherComment: string) =>
+    set((s) => ({ ...s, submissions: s.submissions.map((x) => (x.id === submissionId ? { ...x, grades, teacherComment } : x)) })),
+  issueCertificate: (programId: string): string => {
+    const existing = state.certificates.find((c) => c.programId === programId && c.student === state.student);
+    if (existing) return existing.code;
+    const p = state.programs.find((x) => x.id === programId)!;
+    const code = certCode();
+    set((s) => ({
+      ...s,
+      certificates: [...s.certificates, { code, programId, student: s.student, issuedAt: new Date().toISOString(), grade: programAverage(s, p) }],
+    }));
+    return code;
+  },
+  addNote: (programId: string, activityId: string, text: string) =>
+    set((s) => ({ ...s, notes: [...s.notes, { id: uid(), programId, activityId, text, at: new Date().toISOString() }] })),
+  saveProgram: (p: Program) =>
+    set((s) => ({ ...s, programs: s.programs.some((x) => x.id === p.id) ? s.programs.map((x) => (x.id === p.id ? p : x)) : [...s.programs, p] })),
+  deleteProgram: (id: string) => set((s) => ({ ...s, programs: s.programs.filter((x) => x.id !== id) })),
+  newProgram: (): Program => ({
+    id: uid(),
+    slug: `programa-${uid()}`,
+    area: "Direito",
+    kind: "Estágio pré-programado",
+    title: "Novo programa",
+    tagline: "",
+    description: "",
+    price: 0,
+    status: "draft",
+    skills: [],
+    activities: [],
+  }),
+  newActivity: (n: number): Activity => ({ ...act(n, "Nova atividade", "Nova atividade", "1 h", "Descreva a tarefa"), id: uid() }),
+  reset: () => set(() => seed),
+};
+
+export function downloadDoc(doc: Doc) {
+  const blob = new Blob([doc.content || doc.name], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${doc.name}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
