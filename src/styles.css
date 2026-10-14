@@ -116,7 +116,7 @@ h4{
 p{margin:0 0 14px;color:#33333C}
 .muted{color:var(--slate)}
 .sm{font-size:13px}
-ul.clean{margin:0 0 14px;padding-left:20px;color:#33333C}
+ul.clean{list-style:disc;margin:0 0 14px;padding-left:20px;color:#33333C}
 ul.clean li{margin-bottom:7px}
 
 /* ─── lista de atividades ─── */
