@@ -361,6 +361,9 @@ ul.clean li{margin-bottom:7px}
 }
 
 @layer components {
+.stage{padding:28px 24px 56px;max-width:1240px;margin:0 auto}
+.window{background:var(--paper);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(20,10,25,.06),0 12px 34px rgba(20,10,25,.10)}
+@media (max-width:900px){.stage{padding:0}.window{border-radius:0}}
 .field{display:block;margin-bottom:14px}
 .field>span{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);margin-bottom:5px}
 .field input,.field textarea,.field select,.input{width:100%;border:1px solid var(--rule);border-radius:7px;padding:9px 12px;font:inherit;font-size:14px;background:var(--paper);color:var(--ink)}
