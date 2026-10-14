@@ -14,6 +14,7 @@ import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
 import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as AdminProgramaIdRouteImport } from './routes/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
 import { Route as EstagioSlugNDevolutivaRouteImport } from './routes/estagio.$slug.$n.devolutiva'
@@ -44,6 +45,11 @@ const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
   path: '/programa/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProgramaIdRoute = AdminProgramaIdRouteImport.update({
+  id: '/admin/programa/$id',
+  path: '/admin/programa/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EstagioSlugNCasoRoute = EstagioSlugNCasoRouteImport.update({
   id: '/estagio/$slug/$n/caso',
   path: '/estagio/$slug/$n/caso',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
+    | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin'
+    | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
+    | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminProgramaIdRoute: typeof AdminProgramaIdRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/programa/$id': {
+      id: '/admin/programa/$id'
+      path: '/admin/programa/$id'
+      fullPath: '/admin/programa/$id'
+      preLoaderRoute: typeof AdminProgramaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/estagio/$slug/$n/caso': {
       id: '/estagio/$slug/$n/caso'
       path: '/estagio/$slug/$n/caso'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminProgramaIdRoute: AdminProgramaIdRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
