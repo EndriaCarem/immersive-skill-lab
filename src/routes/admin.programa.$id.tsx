@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ArrowDown, ArrowUp, ChevronDown, Copy, ExternalLink, ImagePlus, PlayCircle, Plus, Save, Trash2, Upload } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { RichEditor, type Template } from "@/components/RichEditor";
-import { paragraphsToHtml, readMinutes, textToHtml, wordCount } from "@/components/Rich";
+import { paragraphsToHtml, textToHtml, wordCount } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 import { coverFor } from "@/components/CourseCard";
 import { deleteFile, saveFile, useFileUrl, type FileRef } from "@/lib/files";
@@ -232,7 +232,7 @@ function Editor() {
           ))}
         </div>
         <span className="muted sm" style={{ marginLeft: "auto" }}>
-          {totalWords} palavras no curso · ≈ {readMinutes(String(" a").repeat(totalWords))} min de leitura
+          {totalWords} palavras no curso · ≈ {Math.max(1, Math.round(totalWords / 200))} min de leitura
         </span>
       </div>
 
