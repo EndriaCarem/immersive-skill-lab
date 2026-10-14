@@ -68,7 +68,7 @@ export function RichEditor({
   const c = () => editor!.chain().focus();
   const link = () => {
     if (!editor) return;
-    const prev = editor.getAttributes("link").href as string | undefined;
+    const prev = editor.getAttributes("link")["href"] as string | undefined;
     const url = window.prompt("Endereço do link (deixe vazio para remover)", prev ?? "https://");
     if (url === null) return;
     if (!url.trim()) return c().extendMarkRange("link").unsetLink().run();
@@ -76,7 +76,7 @@ export function RichEditor({
     c().extendMarkRange("link").setLink({ href: url.trim() }).run();
   };
 
-  const B = ({ on, title, fn, children }: { on?: boolean; title: string; fn: () => void; children: React.ReactNode }) => (
+  const B = ({ on, title, fn, children }: { on?: boolean | undefined; title: string; fn: () => unknown; children: React.ReactNode }) => (
     <button type="button" title={title} aria-label={title} className={on ? "on" : ""} onMouseDown={(e) => e.preventDefault()} onClick={fn} disabled={mode === "preview"}>
       {children}
     </button>
