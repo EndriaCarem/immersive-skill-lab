@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
+import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as AdminProgramaIdRouteImport } from './routes/admin.programa.$id'
+import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
+import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
+import { Route as EstagioSlugNDevolutivaRouteImport } from './routes/estagio.$slug.$n.devolutiva'
+import { Route as EstagioSlugNGabaritoRouteImport } from './routes/estagio.$slug.$n.gabarito'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MeusProgramasRoute = MeusProgramasRouteImport.update({
+  id: '/meus-programas',
+  path: '/meus-programas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificadoCodeRoute = CertificadoCodeRouteImport.update({
+  id: '/certificado/$code',
+  path: '/certificado/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
+  id: '/programa/$slug',
+  path: '/programa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProgramaIdRoute = AdminProgramaIdRouteImport.update({
+  id: '/admin/programa/$id',
+  path: '/admin/programa/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstagioSlugNCasoRoute = EstagioSlugNCasoRouteImport.update({
+  id: '/estagio/$slug/$n/caso',
+  path: '/estagio/$slug/$n/caso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstagioSlugNDemandaRoute = EstagioSlugNDemandaRouteImport.update({
+  id: '/estagio/$slug/$n/demanda',
+  path: '/estagio/$slug/$n/demanda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstagioSlugNDevolutivaRoute = EstagioSlugNDevolutivaRouteImport.update({
+  id: '/estagio/$slug/$n/devolutiva',
+  path: '/estagio/$slug/$n/devolutiva',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstagioSlugNGabaritoRoute = EstagioSlugNGabaritoRouteImport.update({
+  id: '/estagio/$slug/$n/gabarito',
+  path: '/estagio/$slug/$n/gabarito',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/meus-programas': typeof MeusProgramasRoute
+  '/certificado/$code': typeof CertificadoCodeRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
+  '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
+  '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
+  '/estagio/$slug/$n/gabarito': typeof EstagioSlugNGabaritoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/meus-programas': typeof MeusProgramasRoute
+  '/certificado/$code': typeof CertificadoCodeRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
+  '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
+  '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
+  '/estagio/$slug/$n/gabarito': typeof EstagioSlugNGabaritoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/meus-programas': typeof MeusProgramasRoute
+  '/certificado/$code': typeof CertificadoCodeRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
+  '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
+  '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
+  '/estagio/$slug/$n/gabarito': typeof EstagioSlugNGabaritoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/meus-programas'
+    | '/certificado/$code'
+    | '/programa/$slug'
+    | '/admin/'
+    | '/admin/programa/$id'
+    | '/estagio/$slug/$n/caso'
+    | '/estagio/$slug/$n/demanda'
+    | '/estagio/$slug/$n/devolutiva'
+    | '/estagio/$slug/$n/gabarito'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/meus-programas'
+    | '/certificado/$code'
+    | '/programa/$slug'
+    | '/admin'
+    | '/admin/programa/$id'
+    | '/estagio/$slug/$n/caso'
+    | '/estagio/$slug/$n/demanda'
+    | '/estagio/$slug/$n/devolutiva'
+    | '/estagio/$slug/$n/gabarito'
+  id:
+    | '__root__'
+    | '/'
+    | '/meus-programas'
+    | '/certificado/$code'
+    | '/programa/$slug'
+    | '/admin/'
+    | '/admin/programa/$id'
+    | '/estagio/$slug/$n/caso'
+    | '/estagio/$slug/$n/demanda'
+    | '/estagio/$slug/$n/devolutiva'
+    | '/estagio/$slug/$n/gabarito'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MeusProgramasRoute: typeof MeusProgramasRoute
+  CertificadoCodeRoute: typeof CertificadoCodeRoute
+  ProgramaSlugRoute: typeof ProgramaSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminProgramaIdRoute: typeof AdminProgramaIdRoute
+  EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
+  EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
+  EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
+  EstagioSlugNGabaritoRoute: typeof EstagioSlugNGabaritoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +169,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/meus-programas': {
+      id: '/meus-programas'
+      path: '/meus-programas'
+      fullPath: '/meus-programas'
+      preLoaderRoute: typeof MeusProgramasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certificado/$code': {
+      id: '/certificado/$code'
+      path: '/certificado/$code'
+      fullPath: '/certificado/$code'
+      preLoaderRoute: typeof CertificadoCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programa/$slug': {
+      id: '/programa/$slug'
+      path: '/programa/$slug'
+      fullPath: '/programa/$slug'
+      preLoaderRoute: typeof ProgramaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/programa/$id': {
+      id: '/admin/programa/$id'
+      path: '/admin/programa/$id'
+      fullPath: '/admin/programa/$id'
+      preLoaderRoute: typeof AdminProgramaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estagio/$slug/$n/caso': {
+      id: '/estagio/$slug/$n/caso'
+      path: '/estagio/$slug/$n/caso'
+      fullPath: '/estagio/$slug/$n/caso'
+      preLoaderRoute: typeof EstagioSlugNCasoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estagio/$slug/$n/demanda': {
+      id: '/estagio/$slug/$n/demanda'
+      path: '/estagio/$slug/$n/demanda'
+      fullPath: '/estagio/$slug/$n/demanda'
+      preLoaderRoute: typeof EstagioSlugNDemandaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estagio/$slug/$n/devolutiva': {
+      id: '/estagio/$slug/$n/devolutiva'
+      path: '/estagio/$slug/$n/devolutiva'
+      fullPath: '/estagio/$slug/$n/devolutiva'
+      preLoaderRoute: typeof EstagioSlugNDevolutivaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estagio/$slug/$n/gabarito': {
+      id: '/estagio/$slug/$n/gabarito'
+      path: '/estagio/$slug/$n/gabarito'
+      fullPath: '/estagio/$slug/$n/gabarito'
+      preLoaderRoute: typeof EstagioSlugNGabaritoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MeusProgramasRoute: MeusProgramasRoute,
+  CertificadoCodeRoute: CertificadoCodeRoute,
+  ProgramaSlugRoute: ProgramaSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminProgramaIdRoute: AdminProgramaIdRoute,
+  EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
+  EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
+  EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
+  EstagioSlugNGabaritoRoute: EstagioSlugNGabaritoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
