@@ -34,6 +34,7 @@ export type Program = {
   tagline: string;
   description: string;
   price: number | null;
+  fullPrice?: number | null;
   status: "published" | "soon" | "draft";
   skills: string[];
   activities: Activity[];
@@ -128,18 +129,19 @@ const seed: State = {
   programs: [
     {
       id: "p1",
-      slug: "arbitragem-comercial",
+      slug: "arbitragem-nivel-1",
       area: "Direito",
-      kind: "Estágio pré-programado",
-      title: "Arbitragem Comercial",
-      tagline: "Seis atividades encadeadas. Correção individual em cada entrega e certificado com nota.",
+      kind: "Curso prático",
+      title: "Arbitragem — Nível 1",
+      tagline: "Seis atividades encadeadas em uma banca fictícia. Correção individual por rubrica com nota, devolutiva e gabarito comentado.",
       description:
         "Você assume a posição de estagiário em uma banca de arbitragem e conduz um procedimento do início ao fim — com um sócio te passando as demandas.",
       price: 890,
+      fullPrice: 1190,
       status: "published",
       skills: ["Cláusula compromissória", "Peça inaugural", "Conflito de interesses", "Prazos processuais", "Impugnação", "Estruturação de tese"],
       activities: [
-        act(1, "Análise da cláusula compromissória", "Cláusula compromissória", "30–60 min", "Verificar cabimento, sede e requisitos de validade"),
+        act(1, "Análise da cláusula compromissória", "Cláusula compromissória", "30–60 min", "Verificar cabimento, sede e requisitos de validade", { demandBody: "Rebeca, chegou o contrato da Helvetia com a Nordeste. Antes de qualquer providência, analisa a cláusula compromissória: cabimento, sede, número de árbitros e se ela preenche os requisitos de validade. A Nordeste já ameaça dizer que é inválida. Me manda um parecer curto, de até duas páginas." }),
         act(2, "Requerimento de arbitragem", "Requerimento de arbitragem", "1–2 h", "Redigir a peça inaugural", {
           demandBody:
             "Rebeca, precisamos protocolar o requerimento de arbitragem da Helvetia até sexta. Monta a peça: qualificação das partes, base na cláusula compromissória, síntese dos fatos, o inadimplemento, o pedido e a indicação de árbitro. Atenção à alegação de invalidade que eles levantaram — não deixa isso sem resposta. Máximo cinco páginas. Qualquer dúvida me chama.",
@@ -153,10 +155,153 @@ const seed: State = {
             { criterion: "Clareza, concisão e limite" },
           ],
         }),
-        act(3, "Indicação de árbitro e conflito de interesses", "Indicação de árbitro", "1 h", "Pesquisa de perfil e checagem de disclosure"),
-        act(4, "Contagem de prazos sob o regulamento", "Contagem de prazos", "30 min", "Montar o calendário processual"),
-        act(5, "Impugnação de árbitro", "Impugnação de árbitro", "1–2 h", "Fundamentar e redigir"),
-        act(6, "Alegações iniciais", "Alegações iniciais", "2 h", "Estruturar tese, fatos e provas"),
+        act(3, "Indicação de árbitro e conflito de interesses", "Indicação de árbitro", "1 h", "Pesquisa de perfil e checagem de disclosure", { demandBody: "Rebeca, precisamos indicar o coárbitro da Helvetia. Levanta três perfis adequados à disputa técnica, checa publicações, atuação recente e qualquer vínculo com a Nordeste ou seus advogados. Quero uma recomendação fundamentada e os pontos de disclosure que cada um precisaria revelar." }),
+        act(4, "Contagem de prazos sob o regulamento", "Contagem de prazos", "30 min", "Montar o calendário processual", { demandBody: "Rebeca, o requerimento foi protocolado. Monta o calendário processual sob o regulamento da câmara: resposta, constituição do tribunal, termo de arbitragem e alegações. Indica o marco inicial de cada prazo e como você contou. Erro de prazo aqui não tem volta." }),
+        act(5, "Impugnação de árbitro", "Impugnação de árbitro", "1–2 h", "Fundamentar e redigir", { demandBody: "Rebeca, descobrimos que o árbitro indicado pela Nordeste atuou como parecerista para ela no ano passado e não revelou. Prepara a impugnação: fundamento, prazo, prova do fato e pedido. Confere se ainda estamos dentro do prazo contado da ciência." }),
+        act(6, "Alegações iniciais", "Alegações iniciais", "2 h", "Estruturar tese, fatos e provas", { demandBody: "Rebeca, chegou a hora das alegações iniciais. Estrutura a tese da Helvetia: fatos, validade da cláusula, inadimplemento das sete faturas, ausência de recusa formal no prazo de dez dias e os pedidos com juros e correção. Indica a prova de cada fato. Até dez páginas." }),
+      ],
+    },
+    {
+      id: "p2",
+      slug: "introducao-arbitragem",
+      area: "Direito",
+      kind: "Curso teórico",
+      title: "Introdução à Arbitragem",
+      tagline: "8 aulas cobrindo o procedimento fase a fase, com 32 modelos comentados em português na praxe das câmaras brasileiras.",
+      description: "O procedimento arbitral fase a fase, da convenção à sentença, acompanhado de 32 modelos comentados em português, na praxe das câmaras brasileiras.",
+      price: 590,
+      fullPrice: 890,
+      status: "published",
+      skills: ["Convenção de arbitragem", "Instauração", "Tribunal arbitral", "Instrução", "Sentença arbitral"],
+      activities: [
+        ["Convenção de arbitragem", "Cláusula e compromisso: requisitos e patologias"],
+        ["Instauração do procedimento", "Requerimento, resposta e custas"],
+        ["Constituição do tribunal", "Indicação, disclosure e impugnação"],
+        ["Termo de arbitragem", "Ata de missão e calendário processual"],
+        ["Alegações escritas", "Estrutura de tese e documentos"],
+        ["Instrução e audiência", "Provas, peritos e testemunhas"],
+        ["Sentença arbitral", "Requisitos, prazos e pedidos de esclarecimento"],
+        ["Pós-sentença", "Cumprimento, anulação e homologação"],
+      ].map(([t, sm], i) => act(i + 1, `Aula ${i + 1} — ${t}`, t!, "40 min", sm!)),
+    },
+    ...[
+      ["contencioso-civel-nivel-1", "Contencioso Cível — Nível 1", "Prazos, estrutura de peça e peticionamento eletrônico."],
+      ["secretario-tribunal-arbitral", "Secretário de Tribunal Arbitral", "A rotina de quem secretaria o tribunal: atas, ordens processuais e minutas."],
+      ["lawyer-101", "Lawyer 101", "O repertório de escritório que ninguém ensina formalmente."],
+    ].map(([slug, title, tagline], i) => ({
+      id: `soon${i}`,
+      slug: slug!,
+      area: "Direito",
+      kind: "Em breve",
+      title: title!,
+      tagline: tagline!,
+      description: "",
+      price: null,
+      status: "soon" as const,
+      skills: [],
+      activities: [],
+    })),
+  ],
+  enrollments: Enrollment[];
+  submissions: Submission[];
+  certificates: Certificate[];
+  notes: Note[];
+};
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+export const certCode = () => {
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const p = () => Array.from({ length: 4 }, () => c[Math.floor(Math.random() * c.length)]).join("");
+  return `${p()}-${p()}`;
+};
+
+function act(n: number, title: string, shortTitle: string, duration: string, summary: string, extra: Partial<Activity> = {}): Activity {
+  return {
+    id: `a${n}`,
+    title,
+    shortTitle,
+    duration,
+    summary,
+    caseParagraphs: [
+      "A banca representa a Helvetia Componentes S.A., fornecedora de peças industriais. Em março de 2024 a Helvetia celebrou contrato de fornecimento de longo prazo com a Nordeste Montagens Ltda., com cláusula compromissória prevendo arbitragem institucional, sede em São Paulo, três árbitros e idioma português.",
+      "Entre agosto e dezembro de 2025 a Nordeste deixou de pagar sete faturas, totalizando R$ 4,2 milhões, e passou a alegar defeito de qualidade nas peças — sem nunca ter formalizado recusa no prazo contratual de dez dias.",
+      "A Nordeste agora sustenta que a cláusula é inválida, por não indicar a instituição arbitral de forma precisa, e que a disputa deveria correr no Judiciário.",
+    ],
+    caseNote:
+      "Procedimento arbitral é confidencial. Todo material parte de caso construído para o exercício — o que resolve o sigilo e permite plantar deliberadamente os erros que o aluno precisa encontrar.",
+    attachments: [
+      { name: "Contrato de fornecimento", content: "CONTRATO DE FORNECIMENTO — Helvetia Componentes S.A. x Nordeste Montagens Ltda.\n\nCláusula 18 — Arbitragem: as partes elegem a arbitragem institucional, sede em São Paulo, três árbitros, idioma português.\nCláusula 9 — Recusa de mercadoria: no prazo de 10 dias do recebimento." },
+      { name: "Faturas em aberto", content: "Faturas vencidas entre ago/2025 e dez/2025: 7 faturas, total R$ 4.200.000,00." },
+      { name: "Correspondência das partes", content: "E-mail da Nordeste (jan/2026): alega defeito de qualidade e invalidade da cláusula compromissória." },
+    ],
+    demandFrom: "Dra. Helena Vasconcelos, sócia",
+    demandSubject: "Helvetia — providência urgente",
+    demandBody: `Precisamos avançar nesta etapa até sexta. ${summary}. Qualquer dúvida me chama.`,
+    demandVideoCaption: "Sua chefe · 2 min",
+    uploadHint: ".docx ou .pdf · até 5 páginas",
+    feedbackGuidance:
+      "Sua entrega foi recebida. Antes de abrir o gabarito, releia a demanda da sócia e confira se cada instrução expressa foi atendida — é o primeiro ponto que um revisor sênior verifica.",
+    reflectionPoints: [
+      "Você respondeu a todos os pontos que a sócia sinalizou expressamente?",
+      "Cada afirmação de fato está ancorada em um documento do caso?",
+      "Se usou IA, consegue sustentar cada parágrafo se for questionado?",
+    ],
+    rubric: [
+      { criterion: "Atendimento à instrução da demanda" },
+      { criterion: "Fundamentação" },
+      { criterion: "Clareza, concisão e limite" },
+    ],
+    answerVideoCaption: "Prof. comentando · 4 min",
+    answerVideoUrl: "",
+    answerIntro: "O que um revisor sênior olha primeiro nesta peça, e por quê. Assista depois de ler sua ficha.",
+    referenceDoc: {
+      name: `${shortTitle} — versão de referência`,
+      description: "Peça completa com anotações marginais explicando cada escolha de redação e as alternativas possíveis.",
+      content: `VERSÃO DE REFERÊNCIA — ${title}\n\n[Peça modelo com anotações do professor]`,
+    },
+    guideDocs: [
+      { name: "Guia de elaboração — instituição arbitral", content: "Guia de elaboração." },
+      { name: "Checklist de requisitos de validade da cláusula", content: "1. Forma escrita\n2. Indicação da instituição\n3. Sede\n4. Número de árbitros" },
+    ],
+    ...extra,
+  };
+}
+
+const seed: State = {
+  student: "Rebeca Ferreira",
+  programs: [
+    {
+      id: "p1",
+      slug: "arbitragem-nivel-1",
+      area: "Direito",
+      kind: "Curso prático",
+      title: "Arbitragem — Nível 1",
+      tagline: "Seis atividades encadeadas em uma banca fictícia. Correção individual por rubrica com nota, devolutiva e gabarito comentado.",
+      description:
+        "Você assume a posição de estagiário em uma banca de arbitragem e conduz um procedimento do início ao fim — com um sócio te passando as demandas.",
+      price: 890,
+      fullPrice: 1190,
+      status: "published",
+      skills: ["Cláusula compromissória", "Peça inaugural", "Conflito de interesses", "Prazos processuais", "Impugnação", "Estruturação de tese"],
+      activities: [
+        act(1, "Análise da cláusula compromissória", "Cláusula compromissória", "30–60 min", "Verificar cabimento, sede e requisitos de validade", { demandBody: "Rebeca, chegou o contrato da Helvetia com a Nordeste. Antes de qualquer providência, analisa a cláusula compromissória: cabimento, sede, número de árbitros e se ela preenche os requisitos de validade. A Nordeste já ameaça dizer que é inválida. Me manda um parecer curto, de até duas páginas." }),
+        act(2, "Requerimento de arbitragem", "Requerimento de arbitragem", "1–2 h", "Redigir a peça inaugural", {
+          demandBody:
+            "Rebeca, precisamos protocolar o requerimento de arbitragem da Helvetia até sexta. Monta a peça: qualificação das partes, base na cláusula compromissória, síntese dos fatos, o inadimplemento, o pedido e a indicação de árbitro. Atenção à alegação de invalidade que eles levantaram — não deixa isso sem resposta. Máximo cinco páginas. Qualquer dúvida me chama.",
+          rubric: [
+            { criterion: "Qualificação das partes e representação" },
+            { criterion: "Fundamento na cláusula compromissória" },
+            { criterion: "Resposta à alegação de invalidade" },
+            { criterion: "Síntese fática e inadimplemento" },
+            { criterion: "Formulação do pedido" },
+            { criterion: "Indicação de árbitro" },
+            { criterion: "Clareza, concisão e limite" },
+          ],
+        }),
+        act(3, "Indicação de árbitro e conflito de interesses", "Indicação de árbitro", "1 h", "Pesquisa de perfil e checagem de disclosure", { demandBody: "Rebeca, precisamos indicar o coárbitro da Helvetia. Levanta três perfis adequados à disputa técnica, checa publicações, atuação recente e qualquer vínculo com a Nordeste ou seus advogados. Quero uma recomendação fundamentada e os pontos de disclosure que cada um precisaria revelar." }),
+        act(4, "Contagem de prazos sob o regulamento", "Contagem de prazos", "30 min", "Montar o calendário processual", { demandBody: "Rebeca, o requerimento foi protocolado. Monta o calendário processual sob o regulamento da câmara: resposta, constituição do tribunal, termo de arbitragem e alegações. Indica o marco inicial de cada prazo e como você contou. Erro de prazo aqui não tem volta." }),
+        act(5, "Impugnação de árbitro", "Impugnação de árbitro", "1–2 h", "Fundamentar e redigir", { demandBody: "Rebeca, descobrimos que o árbitro indicado pela Nordeste atuou como parecerista para ela no ano passado e não revelou. Prepara a impugnação: fundamento, prazo, prova do fato e pedido. Confere se ainda estamos dentro do prazo contado da ciência." }),
+        act(6, "Alegações iniciais", "Alegações iniciais", "2 h", "Estruturar tese, fatos e provas", { demandBody: "Rebeca, chegou a hora das alegações iniciais. Estrutura a tese da Helvetia: fatos, validade da cláusula, inadimplemento das sete faturas, ausência de recusa formal no prazo de dez dias e os pedidos com juros e correção. Indica a prova de cada fato. Até dez páginas." }),
       ],
     },
     {
@@ -208,7 +353,7 @@ const seed: State = {
   notes: [{ id: "n1", programId: "p1", activityId: "a2", text: "Verificar sempre se houve recusa formal no prazo contratual antes de alegar inadimplemento puro.", at: "2026-09-08T10:00:00Z" }],
 };
 
-const KEY = "formacao-pratica-v1";
+const KEY = "empiria-v2";
 let state: State = seed;
 let loaded = false;
 const listeners = new Set<() => void>();
@@ -255,7 +400,7 @@ export function useStore<T>(sel: (s: State) => T): T {
 // ---- derived helpers ----
 export const avg = (ns: number[]) => (ns.length ? ns.reduce((a, b) => a + b, 0) / ns.length : null);
 export const fmt = (n: number | null | undefined) => (n == null ? "—" : n.toFixed(1).replace(".", ","));
-export const brl = (n: number | null) => (n == null ? "—" : `R$ ${n.toLocaleString("pt-BR")}`);
+export const brl = (n: number | null | undefined) => (n == null ? "—" : `R$ ${n.toLocaleString("pt-BR")}`);
 export const subScore = (s?: Submission) => (s?.grades?.length ? avg(s.grades.map((g) => g.score)) : null);
 
 export function latestSubmission(s: State, programId: string, activityId: string, student = s.student) {

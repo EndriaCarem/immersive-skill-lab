@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { useStore } from "@/lib/store";
+import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const student = useStore((s) => s.student);
@@ -15,11 +16,14 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="window">
         <header className="appbar">
           <Link to="/" className="brand">
-            PRAXIS<span>FORMAÇÃO PRÁTICA</span>
+            <img src={logoLight.url} alt="Empiria" />
           </Link>
           <nav className="appnav">
             <Link to="/" activeOptions={{ exact: true }} activeProps={{ className: "on" }}>
               Catálogo
+            </Link>
+            <Link to="/sobre" activeProps={{ className: "on" }}>
+              Sobre
             </Link>
             <Link to="/meus-programas" activeProps={{ className: "on" }}>
               Meus programas
@@ -33,6 +37,14 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </header>
         {children}
+        <footer className="foot">
+          <span>
+            <b>Empiria</b> · Não é um curso sobre arbitragem; é o que você redige quando o caso chega.
+          </span>
+          <span style={{ marginLeft: "auto" }}>
+            Parceiros institucionais: <b>Arbipédia</b> · <b>CJA/CBMA</b>
+          </span>
+        </footer>
       </div>
     </div>
   );
