@@ -6,9 +6,9 @@ import { downloadDoc } from "@/lib/store";
 export const Route = createFileRoute("/estagio/$slug/$n/caso")({
   head: () => ({
     meta: [
-      { title: "O caso — Praxis Formação Prática" },
+      { title: "O caso — Empiria" },
       { name: "description", content: "Briefing do caso, contexto do cliente e documentos anexos." },
-      { property: "og:title", content: "O caso — Praxis Formação Prática" },
+      { property: "og:title", content: "O caso — Empiria" },
       { property: "og:description", content: "Entenda o caso antes de receber a demanda." },
     ],
   }),

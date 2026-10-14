@@ -6,9 +6,9 @@ import { downloadDoc, latestSubmission, useStore } from "@/lib/store";
 export const Route = createFileRoute("/estagio/$slug/$n/gabarito")({
   head: () => ({
     meta: [
-      { title: "Gabarito comentado — Praxis Formação Prática" },
+      { title: "Gabarito comentado — Empiria" },
       { name: "description", content: "Vídeo de debriefing do professor e peça de referência para download." },
-      { property: "og:title", content: "Gabarito comentado — Praxis Formação Prática" },
+      { property: "og:title", content: "Gabarito comentado — Empiria" },
       { property: "og:description", content: "Liberado somente após a sua entrega." },
     ],
   }),

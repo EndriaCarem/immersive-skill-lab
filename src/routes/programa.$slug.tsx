@@ -6,9 +6,9 @@ import { actions, brl, useStore } from "@/lib/store";
 export const Route = createFileRoute("/programa/$slug")({
   head: () => ({
     meta: [
-      { title: "Programa — Praxis Formação Prática" },
+      { title: "Programa — Empiria" },
       { name: "description", content: "Apresentação do programa, habilidades desenvolvidas e atividades encadeadas." },
-      { property: "og:title", content: "Programa — Praxis Formação Prática" },
+      { property: "og:title", content: "Programa — Empiria" },
       { property: "og:description", content: "Conheça as atividades e inscreva-se." },
     ],
   }),

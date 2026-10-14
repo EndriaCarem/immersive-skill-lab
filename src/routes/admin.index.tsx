@@ -6,9 +6,9 @@ import { actions, brl, fmt, subScore, useStore, type Grade, type Submission } fr
 export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
-      { title: "Administração — Praxis Formação Prática" },
+      { title: "Administração — Empiria" },
       { name: "description", content: "Gerencie programas, atividades, inscritos e entregas." },
-      { property: "og:title", content: "Administração — Praxis Formação Prática" },
+      { property: "og:title", content: "Administração — Empiria" },
       { property: "og:description", content: "Painel do criador da plataforma." },
     ],
   }),

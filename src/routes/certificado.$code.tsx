@@ -6,9 +6,9 @@ import { fmt, useStore } from "@/lib/store";
 export const Route = createFileRoute("/certificado/$code")({
   head: ({ params }) => ({
     meta: [
-      { title: `Certificado ${params.code} — Praxis Formação Prática` },
+      { title: `Certificado ${params.code} — Empiria` },
       { name: "description", content: "Certificado digital com nota e verificação pública por código." },
-      { property: "og:title", content: `Certificado ${params.code} — Praxis Formação Prática` },
+      { property: "og:title", content: `Certificado ${params.code} — Empiria` },
       { property: "og:description", content: "Certificado com nota por critério, verificável por link." },
     ],
   }),
@@ -44,7 +44,7 @@ function CertPage() {
     new URLSearchParams({
       startTask: "CERTIFICATION_NAME",
       name,
-      organizationName: "Praxis Formação Prática",
+      organizationName: "Empiria",
       issueYear: String(issued.getFullYear()),
       issueMonth: String(issued.getMonth() + 1),
       certUrl: url,

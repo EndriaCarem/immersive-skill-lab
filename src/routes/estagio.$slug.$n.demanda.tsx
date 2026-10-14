@@ -7,9 +7,9 @@ import { actions, downloadDoc } from "@/lib/store";
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
   head: () => ({
     meta: [
-      { title: "A demanda — Praxis Formação Prática" },
+      { title: "A demanda — Empiria" },
       { name: "description", content: "Instrução da tarefa, materiais de apoio e envio da sua entrega." },
-      { property: "og:title", content: "A demanda — Praxis Formação Prática" },
+      { property: "og:title", content: "A demanda — Empiria" },
       { property: "og:description", content: "Receba a demanda e envie sua entrega para correção." },
     ],
   }),

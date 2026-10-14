@@ -7,9 +7,9 @@ import { actions, completedCount, fmt, programAverage, useStore } from "@/lib/st
 export const Route = createFileRoute("/meus-programas")({
   head: () => ({
     meta: [
-      { title: "Meus programas — Praxis Formação Prática" },
+      { title: "Meus programas — Empiria" },
       { name: "description", content: "Seus programas, progresso por atividade, anotações e certificados." },
-      { property: "og:title", content: "Meus programas — Praxis Formação Prática" },
+      { property: "og:title", content: "Meus programas — Empiria" },
       { property: "og:description", content: "Acompanhe seu progresso e seus certificados." },
     ],
   }),

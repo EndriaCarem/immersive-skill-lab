@@ -6,9 +6,9 @@ import { brl, useStore } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Catálogo — Praxis Formação Prática" },
+      { title: "Catálogo — Empiria" },
       { name: "description", content: "Simulações profissionais de trabalho com correção individual em cada entrega e certificado com nota." },
-      { property: "og:title", content: "Catálogo — Praxis Formação Prática" },
+      { property: "og:title", content: "Catálogo — Empiria" },
       { property: "og:description", content: "Você não assiste. Você faz, entrega e é corrigido." },
     ],
   }),

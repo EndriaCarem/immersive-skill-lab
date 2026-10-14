@@ -6,9 +6,9 @@ import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
 export const Route = createFileRoute("/estagio/$slug/$n/devolutiva")({
   head: () => ({
     meta: [
-      { title: "Devolutiva — Praxis Formação Prática" },
+      { title: "Devolutiva — Empiria" },
       { name: "description", content: "Ficha de avaliação por critério, orientações e pontos de reflexão após a entrega." },
-      { property: "og:title", content: "Devolutiva — Praxis Formação Prática" },
+      { property: "og:title", content: "Devolutiva — Empiria" },
       { property: "og:description", content: "Sua ficha de avaliação por critério." },
     ],
   }),
