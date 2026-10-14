@@ -238,15 +238,18 @@ export function hydrateStore() {
   listeners.forEach((l) => l());
 }
 
+const subscribe = (l: () => void) => {
+  listeners.add(l);
+  return () => {
+    listeners.delete(l);
+  };
+};
+const getSnap = () => state;
+const getServerSnap = () => seed;
+
 export function useStore<T>(sel: (s: State) => T): T {
-  return useSyncExternalStore(
-    (l) => {
-      listeners.add(l);
-      return () => listeners.delete(l);
-    },
-    () => sel(state),
-    () => sel(seed),
-  );
+  const snap = useSyncExternalStore(subscribe, getSnap, getServerSnap);
+  return sel(snap);
 }
 
 // ---- derived helpers ----
