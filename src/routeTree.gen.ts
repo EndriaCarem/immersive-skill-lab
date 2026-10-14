@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
 import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
@@ -28,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const MeusProgramasRoute = MeusProgramasRouteImport.update({
   id: '/meus-programas',
   path: '/meus-programas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -74,6 +80,7 @@ const EstagioSlugNGabaritoRoute = EstagioSlugNGabaritoRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin': typeof AdminIndexRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/meus-programas'
+    | '/sobre'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
@@ -125,6 +135,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/meus-programas'
+    | '/sobre'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin'
@@ -137,6 +148,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/meus-programas'
+    | '/sobre'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
@@ -150,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MeusProgramasRoute: typeof MeusProgramasRoute
+  SobreRoute: typeof SobreRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/meus-programas'
       fullPath: '/meus-programas'
       preLoaderRoute: typeof MeusProgramasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -238,6 +258,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MeusProgramasRoute: MeusProgramasRoute,
+  SobreRoute: SobreRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
