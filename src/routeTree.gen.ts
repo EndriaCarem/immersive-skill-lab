@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
+  id: '/programa/$slug',
+  path: '/programa/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstagioSlugNCasoRoute = EstagioSlugNCasoRouteImport.update({
+  id: '/estagio/$slug/$n/caso',
+  path: '/estagio/$slug/$n/caso',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/programa/$slug': typeof ProgramaSlugRoute
+  '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/programa/$slug' | '/estagio/$slug/$n/caso'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/programa/$slug' | '/estagio/$slug/$n/caso'
+  id: '__root__' | '/' | '/programa/$slug' | '/estagio/$slug/$n/caso'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProgramaSlugRoute: typeof ProgramaSlugRoute
+  EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/programa/$slug': {
+      id: '/programa/$slug'
+      path: '/programa/$slug'
+      fullPath: '/programa/$slug'
+      preLoaderRoute: typeof ProgramaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estagio/$slug/$n/caso': {
+      id: '/estagio/$slug/$n/caso'
+      path: '/estagio/$slug/$n/caso'
+      fullPath: '/estagio/$slug/$n/caso'
+      preLoaderRoute: typeof EstagioSlugNCasoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProgramaSlugRoute: ProgramaSlugRoute,
+  EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
