@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
+import { Rich } from "@/components/Rich";
 
 export const Route = createFileRoute("/estagio/$slug/$n/devolutiva")({
   head: () => ({
@@ -81,7 +82,7 @@ function FeedbackPage() {
       )}
       <div className="callout">
         <div className="k">Orientação imediata</div>
-        <p>{activity.feedbackGuidance}</p>
+        {activity.feedbackHtml ? <Rich html={activity.feedbackHtml} /> : <p>{activity.feedbackGuidance}</p>}
       </div>
       <h4>Pontos de reflexão</h4>
       <ul className="clean">
