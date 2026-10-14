@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { actions, downloadDoc } from "@/lib/store";
+import { Rich } from "@/components/Rich";
+import { FileList } from "@/components/FileList";
 
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
   head: () => ({
@@ -73,6 +75,11 @@ function DemandPage() {
           </div>
         ))}
       </div>
+      {activity.files?.length ? (
+        <div style={{ marginTop: 8 }}>
+          <FileList files={activity.files} />
+        </div>
+      ) : null}
       <h4>Assistente de ofício</h4>
       <div className="assist">
         <div className="hd">Disponível durante o exercício</div>
@@ -102,7 +109,7 @@ function DemandPage() {
         <div className="from">
           <b>{activity.demandFrom}</b> · Assunto: {activity.demandSubject}
         </div>
-        <p>{activity.demandBody}</p>
+        {activity.demandHtml ? <Rich html={activity.demandHtml} /> : <p>{activity.demandBody}</p>}
       </div>
       <h4>Sua entrega</h4>
       <div

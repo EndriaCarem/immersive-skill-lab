@@ -3,15 +3,17 @@ import { brl, type Program } from "@/lib/store";
 import coverPratico from "@/assets/cover-pratico.jpg";
 import coverTeorico from "@/assets/cover-teorico.jpg";
 import art from "@/assets/art-hero.jpg";
+import { useFileUrl } from "@/lib/files";
 
 export const coverFor = (p: Program) => (p.cover === "pratico" ? coverPratico : p.cover === "teorico" ? coverTeorico : art);
 
 export function CourseCard({ p }: { p: Program }) {
   const soon = p.status === "soon";
+  const custom = useFileUrl(p.coverFile?.id);
   const inner = (
     <>
       <div className="cover">
-        <img src={coverFor(p)} alt="" loading="lazy" width={1024} height={640} style={soon ? { filter: "grayscale(.6) opacity(.6)" } : undefined} />
+        <img src={custom ?? coverFor(p)} alt="" loading="lazy" width={1024} height={640} style={soon ? { filter: "grayscale(.6) opacity(.6)" } : undefined} />
         {p.fullPrice ? (
           <span className="pillbadge" style={{ position: "absolute", top: 12, left: 12, fontSize: 11.5, padding: "5px 12px" }}>
             ✦ Pré-venda

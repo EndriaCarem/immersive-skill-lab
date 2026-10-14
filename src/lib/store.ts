@@ -1,4 +1,6 @@
 import { useSyncExternalStore } from "react";
+import type { FileRef } from "./files";
+export type { FileRef };
 
 export type Doc = { name: string; content: string };
 export type Criterion = { criterion: string };
@@ -24,6 +26,12 @@ export type Activity = {
   answerIntro: string;
   referenceDoc: Doc & { description: string };
   guideDocs: Doc[];
+  caseHtml?: string;
+  demandHtml?: string;
+  feedbackHtml?: string;
+  answerHtml?: string;
+  files?: FileRef[];
+  answerFiles?: FileRef[];
 };
 export type Program = {
   id: string;
@@ -38,6 +46,9 @@ export type Program = {
   cover?: "pratico" | "teorico";
   learn?: string[];
   includes?: string[];
+  descriptionHtml?: string;
+  coverFile?: FileRef | null;
+  files?: FileRef[];
   status: "published" | "soon" | "draft";
   skills: string[];
   activities: Activity[];

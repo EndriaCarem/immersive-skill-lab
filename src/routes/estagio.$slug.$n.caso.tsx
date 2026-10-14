@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { downloadDoc } from "@/lib/store";
+import { Rich } from "@/components/Rich";
+import { FileList } from "@/components/FileList";
 
 export const Route = createFileRoute("/estagio/$slug/$n/caso")({
   head: () => ({
@@ -24,9 +26,13 @@ function CasePage() {
       <Steps current={1} done={0} />
       <div className="eyebrow">O caso</div>
       <h1>O caso</h1>
-      {activity.caseParagraphs.map((p, i) => (
-        <p key={i}>{p}</p>
-      ))}
+      {activity.caseHtml ? <Rich html={activity.caseHtml} /> : activity.caseParagraphs.map((p, i) => <p key={i}>{p}</p>)}
+      {activity.files?.length ? (
+        <>
+          <h4>Arquivos do caso</h4>
+          <FileList files={activity.files} />
+        </>
+      ) : null}
       {activity.attachments.length > 0 && (
         <>
           <h4>Documentos anexos</h4>

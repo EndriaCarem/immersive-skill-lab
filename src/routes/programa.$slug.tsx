@@ -4,6 +4,9 @@ import { SiteShell } from "@/components/AppShell";
 import { NotFoundBlock } from "@/components/ActivityLayout";
 import { coverFor } from "@/components/CourseCard";
 import { actions, brl, useStore } from "@/lib/store";
+import { Rich } from "@/components/Rich";
+import { FileList } from "@/components/FileList";
+import { useFileUrl } from "@/lib/files";
 
 export const Route = createFileRoute("/programa/$slug")({
   head: () => ({
@@ -23,6 +26,7 @@ function ProgramPage() {
   const { slug } = Route.useParams();
   const nav = useNavigate();
   const program = useStore((s) => s.programs.find((p) => p.slug === slug));
+  const coverUrl = useFileUrl(program?.coverFile?.id);
   const enrolled = useStore((s) => !!program && s.enrollments.some((e) => e.programId === program.id && e.student === s.student));
   if (!program) return <NotFoundBlock />;
   const start = () => {
@@ -50,7 +54,7 @@ function ProgramPage() {
           </div>
 
           <h3 style={{ fontSize: 24, marginTop: 40 }}>Sobre o curso</h3>
-          <p style={{ fontSize: 16, color: "var(--slate)" }}>{program.description}</p>
+          {program.descriptionHtml ? <Rich html={program.descriptionHtml} /> : <p style={{ fontSize: 16, color: "var(--slate)" }}>{program.description}</p>}
           {practical && (
             <p style={{ fontSize: 16, color: "var(--slate)" }}>
               Cada atividade parte de um caso construído para o exercício: você recebe o contexto, a sócia pede a peça, você entrega e recebe a
@@ -74,6 +78,12 @@ function ProgramPage() {
             </div>
           ) : null}
 
+          {program.files?.length ? (
+            <>
+              <h3 style={{ fontSize: 24, marginTop: 44 }}>Materiais do curso</h3>
+              <FileList files={program.files} />
+            </>
+          ) : null}
           <h3 style={{ fontSize: 24, marginTop: 44 }}>Grade curricular</h3>
           <p className="muted">{practical ? "As demandas da banca fictícia, em sequência." : "O procedimento, fase a fase."}</p>
           {program.activities.map((a, i) => (
@@ -92,7 +102,7 @@ function ProgramPage() {
         <aside>
           <div className="buycard">
             <div className="prev">
-              <img src={coverFor(program)} alt="" width={1024} height={640} />
+              <img src={coverUrl ?? coverFor(program)} alt="" width={1024} height={640} />
             </div>
             <div className="bp">
               <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>

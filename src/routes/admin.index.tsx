@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { toast } from "sonner";
 import { actions, brl, fmt, subScore, useStore, type Grade, type Submission } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/")({
@@ -44,6 +45,7 @@ function Admin() {
               onClick={() => {
                 const p = actions.newProgram();
                 actions.saveProgram(p);
+                toast.success("Curso criado como rascunho");
                 nav({ to: "/admin/programa/$id", params: { id: p.id } });
               }}
             >
@@ -75,7 +77,7 @@ function Admin() {
                       <Link to="/admin/programa/$id" params={{ id: p.id }} className="btn ghost sm">
                         Editar
                       </Link>{" "}
-                      <button className="btn ghost sm" onClick={() => confirm(`Excluir "${p.title}"?`) && actions.deleteProgram(p.id)}>
+                      <button className="btn ghost sm" onClick={() => { if (confirm(`Excluir "${p.title}"?`)) { actions.deleteProgram(p.id); toast("Curso excluído", { description: p.title }); } }}>
                         Excluir
                       </button>
                     </td>
@@ -200,6 +202,7 @@ function GradeForm({ sub, onClose }: { sub: Submission; onClose: () => void }) {
         className="btn"
         onClick={() => {
           actions.grade(sub.id, grades, comment);
+          toast.success("Correção salva", { description: `${sub.student} · ${activity.title}` });
           onClose();
         }}
       >

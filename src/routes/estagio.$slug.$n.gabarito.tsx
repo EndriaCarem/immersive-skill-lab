@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { downloadDoc, latestSubmission, useStore } from "@/lib/store";
+import { Rich } from "@/components/Rich";
+import { FileList } from "@/components/FileList";
 
 export const Route = createFileRoute("/estagio/$slug/$n/gabarito")({
   head: () => ({
@@ -52,6 +54,16 @@ function AnswerPage() {
       <Steps current={4} done={3} />
       <div className="eyebrow">Atividade {idx + 1} · liberado após sua entrega</div>
       <h1>Gabarito comentado</h1>
+      {activity.answerHtml ? (
+        <div className="panel">
+          <Rich html={activity.answerHtml} />
+        </div>
+      ) : null}
+      {activity.answerFiles?.length ? (
+        <div style={{ marginBottom: 14 }}>
+          <FileList files={activity.answerFiles} />
+        </div>
+      ) : null}
       <div className="files">
         <div className="file">
           <span className="ic">DOC</span>
