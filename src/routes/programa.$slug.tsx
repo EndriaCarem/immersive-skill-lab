@@ -6,9 +6,9 @@ import { actions, brl, useStore } from "@/lib/store";
 export const Route = createFileRoute("/programa/$slug")({
   head: () => ({
     meta: [
-      { title: "Programa — Praxis Formação Prática" },
+      { title: "Programa — Empiria" },
       { name: "description", content: "Apresentação do programa, habilidades desenvolvidas e atividades encadeadas." },
-      { property: "og:title", content: "Programa — Praxis Formação Prática" },
+      { property: "og:title", content: "Programa — Empiria" },
       { property: "og:description", content: "Conheça as atividades e inscreva-se." },
     ],
   }),
@@ -39,7 +39,9 @@ function ProgramPage() {
           </div>
           <div className="price" style={{ fontSize: 28, fontWeight: 700, color: "var(--plum)", margin: "6px 0 14px" }}>
             {brl(program.price)}
+            {program.fullPrice ? <s>{brl(program.fullPrice)}</s> : null}
           </div>
+          {program.fullPrice ? <div className="badge">Preço de pré-venda</div> : null}
           <button className="btn wide" onClick={start} disabled={!program.activities.length}>
             {enrolled ? "Continuar programa" : "Adquirir programa"}
           </button>

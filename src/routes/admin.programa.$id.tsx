@@ -6,9 +6,9 @@ import { actions, useStore, type Activity, type Doc, type Program } from "@/lib/
 export const Route = createFileRoute("/admin/programa/$id")({
   head: () => ({
     meta: [
-      { title: "Editar programa — Praxis Formação Prática" },
+      { title: "Editar programa — Empiria" },
       { name: "description", content: "Configure programa, atividades, caso, demanda, devolutiva e gabarito." },
-      { property: "og:title", content: "Editar programa — Praxis Formação Prática" },
+      { property: "og:title", content: "Editar programa — Empiria" },
       { property: "og:description", content: "Editor de programas e atividades." },
     ],
   }),
@@ -83,6 +83,10 @@ function Editor() {
           <label className="field">
             <span>Preço (R$)</span>
             <input type="number" value={p.price ?? ""} onChange={(e) => up({ price: e.target.value === "" ? null : Number(e.target.value) })} />
+          </label>
+          <label className="field">
+            <span>Preço cheio (R$, opcional)</span>
+            <input type="number" value={p.fullPrice ?? ""} onChange={(e) => up({ fullPrice: e.target.value === "" ? null : Number(e.target.value) })} />
           </label>
           <T l="Chamada no catálogo" v={p.tagline} on={(v) => up({ tagline: v })} area />
           <T l="Apresentação" v={p.description} on={(v) => up({ description: v })} area />

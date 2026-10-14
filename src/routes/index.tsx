@@ -6,9 +6,9 @@ import { brl, useStore } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Catálogo — Praxis Formação Prática" },
+      { title: "Catálogo — Empiria" },
       { name: "description", content: "Simulações profissionais de trabalho com correção individual em cada entrega e certificado com nota." },
-      { property: "og:title", content: "Catálogo — Praxis Formação Prática" },
+      { property: "og:title", content: "Catálogo — Empiria" },
       { property: "og:description", content: "Você não assiste. Você faz, entrega e é corrigido." },
     ],
   }),
@@ -30,6 +30,7 @@ function Catalog() {
       <main className="pane">
         <div className="eyebrow">Catálogo</div>
         <h1>Você não assiste. Você faz, entrega e é corrigido.</h1>
+        <p className="quote" style={{ maxWidth: 720 }}>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
         <p className="muted" style={{ maxWidth: 640 }}>
           Programas com correção individualizada em cada entrega — o que a faculdade não dá e o escritório só oferece a quem já contratou.
         </p>
@@ -49,7 +50,11 @@ function Catalog() {
               <div className="kind">{p.status === "soon" ? "Em breve" : p.kind}</div>
               <h3>{p.title}</h3>
               <p>{p.tagline}</p>
-              <div className="price">{brl(p.price)}</div>
+              <div className="price">
+                {brl(p.price)}
+                {p.fullPrice ? <s>{brl(p.fullPrice)}</s> : null}
+              </div>
+              {p.fullPrice ? <div className="badge" style={{ alignSelf: "flex-start" }}>Pré-venda</div> : null}
               {p.status === "soon" ? (
                 <button className="btn ghost wide" onClick={() => alert("Avisaremos você quando o programa abrir.")}>
                   Avise-me

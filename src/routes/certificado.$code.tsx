@@ -2,13 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { fmt, useStore } from "@/lib/store";
+import logo from "@/assets/empiria-logo.png.asset.json";
 
 export const Route = createFileRoute("/certificado/$code")({
   head: ({ params }) => ({
     meta: [
-      { title: `Certificado ${params.code} — Praxis Formação Prática` },
+      { title: `Certificado ${params.code} — Empiria` },
       { name: "description", content: "Certificado digital com nota e verificação pública por código." },
-      { property: "og:title", content: `Certificado ${params.code} — Praxis Formação Prática` },
+      { property: "og:title", content: `Certificado ${params.code} — Empiria` },
       { property: "og:description", content: "Certificado com nota por critério, verificável por link." },
     ],
   }),
@@ -38,13 +39,13 @@ function CertPage() {
       </AppShell>
     );
   const issued = new Date(cert.issuedAt);
-  const name = `Estágio Pré-Programado em ${program.title}`;
+  const name = `${program.kind} — ${program.title}`;
   const linkedinAdd =
     "https://www.linkedin.com/profile/add?" +
     new URLSearchParams({
       startTask: "CERTIFICATION_NAME",
       name,
-      organizationName: "Praxis Formação Prática",
+      organizationName: "Empiria",
       issueYear: String(issued.getFullYear()),
       issueMonth: String(issued.getMonth() + 1),
       certUrl: url,
@@ -56,6 +57,7 @@ function CertPage() {
     <AppShell>
       <div className="cert-wrap">
         <div className="cert">
+          <img src={logo.url} alt="Empiria" style={{ height: 40, margin: "0 auto 26px" }} />
           <div className="k">Certificado de conclusão</div>
           <h2>{name}</h2>
           <div className="who">
