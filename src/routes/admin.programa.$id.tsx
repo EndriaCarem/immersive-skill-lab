@@ -8,7 +8,7 @@ import { paragraphsToHtml, textToHtml, wordCount } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 import { coverFor } from "@/components/CourseCard";
 import { deleteFile, saveFile, useFileUrl, type FileRef } from "@/lib/files";
-import { actions, useStore, type Activity, type Program } from "@/lib/store";
+import { actions, useStore, useStoreReady, type Activity, type Program } from "@/lib/store";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -81,8 +81,9 @@ function normalize(p: Program): Program {
 
 function Editor() {
   const { id } = Route.useParams();
-  const stored = useStore((s) => s.programs.find((p) => p.id === id));
-  const [p, setP] = useState<Program | null>(null);
+  const stored = useStore((s) => s.programs.find((p) => p.id === id || p.slug === id));
+  const ready = useStoreReady();
+  const [p, setP] = useState<Program | null>(() => (stored ? normalize(stored) : null));
   const [dirty, setDirty] = useState(false);
   const [tab, setTab] = useState<"geral" | "atividades" | "midias">("geral");
   const [open, setOpen] = useState(0);
@@ -90,8 +91,8 @@ function Editor() {
   const [confirmDel, setConfirmDel] = useState<number | null>(null);
 
   useEffect(() => {
-    if (stored && !p) setP(normalize(stored));
-  }, [stored, p]);
+    if (ready && stored && (!p || p.id !== stored.id)) setP(normalize(stored));
+  }, [ready, stored, p]);
 
   useBlocker({ shouldBlockFn: () => dirty && !window.confirm("Há alterações não salvas. Sair mesmo assim?"), enableBeforeUnload: dirty });
 
@@ -114,11 +115,20 @@ function Editor() {
     return () => window.removeEventListener("keydown", h);
   }, [save]);
 
+  if (!ready || (!p && stored))
+    return (
+      <AppShell>
+        <main className="pane" aria-busy="true">
+          <div className="eyebrow">Editor</div>
+          <h1 className="muted">Carregando curso…</h1>
+        </main>
+      </AppShell>
+    );
   if (!p)
     return (
       <AppShell>
         <main className="pane">
-          <h1>{stored === undefined ? "Carregando…" : "Curso não encontrado"}</h1>
+          <h1>Curso não encontrado</h1>
           <Link to="/admin" className="btn">
             Voltar
           </Link>
