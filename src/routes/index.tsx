@@ -1,74 +1,128 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { AppShell } from "@/components/AppShell";
-import { brl, useStore } from "@/lib/store";
+import { ArrowUpRight, Star } from "lucide-react";
+import { SiteShell } from "@/components/AppShell";
+import { CourseCard } from "@/components/CourseCard";
+import { useStore } from "@/lib/store";
+import art from "@/assets/art-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Catálogo — Empiria" },
-      { name: "description", content: "Simulações profissionais de trabalho com correção individual em cada entrega e certificado com nota." },
-      { property: "og:title", content: "Catálogo — Empiria" },
-      { property: "og:description", content: "Você não assiste. Você faz, entrega e é corrigido." },
+      { title: "Empiria — Formação jurídica prática em arbitragem" },
+      { name: "description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega. Casos reais, correção individual e certificado com nota." },
+      { property: "og:title", content: "Empiria — Formação jurídica prática" },
+      { property: "og:description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega." },
     ],
   }),
-  component: Catalog,
+  component: Landing,
 });
 
-function Catalog() {
-  const programs = useStore((s) => s.programs.filter((p) => p.status !== "draft"));
-  const [area, setArea] = useState("Todas");
-  const [q, setQ] = useState("");
-  const areas = useMemo(() => ["Todas", ...Array.from(new Set(programs.map((p) => p.area)))], [programs]);
-  const list = programs.filter(
-    (p) =>
-      (area === "Todas" || p.area === area) &&
-      (p.title + p.tagline + p.kind + p.skills.join(" ")).toLowerCase().includes(q.toLowerCase()),
-  );
+function Landing() {
+  const programs = useStore((s) => s.programs);
+  const featured = programs.filter((p) => p.status === "published").slice(0, 3);
   return (
-    <AppShell>
-      <main className="pane">
-        <div className="eyebrow">Catálogo</div>
-        <h1>Você não assiste. Você faz, entrega e é corrigido.</h1>
-        <p className="quote" style={{ maxWidth: 720 }}>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
-        <p className="muted" style={{ maxWidth: 640 }}>
-          Programas com correção individualizada em cada entrega — o que a faculdade não dá e o escritório só oferece a quem já contratou.
-        </p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", margin: "22px 0 24px" }}>
-          <input className="input" style={{ maxWidth: 320 }} placeholder="Buscar programa ou habilidade…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
-          <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-            {areas.map((a) => (
-              <button key={a} className={`filter ${a === area ? "on" : ""}`} onClick={() => setArea(a)}>
-                {a}
-              </button>
-            ))}
+    <SiteShell>
+      <section className="wrap grid2" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "center", paddingTop: 64, paddingBottom: 56 }}>
+        <div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <span className="pillbadge">✦ Formação Jurídica Prática</span>
+            <span className="pillbadge soft">Pré-venda Fenalaw</span>
+          </div>
+          <h1 className="display">
+            O que você <em>redige</em> quando o caso chega.
+          </h1>
+          <p className="lead">
+            Não é um curso sobre arbitragem. Você assume uma banca fictícia, recebe as demandas da sócia, entrega a peça e é corrigido
+            critério a critério.
+          </p>
+          <div style={{ display: "flex", gap: 10, marginTop: 30, flexWrap: "wrap" }}>
+            <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
+              Garantir vaga na pré-venda
+            </Link>
+            <Link to="/sobre" className="btn ghost lg">
+              Conhecer o método
+            </Link>
           </div>
         </div>
-        <div className="cards">
-          {list.map((p) => (
-            <div key={p.id} className={`card ${p.status === "soon" ? "soon" : ""}`}>
-              <div className="kind">{p.status === "soon" ? "Em breve" : p.kind}</div>
-              <h3>{p.title}</h3>
-              <p>{p.tagline}</p>
-              <div className="price">
-                {brl(p.price)}
-                {p.fullPrice ? <s>{brl(p.fullPrice)}</s> : null}
+        <div className="bento">
+          <div className="b img">
+            <img src={art} alt="" width={1200} height={912} />
+            <div className="float">
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="avs">
+                  <i>RF</i>
+                  <i>TM</i>
+                  <i>+</i>
+                </div>
+                <Star size={16} fill="#E2B33C" color="#E2B33C" />
+                <b>8,4</b>
               </div>
-              {p.fullPrice ? <div className="badge" style={{ alignSelf: "flex-start" }}>Pré-venda</div> : null}
-              {p.status === "soon" ? (
-                <button className="btn ghost wide" onClick={() => alert("Avisaremos você quando o programa abrir.")}>
-                  Avise-me
-                </button>
-              ) : (
-                <Link to="/programa/$slug" params={{ slug: p.slug }} className="btn ghost wide">
-                  Ver o programa
-                </Link>
-              )}
+              <div style={{ fontWeight: 700, marginTop: 6 }}>+300 alunos formados</div>
+            </div>
+          </div>
+          <div className="b dark">
+            <div className="metric">8,4</div>
+            <div style={{ marginTop: 8, fontSize: 14, color: "#DCCFE2" }}>Nota média nas entregas corrigidas</div>
+          </div>
+          <div className="b">
+            <div className="metric">100%</div>
+            <div style={{ marginTop: 8, fontSize: 14, color: "var(--slate)" }}>Prática real: caso, demanda, devolutiva e gabarito</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap">
+        <div className="statbar">
+          <div>
+            <b>+300</b>
+            <span>Alunos formados</span>
+          </div>
+          <div>
+            <b>{programs.filter((p) => p.status === "published").length}</b>
+            <span>Cursos práticos e teóricos</span>
+          </div>
+          <div>
+            <b>2</b>
+            <span>Parceiros institucionais: Arbipédia e CJA/CBMA</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap" style={{ paddingTop: 88 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 20, marginBottom: 30 }}>
+          <div>
+            <span className="pillbadge soft">✦ Cursos de lançamento</span>
+            <h2 className="sec-title" style={{ marginTop: 14 }}>
+              Conheça os cursos
+            </h2>
+          </div>
+          <Link to="/cursos" className="iconbtn" style={{ marginLeft: "auto", width: 56, height: 56, background: "var(--grad)", color: "var(--paper)" }} aria-label="Ver todos os cursos">
+            <ArrowUpRight />
+          </Link>
+        </div>
+        <div className="cards">
+          {featured.map((p) => (
+            <CourseCard key={p.id} p={p} />
+          ))}
+        </div>
+      </section>
+
+      <section className="wrap" style={{ paddingTop: 88 }}>
+        <div className="grid2" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+          {[
+            ["01", "O caso", "O contexto chega antes da demanda, como no escritório."],
+            ["02", "A demanda", "A sócia pede a peça. Sem roteiro, com o assistente de ofício."],
+            ["03", "A devolutiva", "Correção por rubrica, critério a critério, com nota."],
+            ["04", "O gabarito", "Peça de referência e debriefing — só depois da entrega."],
+          ].map(([n, t, d]) => (
+            <div key={n} className="card">
+              <div className="kind">{n}</div>
+              <h3>{t}</h3>
+              <p style={{ marginBottom: 0 }}>{d}</p>
             </div>
           ))}
-          {list.length === 0 && <p className="muted">Nenhum programa encontrado.</p>}
         </div>
-      </main>
-    </AppShell>
+      </section>
+    </SiteShell>
   );
 }
