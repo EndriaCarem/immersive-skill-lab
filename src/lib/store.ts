@@ -35,6 +35,9 @@ export type Program = {
   description: string;
   price: number | null;
   fullPrice?: number | null;
+  cover?: "pratico" | "teorico";
+  learn?: string[];
+  includes?: string[];
   status: "published" | "soon" | "draft";
   skills: string[];
   activities: Activity[];
@@ -138,6 +141,15 @@ const seed: State = {
         "Você assume a posição de estagiário em uma banca de arbitragem e conduz um procedimento do início ao fim — com um sócio te passando as demandas.",
       price: 890,
       fullPrice: 1190,
+      cover: "pratico",
+      learn: [
+        "Analisar a validade de uma cláusula compromissória e responder a quem a ataca",
+        "Redigir requerimento de arbitragem, impugnação e alegações iniciais",
+        "Indicar árbitros e conduzir a checagem de conflito de interesses",
+        "Contar prazos sob o regulamento da câmara sem margem de erro",
+        "Usar IA no limite do que o escritório aceita",
+      ],
+      includes: ["6 atividades com correção individual", "Gabaritos comentados", "Certificado com nota", "6 meses de acesso"],
       status: "published",
       skills: ["Cláusula compromissória", "Peça inaugural", "Conflito de interesses", "Prazos processuais", "Impugnação", "Estruturação de tese"],
       activities: [
@@ -171,6 +183,13 @@ const seed: State = {
       description: "O procedimento arbitral fase a fase, da convenção à sentença, acompanhado de 32 modelos comentados em português, na praxe das câmaras brasileiras.",
       price: 590,
       fullPrice: 890,
+      cover: "teorico",
+      learn: [
+        "O procedimento arbitral fase a fase, da convenção à sentença",
+        "A praxe das câmaras brasileiras em cada etapa",
+        "Como adaptar modelos às particularidades do caso",
+      ],
+      includes: ["8 aulas", "32 modelos comentados em português", "Certificado de conclusão", "6 meses de acesso"],
       status: "published",
       skills: ["Convenção de arbitragem", "Instauração", "Tribunal arbitral", "Instrução", "Sentença arbitral"],
       activities: [
@@ -224,7 +243,7 @@ const seed: State = {
   notes: [{ id: "n1", programId: "p1", activityId: "a2", text: "Verificar sempre se houve recusa formal no prazo contratual antes de alegar inadimplemento puro.", at: "2026-09-08T10:00:00Z" }],
 };
 
-const KEY = "empiria-v2";
+const KEY = "empiria-v3";
 let state: State = seed;
 let loaded = false;
 const listeners = new Set<() => void>();
