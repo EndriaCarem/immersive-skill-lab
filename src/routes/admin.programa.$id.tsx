@@ -46,7 +46,7 @@ function Editor() {
     const a = [...p.activities];
     const j = i + d;
     if (j < 0 || j >= a.length) return;
-    [a[i], a[j]] = [a[j], a[i]];
+    [a[i], a[j]] = [a[j]!, a[i]!];
     up({ activities: a });
     setOpen(j);
   };

@@ -29,7 +29,7 @@ export function ActivityRail({ program, current }: { program: Program; current: 
     <ul className="acts">
       {program.activities.map((a, i) => {
         const sub = latestSubmission(state, program.id, a.id);
-        const unlocked = i === 0 || !!latestSubmission(state, program.id, program.activities[i - 1].id);
+        const unlocked = i === 0 || !!latestSubmission(state, program.id, program.activities[i - 1]!.id);
         const cls = sub ? "done" : i === current ? "now" : unlocked ? "" : "locked";
         const score = subScore(sub);
         return (

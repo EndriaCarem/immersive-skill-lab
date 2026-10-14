@@ -30,7 +30,7 @@ function Admin() {
         <div className="chips">
           {(["programas", "inscritos", "entregas"] as const).map((t) => (
             <button key={t} className={`filter ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>
-              {t[0].toUpperCase() + t.slice(1)}
+              {t.charAt(0).toUpperCase() + t.slice(1)}
               {t === "entregas" && ` (${state.submissions.filter((s) => !s.grades).length} a corrigir)`}
             </button>
           ))}

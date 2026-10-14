@@ -58,7 +58,7 @@ function Portal() {
               <button
                 className="btn sm"
                 onClick={() => {
-                  if (note.trim()) actions.addNote(mine[0].id, mine[0].activities[0]?.id ?? "", note.trim());
+                  if (note.trim() && mine[0]) actions.addNote(mine[0].id, mine[0].activities[0]?.id ?? "", note.trim());
                   setNote("");
                 }}
               >
