@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
+import { GradeWorkbench } from "@/components/GradeWorkbench";
 import { toast } from "sonner";
-import { actions, brl, fmt, subScore, useStore, type Grade, type Submission } from "@/lib/store";
+import { actions, brl, fmt, subScore, useStore, type Submission } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -245,56 +246,9 @@ function Admin() {
           </table>
         )}
 
-        {grading && <GradeForm sub={grading} onClose={() => setGrading(null)} />}
+        <GradeWorkbench sub={grading} queue={subs} onChange={setGrading} onClose={() => setGrading(null)} />
       </main>
     </AppShell>
   );
 }
 
-function GradeForm({ sub, onClose }: { sub: Submission; onClose: () => void }) {
-  const activity = useStore((s) => s.programs.find((p) => p.id === sub.programId)?.activities.find((a) => a.id === sub.activityId));
-  const [grades, setGrades] = useState<Grade[]>(
-    () => activity?.rubric.map((r) => sub.grades?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: 7, comment: "" }) ?? [],
-  );
-  const [comment, setComment] = useState(sub.teacherComment ?? "");
-  if (!activity) return null;
-  return (
-    <div className="panel" style={{ marginTop: 24, borderColor: "var(--plum-edge)" }}>
-      <h3>
-        Corrigir · {sub.student} · {activity.title}
-      </h3>
-      {grades.map((g, i) => (
-        <div key={g.criterion} style={{ display: "grid", gridTemplateColumns: "1fr 90px 2fr", gap: 10, alignItems: "center", marginBottom: 8 }}>
-          <b className="sm">{g.criterion}</b>
-          <input
-            className="input"
-            type="number"
-            min={0}
-            max={10}
-            step={0.1}
-            value={g.score}
-            onChange={(e) => setGrades((gs) => gs.map((x, j) => (j === i ? { ...x, score: Math.min(10, Math.max(0, Number(e.target.value))) } : x)))}
-          />
-          <input className="input" placeholder="O que a correção observou" value={g.comment} onChange={(e) => setGrades((gs) => gs.map((x, j) => (j === i ? { ...x, comment: e.target.value } : x)))} />
-        </div>
-      ))}
-      <label className="field">
-        <span>Comentário geral</span>
-        <textarea rows={3} value={comment} onChange={(e) => setComment(e.target.value)} />
-      </label>
-      <button
-        className="btn"
-        onClick={() => {
-          actions.grade(sub.id, grades, comment);
-          toast.success("Correção salva", { description: `${sub.student} · ${activity.title}` });
-          onClose();
-        }}
-      >
-        Salvar correção
-      </button>{" "}
-      <button className="btn ghost" onClick={onClose}>
-        Cancelar
-      </button>
-    </div>
-  );
-}
