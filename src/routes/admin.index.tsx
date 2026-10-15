@@ -16,25 +16,100 @@ export const Route = createFileRoute("/admin/")({
   component: Admin,
 });
 
+type Tab = "programas" | "inscritos" | "entregas";
+const TAB_LABEL: Record<Tab, string> = { programas: "Cursos", inscritos: "Alunos inscritos", entregas: "Fila de correção" };
+const STATUS_LABEL = { published: "Publicado", soon: "Em breve", draft: "Rascunho" } as const;
+
 function Admin() {
   const state = useStore((s) => s);
   const nav = useNavigate();
-  const [tab, setTab] = useState<"programas" | "inscritos" | "entregas">("programas");
+  const [tab, setTab] = useState<Tab>("programas");
+  const [q, setQ] = useState("");
+  const [statusF, setStatusF] = useState<"all" | "published" | "soon" | "draft">("all");
+  const [subF, setSubF] = useState<"pending" | "graded" | "all">("pending");
   const [grading, setGrading] = useState<Submission | null>(null);
   const prog = (id: string) => state.programs.find((p) => p.id === id);
+  const term = q.trim().toLowerCase();
+  const has = (...xs: (string | undefined)[]) => !term || xs.some((x) => x?.toLowerCase().includes(term));
+
+  // KPIs
+  const revenue = state.enrollments.reduce((sum, e) => sum + (prog(e.programId)?.price ?? 0), 0);
+  const activeStudents = new Set(state.enrollments.map((e) => e.student)).size;
+  const pending = state.submissions.filter((s) => !s.grades).length;
+  const totalActs = state.enrollments.reduce((n, e) => n + (prog(e.programId)?.activities.length ?? 0), 0);
+  const doneActs = state.enrollments.reduce((n, e) => {
+    const p = prog(e.programId);
+    return n + (p ? p.activities.filter((a) => state.submissions.some((s) => s.activityId === a.id && s.programId === p.id && s.student === e.student)).length : 0);
+  }, 0);
+  const completion = totalActs ? Math.round((doneActs / totalActs) * 100) : 0;
+
+  const programs = state.programs.filter((p) => (statusF === "all" || p.status === statusF) && has(p.title, p.area, p.kind));
+  const enrollments = state.enrollments.filter((e) => has(e.student, prog(e.programId)?.title));
+  const subs = [...state.submissions]
+    .reverse()
+    .filter((s) => (subF === "all" || (subF === "pending" ? !s.grades : !!s.grades)))
+    .filter((s) => {
+      const p = prog(s.programId);
+      return has(s.student, p?.title, p?.activities.find((a) => a.id === s.activityId)?.title, s.fileName);
+    });
 
   return (
     <AppShell>
       <main className="pane">
-        <div className="eyebrow">Painel administrativo</div>
+        <div className="eyebrow">Painel executivo</div>
         <h1>Administração</h1>
+
+        <div className="kpis">
+          <div className="kpi">
+            <small>Faturamento estimado</small>
+            <b>{brl(revenue)}</b>
+            <span>{state.enrollments.length} matrículas × preço atual</span>
+          </div>
+          <div className="kpi">
+            <small>Alunos ativos</small>
+            <b>{activeStudents}</b>
+            <span>com ao menos uma matrícula</span>
+          </div>
+          <button className={`kpi ${pending ? "alert" : ""}`} style={{ textAlign: "left", cursor: "pointer" }} onClick={() => { setTab("entregas"); setSubF("pending"); }}>
+            <small>Peças a avaliar</small>
+            <b>{pending}</b>
+            <span>{pending ? "Abrir fila de correção →" : "Fila em dia"}</span>
+          </button>
+          <div className="kpi">
+            <small>Taxa de conclusão</small>
+            <b>{completion}%</b>
+            <span>{doneActs} de {totalActs} atividades entregues</span>
+          </div>
+        </div>
+
         <div className="chips">
-          {(["programas", "inscritos", "entregas"] as const).map((t) => (
+          {(Object.keys(TAB_LABEL) as Tab[]).map((t) => (
             <button key={t} className={`filter ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-              {t === "entregas" && ` (${state.submissions.filter((s) => !s.grades).length} a corrigir)`}
+              {TAB_LABEL[t]}
+              {t === "entregas" && ` (${pending})`}
             </button>
           ))}
+        </div>
+
+        <div className="admbar">
+          <input
+            className="input"
+            placeholder={tab === "programas" ? "Buscar curso, área ou tipo" : tab === "inscritos" ? "Buscar aluno ou curso" : "Buscar aluno, curso, atividade ou arquivo"}
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+          {tab === "programas" &&
+            (["all", "published", "soon", "draft"] as const).map((s) => (
+              <button key={s} className={`filter ${statusF === s ? "on" : ""}`} onClick={() => setStatusF(s)}>
+                {s === "all" ? "Todos" : STATUS_LABEL[s]}
+              </button>
+            ))}
+          {tab === "entregas" &&
+            ([["pending", "Aguardando correção"], ["graded", "Corrigidas"], ["all", "Todas"]] as const).map(([k, l]) => (
+              <button key={k} className={`filter ${subF === k ? "on" : ""}`} onClick={() => setSubF(k)}>
+                {l}
+              </button>
+            ))}
         </div>
 
         {tab === "programas" && (
@@ -49,27 +124,30 @@ function Admin() {
                 nav({ to: "/admin/programa/$id", params: { id: p.id } });
               }}
             >
-              Criar programa
+              Novo curso
             </button>
             <table className="tbl">
               <thead>
                 <tr>
-                  <th>Programa</th>
+                  <th>Curso</th>
                   <th>Status</th>
                   <th>Atividades</th>
                   <th>Preço</th>
-                  <th>Inscritos</th>
+                  <th>Matrículas</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
-                {state.programs.map((p) => (
+                {programs.length === 0 && (
+                  <tr><td colSpan={6} className="muted">Nenhum curso encontrado.</td></tr>
+                )}
+                {programs.map((p) => (
                   <tr key={p.id}>
                     <td>
                       <b>{p.title}</b>
                       <div className="muted sm">{p.kind} · {p.area}</div>
                     </td>
-                    <td>{{ published: "Publicado", soon: "Em breve", draft: "Rascunho" }[p.status]}</td>
+                    <td>{STATUS_LABEL[p.status]}</td>
                     <td>{p.activities.length}</td>
                     <td>{brl(p.price)}</td>
                     <td>{state.enrollments.filter((e) => e.programId === p.id).length}</td>
@@ -96,13 +174,16 @@ function Admin() {
             <thead>
               <tr>
                 <th>Aluno</th>
-                <th>Programa</th>
-                <th>Inscrição</th>
+                <th>Curso</th>
+                <th>Matrícula</th>
                 <th>Progresso</th>
               </tr>
             </thead>
             <tbody>
-              {state.enrollments.map((e, i) => {
+              {enrollments.length === 0 && (
+                <tr><td colSpan={4} className="muted">Nenhum aluno encontrado.</td></tr>
+              )}
+              {enrollments.map((e, i) => {
                 const p = prog(e.programId);
                 const done = p ? p.activities.filter((a) => state.submissions.some((s) => s.activityId === a.id && s.programId === p.id && s.student === e.student)).length : 0;
                 return (
@@ -125,15 +206,18 @@ function Admin() {
             <thead>
               <tr>
                 <th>Aluno</th>
-                <th>Programa · atividade</th>
-                <th>Arquivo</th>
-                <th>Uso de IA</th>
+                <th>Curso · atividade</th>
+                <th>Peça entregue</th>
+                <th>Uso de IA declarado</th>
                 <th>Nota</th>
                 <th />
               </tr>
             </thead>
             <tbody>
-              {[...state.submissions].reverse().map((s) => {
+              {subs.length === 0 && (
+                <tr><td colSpan={6} className="muted">{subF === "pending" ? "Nenhuma peça aguardando correção." : "Nenhuma entrega encontrada."}</td></tr>
+              )}
+              {subs.map((s) => {
                 const p = prog(s.programId);
                 const a = p?.activities.find((x) => x.id === s.activityId);
                 return (
