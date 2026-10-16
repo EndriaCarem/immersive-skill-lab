@@ -65,8 +65,10 @@ export type Submission = {
   submittedAt: string;
   grades?: Grade[];
   teacherComment?: string;
-  /** Timestamps of human-review requests; the brand allows at most 2 per submission. */
+  /** Timestamp of the human-review request (quota: 2 activities per course). */
   humanReviews?: string[];
+  /** Set when the reviewer finishes the human review; unlocks the answer key. */
+  reviewedAt?: string;
 };
 export type Enrollment = { programId: string; student: string; enrolledAt: string };
 export type Certificate = { code: string; programId: string; student: string; issuedAt: string; grade: number | null };
@@ -328,8 +330,19 @@ export function completedCount(s: State, p: Program, student = s.student) {
 }
 
 // ---- actions ----
+/** Backlog EMP-026: human review allowed on at most 2 distinct activities per student per course. */
 export const MAX_HUMAN_REVIEWS = 2;
-export const reviewsLeft = (s?: Submission) => Math.max(0, MAX_HUMAN_REVIEWS - (s?.humanReviews?.length ?? 0));
+export function reviewedActivities(s: Pick<State, "submissions">, programId: string, student: string) {
+  return new Set(s.submissions.filter((x) => x.programId === programId && x.student === student && x.humanReviews?.length).map((x) => x.activityId));
+}
+/** Remaining review quota for this course; an activity already under review doesn't consume a new slot. */
+export function reviewsLeft(s: Pick<State, "submissions">, programId: string, student: string, activityId?: string) {
+  const used = reviewedActivities(s, programId, student);
+  if (activityId && used.has(activityId)) return 0;
+  return Math.max(0, MAX_HUMAN_REVIEWS - used.size);
+}
+/** Backlog EMP-027: answer key stays locked while a human review is pending (requested, not yet re-graded). */
+export const reviewPending = (sub?: Submission) => !!sub?.humanReviews?.length && !sub.reviewedAt;
 /** SLA for grading a submission, in hours. */
 export const SLA_HOURS = 24;
 export function slaStatus(submittedAt: string, now = Date.now()) {
@@ -341,12 +354,16 @@ export function slaStatus(submittedAt: string, now = Date.now()) {
 
 export const actions = {
   requestHumanReview: (submissionId: string) =>
-    set((s) => ({
-      ...s,
-      submissions: s.submissions.map((x) =>
-        x.id === submissionId && reviewsLeft(x) > 0 ? { ...x, humanReviews: [...(x.humanReviews ?? []), new Date().toISOString()] } : x,
-      ),
-    })),
+    set((s) => {
+      const sub = s.submissions.find((x) => x.id === submissionId);
+      if (!sub || reviewsLeft(s, sub.programId, sub.student, sub.activityId) === 0) return s;
+      return {
+        ...s,
+        submissions: s.submissions.map((x) =>
+          x.id === submissionId ? { ...x, humanReviews: [new Date().toISOString()], reviewedAt: undefined } : x,
+        ),
+      };
+    }),
   setStudent: (name: string) => set((s) => ({ ...s, student: name })),
   enroll: (programId: string) =>
     set((s) =>
