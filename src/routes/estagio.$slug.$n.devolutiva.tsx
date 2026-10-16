@@ -24,6 +24,7 @@ function FeedbackPage() {
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
   const sub = useStore((s) => (program && activity ? latestSubmission(s, program.id, activity.id) : undefined));
+  const left = useStore((s) => (program && activity ? reviewsLeft(s, program.id, s.student, activity.id) : 0));
   if (!program || !activity) return <NotFoundBlock />;
   if (!sub)
     return (
