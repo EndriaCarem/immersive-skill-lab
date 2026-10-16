@@ -232,7 +232,7 @@ function Admin() {
                       {s.fileName}
                       <div className="muted sm">{new Date(s.submittedAt).toLocaleString("pt-BR")}</div>
                       {!s.grades && (() => { const sl = slaStatus(s.submittedAt); return <span className={`sig ${sl.k}`} style={{ marginTop: 4 }}>Entregue {sl.label} · SLA {SLA_HOURS}h</span>; })()}
-                      {!!s.humanReviews?.length && <span className="sig mid" style={{ marginTop: 4 }}>Correção humana pedida ({s.humanReviews.length}/2)</span>}
+                      {!!s.humanReviews?.length && <span className="sig mid" style={{ marginTop: 4 }}>{s.reviewedAt ? "Correção humana concluída" : "Correção humana pedida"}</span>}
                     </td>
                     <td className="sm">{s.aiUse}</td>
                     <td>{fmt(subScore(s))}</td>

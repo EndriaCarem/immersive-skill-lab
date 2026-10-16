@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc, latestSubmission, useStore } from "@/lib/store";
+import { downloadDoc, latestSubmission, reviewPending, useStore } from "@/lib/store";
 import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
@@ -22,11 +22,11 @@ function AnswerPage() {
   const { program, activity, idx } = useActivity(slug, n);
   const sub = useStore((s) => (program && activity ? latestSubmission(s, program.id, activity.id) : undefined));
   if (!program || !activity) return <NotFoundBlock />;
-  if (!sub)
+  if (!sub || reviewPending(sub))
     return (
       <ActivityLayout program={program} activity={activity} idx={idx}>
         <h1>Gabarito bloqueado</h1>
-        <div className="lockline">O gabarito é liberado somente depois que você enviar.</div>
+        <div className="lockline">{sub ? "Correção humana em andamento. O gabarito é liberado quando o sênior concluir." : "O gabarito é liberado somente depois que você enviar."}</div>
         <div style={{ marginTop: 18 }}>
           <Link to="/estagio/$slug/$n/demanda" params={{ slug, n }} className="btn">
             Ir para a demanda

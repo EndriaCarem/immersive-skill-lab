@@ -1,11 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { reviewsLeft, slaStatus } from "@/lib/store";
+import { reviewPending, reviewsLeft, slaStatus, type Submission } from "@/lib/store";
 
-const sub = (n: number) => ({ humanReviews: Array(n).fill("x") }) as never;
+const mk = (activityId: string, reviewed = true, extra: Partial<Submission> = {}): Submission => ({
+  id: activityId, programId: "p1", activityId, student: "A", fileName: "", fileSize: 0, aiUse: "", submittedAt: "",
+  ...(reviewed ? { humanReviews: ["x"] } : {}), ...extra,
+});
+
 describe("regras de revisão", () => {
-  it("permite até 2 revisões humanas", () => {
-    expect(reviewsLeft(sub(0))).toBe(2);
-    expect(reviewsLeft(sub(2))).toBe(0);
+  it("permite correção humana em até 2 atividades por curso", () => {
+    expect(reviewsLeft({ submissions: [] }, "p1", "A")).toBe(2);
+    expect(reviewsLeft({ submissions: [mk("a1"), mk("a2")] }, "p1", "A", "a3")).toBe(0);
+    expect(reviewsLeft({ submissions: [mk("a1")] }, "p1", "A", "a2")).toBe(1);
+  });
+  it("gabarito trancado enquanto a revisão humana está pendente", () => {
+    expect(reviewPending(mk("a1"))).toBe(true);
+    expect(reviewPending(mk("a1", true, { reviewedAt: "2026-10-10" }))).toBe(false);
   });
   it("SLA de 24h estoura em vermelho", () => {
     const now = Date.parse("2026-10-02T00:00:00Z");
