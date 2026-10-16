@@ -660,3 +660,10 @@ body{background:var(--plum-tint)}
 .final .btn{background:var(--paper);color:var(--plum)}
 .final .btn:hover{background:var(--lilac)}
 @media (max-width:900px){.g4,.g3,.g2{grid-template-columns:1fr}.rv-body{grid-template-columns:1fr}.rv-foot{grid-template-columns:1fr}.rv-total{grid-column:auto;grid-row:auto;text-align:left}.final{padding:32px}}
+
+/* Clean centered hero */
+.hero-c { text-align: center; padding-top: 88px; padding-bottom: 64px; display: flex; flex-direction: column; align-items: center; }
+.hero-c .display { max-width: 17ch; margin: 22px auto 0; font-size: clamp(40px, 5.6vw, 76px); line-height: 1.02; letter-spacing: -0.035em; }
+.hero-c .lead { max-width: 46ch; margin: 22px auto 0; }
+.hero-c .hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.hero-c .hero-doc { width: 100%; max-width: 880px; margin-top: 64px; text-align: left; }
