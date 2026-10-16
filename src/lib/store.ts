@@ -68,7 +68,7 @@ export type Submission = {
   /** Timestamp of the human-review request (quota: 2 activities per course). */
   humanReviews?: string[];
   /** Set when the reviewer finishes the human review; unlocks the answer key. */
-  reviewedAt?: string;
+  reviewedAt?: string | undefined;
 };
 export type Enrollment = { programId: string; student: string; enrolledAt: string };
 export type Certificate = { code: string; programId: string; student: string; issuedAt: string; grade: number | null };
