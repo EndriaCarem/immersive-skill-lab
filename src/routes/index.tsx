@@ -73,7 +73,7 @@ function Landing() {
               </button>
             ))}
           </div>
-          <p className="goal-copy">{GOALS[goal].t}</p>
+          <p className="goal-copy">{GOALS[goal]?.t}</p>
           <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
             <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
               Receber a primeira demanda
