@@ -3,7 +3,7 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { GradeWorkbench } from "@/components/GradeWorkbench";
 import { toast } from "sonner";
-import { actions, brl, fmt, subScore, useStore, type Submission } from "@/lib/store";
+import { actions, brl, fmt, subScore, useStore, type Submission, slaStatus, SLA_HOURS } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/")({
   head: () => ({
@@ -231,6 +231,8 @@ function Admin() {
                     <td>
                       {s.fileName}
                       <div className="muted sm">{new Date(s.submittedAt).toLocaleString("pt-BR")}</div>
+                      {!s.grades && (() => { const sl = slaStatus(s.submittedAt); return <span className={`sig ${sl.k}`} style={{ marginTop: 4 }}>Entregue {sl.label} · SLA {SLA_HOURS}h</span>; })()}
+                      {!!s.humanReviews?.length && <span className="sig mid" style={{ marginTop: 4 }}>Correção humana pedida ({s.humanReviews.length}/2)</span>}
                     </td>
                     <td className="sm">{s.aiUse}</td>
                     <td>{fmt(subScore(s))}</td>
