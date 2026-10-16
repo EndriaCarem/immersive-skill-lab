@@ -77,7 +77,7 @@ function CertPage() {
               ))}
             </tbody>
           </table>
-          <p className="muted sm">Não é um certificado de presença: cada nota vem de uma peça corrigida por critério.</p>
+          <p className="muted sm">Certificado de curso livre. Não é certificado de estágio nem de presença: cada nota vem de uma peça corrigida por critério.</p>
           <div className="skills">
             {program.skills.map((s) => (
               <span key={s} className="chip">

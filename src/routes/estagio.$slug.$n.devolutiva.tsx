@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { ReviewWindow } from "@/components/ReviewWindow";
-import { actions, fmt, latestSubmission, reviewsLeft, subScore, useStore } from "@/lib/store";
+import { actions, fmt, latestSubmission, reviewPending, reviewsLeft, subScore, useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { Rich } from "@/components/Rich";
 
@@ -118,12 +118,12 @@ function FeedbackPage() {
       <div className="callout">
         <div className="k">Correção humana</div>
         <p>
-          Discorda de algum critério? Um sênior relê a peça. Você tem direito a até duas revisões humanas por entrega
-          {" "}— restam <b>{reviewsLeft(sub)}</b>.
+          Discorda de algum critério? Um sênior relê a peça. Você pode pedir correção humana em até duas atividades
+          por curso — restam <b>{left}</b>. Enquanto a revisão estiver em andamento, o gabarito fica trancado.
         </p>
         <button
           className="btn ghost"
-          disabled={reviewsLeft(sub) === 0}
+          disabled={left === 0}
           onClick={() => {
             actions.requestHumanReview(sub.id);
             toast.success("Pedido enviado. O sênior relê a peça e a nota é atualizada aqui.");
@@ -133,9 +133,13 @@ function FeedbackPage() {
         </button>
       </div>
       <div style={{ marginTop: 26 }}>
-        <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn">
-          Liberar gabarito e comentário do professor
-        </Link>
+        {reviewPending(sub) ? (
+          <div className="lockline">Correção humana em andamento. O gabarito é liberado quando o sênior concluir.</div>
+        ) : (
+          <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn">
+            Liberar gabarito e comentário do professor
+          </Link>
+        )}
       </div>
     </ActivityLayout>
   );

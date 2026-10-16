@@ -380,7 +380,7 @@ export const actions = {
       ],
     })),
   grade: (submissionId: string, grades: Grade[], teacherComment: string) =>
-    set((s) => ({ ...s, submissions: s.submissions.map((x) => (x.id === submissionId ? { ...x, grades, teacherComment } : x)) })),
+    set((s) => ({ ...s, submissions: s.submissions.map((x) => (x.id === submissionId ? { ...x, grades, teacherComment, reviewedAt: x.humanReviews?.length ? new Date().toISOString() : x.reviewedAt } : x)) })),
   issueCertificate: (programId: string): string => {
     const existing = state.certificates.find((c) => c.programId === programId && c.student === state.student);
     if (existing) return existing.code;

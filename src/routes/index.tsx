@@ -18,7 +18,8 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const PARTNERS = ["IbraWork", "CBMA", "Arbipédia", "Fenalaw", "São Paulo Arbitration Week"];
+/** Backlog EMP-006: only partners confirmed by the client may appear. None confirmed yet. */
+const PARTNERS: string[] = [];
 const SCREENS = [
   ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
   ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
@@ -59,11 +60,13 @@ function Landing() {
         <div className="hero-doc"><ReviewWindow compact /></div>
       </section>
 
-      <section className="wrap">
-        <div className="partners" aria-label="Parceiros">
-          {PARTNERS.map((p) => <span key={p}>{p}</span>)}
-        </div>
-      </section>
+      {PARTNERS.length > 0 && (
+        <section className="wrap">
+          <div className="partners" aria-label="Parceiros">
+            {PARTNERS.map((p) => <span key={p}>{p}</span>)}
+          </div>
+        </section>
+      )}
 
       <section className="wrap h-sec">
         <div className="h-eyebrow">O produto</div>
