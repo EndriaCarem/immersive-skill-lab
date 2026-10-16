@@ -3,7 +3,7 @@ import { reviewPending, reviewsLeft, slaStatus, type Submission } from "@/lib/st
 
 const mk = (activityId: string, reviewed = true, extra: Partial<Submission> = {}): Submission => ({
   id: activityId, programId: "p1", activityId, student: "A", fileName: "", fileSize: 0, aiUse: "", submittedAt: "",
-  humanReviews: reviewed ? ["x"] : undefined, ...extra,
+  ...(reviewed ? { humanReviews: ["x"] } : {}), ...extra,
 });
 
 describe("regras de revisão", () => {
