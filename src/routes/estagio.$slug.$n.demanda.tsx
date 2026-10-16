@@ -80,7 +80,7 @@ function DemandPage() {
           <FileList files={activity.files} />
         </div>
       ) : null}
-      <h4>Assistente de ofício</h4>
+      <h4><span className="nidia-name">Nidia</span> · revisora de método</h4>
       <div className="assist">
         <div className="hd">Disponível durante o exercício</div>
         {chat.map((m, i) => (
