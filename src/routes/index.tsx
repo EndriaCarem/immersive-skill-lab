@@ -53,37 +53,21 @@ const FAQ = [
 function Landing() {
   const programs = useStore((s) => s.programs);
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
-  const [goal, setGoal] = useState(0);
   return (
     <SiteShell>
-      <section className="wrap grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.05fr", gap: 48, alignItems: "center", paddingTop: 64, paddingBottom: 56 }}>
-        <div>
-          <span className="pillbadge">No padrão das grandes bancas</span>
-          <h1 className="display">
-            O que você redige quando o caso chega.
-          </h1>
-          <p className="lead">
-            Um escritório simulado de arbitragem. Você recebe a demanda, entrega a peça e é revisado por quem supervisiona, critério a critério.
-          </p>
-          <div className="h-eyebrow" style={{ marginTop: 28, marginBottom: 0 }}>Qual é o seu objetivo?</div>
-          <div className="goals" style={{ marginTop: 10 }} role="tablist">
-            {GOALS.map((g, i) => (
-              <button key={g.k} role="tab" aria-selected={goal === i} className={goal === i ? "on" : ""} onClick={() => setGoal(i)}>
-                {g.k}
-              </button>
-            ))}
-          </div>
-          <p className="goal-copy">{GOALS[goal]?.t}</p>
-          <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
-            <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
-              Receber a primeira demanda
-            </Link>
-            <Link to="/sobre" className="btn ghost lg">
-              Ver como funciona
-            </Link>
-          </div>
+      <section className="wrap hero-c">
+        <span className="pillbadge">Escritório simulado de arbitragem</span>
+        <h1 className="display">O que você redige quando o caso chega.</h1>
+        <p className="lead">Receba a demanda, entregue a peça e seja revisado por quem supervisiona, critério a critério.</p>
+        <div className="hero-cta">
+          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
+            Receber a primeira demanda
+          </Link>
+          <Link to="/sobre" className="btn ghost lg">
+            Ver como funciona
+          </Link>
         </div>
-        <ReviewWindow />
+        <div className="hero-doc"><ReviewWindow compact /></div>
       </section>
 
       <section className="wrap">
@@ -116,20 +100,11 @@ function Landing() {
       </section>
 
       <section className="wrap h-sec">
-        <div className="h-eyebrow">Por que a Empiria</div>
-        <div className="g3">
-          {WHY.map(([t, d]) => (
-            <div key={t} className="tile"><h3>{t}</h3><p>{d}</p></div>
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap h-sec">
         <div className="h-eyebrow">Para quem</div>
         <h2 className="sec-title">Três pontos de partida</h2>
         <div className="g3" style={{ marginTop: 28 }}>
-          {AUDIENCE.map(([t, d, c], i) => (
-            <div key={t} className={`tile`} style={goal === i ? { borderColor: "var(--plum-mid)" } : undefined}>
+          {AUDIENCE.map(([t, d, c]) => (
+            <div key={t} className={`tile`}>
               <h3>{t}</h3>
               <p>{d}</p>
               <p style={{ marginTop: 14, fontWeight: 700, color: "var(--plum-mid)" }}>Recomendado: {c}</p>
@@ -151,28 +126,9 @@ function Landing() {
         </div>
       </section>
 
-      <section className="wrap h-sec">
-        <div className="h-eyebrow">Quem ensina</div>
-        <h2 className="sec-title">Plenos e seniores de grandes bancas do país</h2>
-        <div className="g3" style={{ marginTop: 28 }}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="slot"><i />Professor a anunciar</div>
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap h-sec">
-        <div className="h-eyebrow">Quem somos</div>
-        <div className="g3">
-          <div className="tile"><h3>Rebeca Franzoni</h3><p>Fundadora e diretora acadêmica. PUC-SP, CJA/CBMA, Vis Moot.</p></div>
-          <div className="tile"><h3>Tainá Malta Rodrigues</h3><p>Cofundadora e sócia. UERJ, CJA/CBMA, PUC-Rio.</p></div>
-          <div className="tile"><h3>IbraWork e Thomas Law</h3><p>Investimento, estrutura e tecnologia, incluindo o motor da Nidia.</p></div>
-        </div>
-      </section>
-
       <section className="wrap h-sec faq">
         <div className="h-eyebrow">Perguntas frequentes</div>
-        {FAQ.map(([q, a]) => (
+        {FAQ.slice(0, 4).map(([q, a]) => (
           <details key={q}>
             <summary>{q}</summary>
             <p>{a}</p>
