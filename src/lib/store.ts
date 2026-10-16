@@ -65,6 +65,8 @@ export type Submission = {
   submittedAt: string;
   grades?: Grade[];
   teacherComment?: string;
+  /** Timestamps of human-review requests; the brand allows at most 2 per submission. */
+  humanReviews?: string[];
 };
 export type Enrollment = { programId: string; student: string; enrolledAt: string };
 export type Certificate = { code: string; programId: string; student: string; issuedAt: string; grade: number | null };
@@ -326,7 +328,25 @@ export function completedCount(s: State, p: Program, student = s.student) {
 }
 
 // ---- actions ----
+export const MAX_HUMAN_REVIEWS = 2;
+export const reviewsLeft = (s?: Submission) => Math.max(0, MAX_HUMAN_REVIEWS - (s?.humanReviews?.length ?? 0));
+/** SLA for grading a submission, in hours. */
+export const SLA_HOURS = 24;
+export function slaStatus(submittedAt: string, now = Date.now()) {
+  const h = (now - new Date(submittedAt).getTime()) / 36e5;
+  const k = h < SLA_HOURS * 0.5 ? "ok" : h < SLA_HOURS ? "mid" : "no";
+  const label = h < 1 ? "há menos de 1h" : h < 48 ? `há ${Math.floor(h)}h` : `há ${Math.floor(h / 24)} dias`;
+  return { k, hours: h, label };
+}
+
 export const actions = {
+  requestHumanReview: (submissionId: string) =>
+    set((s) => ({
+      ...s,
+      submissions: s.submissions.map((x) =>
+        x.id === submissionId && reviewsLeft(x) > 0 ? { ...x, humanReviews: [...(x.humanReviews ?? []), new Date().toISOString()] } : x,
+      ),
+    })),
   setStudent: (name: string) => set((s) => ({ ...s, student: name })),
   enroll: (programId: string) =>
     set((s) =>

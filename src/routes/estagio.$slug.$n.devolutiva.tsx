@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { ReviewWindow } from "@/components/ReviewWindow";
-import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
+import { actions, fmt, latestSubmission, reviewsLeft, subScore, useStore } from "@/lib/store";
+import { toast } from "sonner";
 import { Rich } from "@/components/Rich";
 
 export const Route = createFileRoute("/estagio/$slug/$n/devolutiva")({
@@ -113,6 +114,23 @@ function FeedbackPage() {
             </span>
           </div>
         ))}
+      </div>
+      <div className="callout">
+        <div className="k">Correção humana</div>
+        <p>
+          Discorda de algum critério? Um sênior relê a peça. Você tem direito a até duas revisões humanas por entrega
+          {" "}— restam <b>{reviewsLeft(sub)}</b>.
+        </p>
+        <button
+          className="btn ghost"
+          disabled={reviewsLeft(sub) === 0}
+          onClick={() => {
+            actions.requestHumanReview(sub.id);
+            toast.success("Pedido enviado. O sênior relê a peça e a nota é atualizada aqui.");
+          }}
+        >
+          Pedir correção humana
+        </button>
       </div>
       <div style={{ marginTop: 26 }}>
         <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn">

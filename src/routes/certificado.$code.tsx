@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { fmt, useStore } from "@/lib/store";
+import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
+import { ScoreChip } from "@/components/ReviewWindow";
 import logo from "@/assets/empiria-logo.png.asset.json";
 
 export const Route = createFileRoute("/certificado/$code")({
@@ -20,6 +21,9 @@ function CertPage() {
   const { code } = Route.useParams();
   const cert = useStore((s) => s.certificates.find((c) => c.code === code));
   const program = useStore((s) => s.programs.find((p) => p.id === cert?.programId));
+  const rows = useStore((s) =>
+    program && cert ? program.activities.map((a) => ({ a, sc: subScore(latestSubmission(s, program.id, a.id, cert.student)) })) : [],
+  );
   const [url, setUrl] = useState("");
   useEffect(() => setUrl(window.location.href), []);
 
@@ -65,6 +69,15 @@ function CertPage() {
           </div>
           <div className="grade">{fmt(cert.grade)}</div>
           <div className="glab">Nota final</div>
+          <table className="rubric" style={{ margin: "18px 0", textAlign: "left" }}>
+            <thead><tr><th>Atividade</th><th className="sc">Nota</th></tr></thead>
+            <tbody>
+              {rows.map(({ a, sc }, i) => (
+                <tr key={a.id}><td>{i + 1}. {a.shortTitle}</td><td className="sc">{sc == null ? <span className="muted">—</span> : <ScoreChip n={Math.round(sc * 10) / 10} />}</td></tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="muted sm">Não é um certificado de presença: cada nota vem de uma peça corrigida por critério.</p>
           <div className="skills">
             {program.skills.map((s) => (
               <span key={s} className="chip">

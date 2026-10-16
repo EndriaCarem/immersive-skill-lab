@@ -40,12 +40,13 @@ function DemandPage() {
     actions.submit(program.id, activity.id, file.name, file.size, ai.join("; ") || "Não declarado");
     nav({ to: "/estagio/$slug/$n/devolutiva", params: { slug, n } });
   };
-  const askAssistant = () => {
-    if (!ask.trim()) return;
-    const delegating = /escrev|faz|redij|pronto|faça/i.test(ask);
+  const askAssistant = (q = ask) => {
+    if (!q.trim()) return;
+    const ask_ = q;
+    const delegating = /escrev|faz|redij|pronto|faça/i.test(ask_);
     setChat((c) => [
       ...c,
-      { me: true, t: ask },
+      { me: true, t: ask_ },
       {
         me: false,
         t: delegating
@@ -88,6 +89,11 @@ function DemandPage() {
             {m.t}
           </div>
         ))}
+        <div className="chips" style={{ marginTop: 10 }}>
+          {["Como estruturo os pedidos?", "Onde fundamento a competência?", "Meu parágrafo está no padrão?"].map((q) => (
+            <button key={q} className="filter" onClick={() => askAssistant(q)}>{q}</button>
+          ))}
+        </div>
         <input
           className="input"
           style={{ marginTop: 10 }}
