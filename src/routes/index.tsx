@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
 import { ReviewWindow } from "@/components/ReviewWindow";
@@ -19,22 +18,12 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const GOALS = [
-  { k: "Meu primeiro estágio", t: "Chegue ao primeiro estágio sabendo entregar no dia um: o relatório, o e-mail, o prazo." },
-  { k: "Migrar para a arbitragem", t: "Domine a prática da arbitragem no seu ritmo, com a correção de quem atua na área." },
-  { k: "Conduzir o meu caso", t: "Conduza o caso do seu cliente sem subcontratar nem dividir honorários com uma banca especializada." },
-];
 const PARTNERS = ["IbraWork", "CBMA", "Arbipédia", "Fenalaw", "São Paulo Arbitration Week"];
 const SCREENS = [
   ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
   ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
   ["A revisão", "Nota por critério, trechos riscados e comentários de quem supervisiona você."],
   ["O gabarito", "Trancado até o envio. Depois, peça modelo comentada e vídeo do professor."],
-];
-const WHY = [
-  ["Feito por quem corrige", "As rubricas são as que plenos e seniores usam para aprovar uma peça."],
-  ["Material para abrir no trabalho", "Modelos e gabaritos comentados na praxe das câmaras brasileiras."],
-  ["Tecnologia a serviço do critério", "A Nidia aplica a rubrica e aponta a forma. O conteúdo é seu."],
 ];
 const AUDIENCE = [
   ["Estagiários e recém-formados", "Ninguém avalia o estagiário pela teoria. Chegue sabendo entregar.", "Arbitragem — Nível 1"],
