@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
+import { ReviewWindow } from "@/components/ReviewWindow";
 import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
 import { Rich } from "@/components/Rich";
 
@@ -41,6 +42,8 @@ function FeedbackPage() {
         Devolutiva · atividade {idx + 1} · {activity.shortTitle.toLowerCase()}
       </div>
       <h1>Ficha de avaliação</h1>
+      <p className="muted sm">Como o sênior marca a peça: trechos riscados, inserções e notas na margem.</p>
+      <div style={{ marginBottom: 22 }}><ReviewWindow compact /></div>
       <div className="score-top">
         <div>
           <div className="lab">Nota da atividade</div>

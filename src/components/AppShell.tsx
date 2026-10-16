@@ -20,18 +20,21 @@ function TopNav() {
             Cursos
           </Link>
           <Link to="/sobre" {...item}>
-            Sobre
+            Quem somos
           </Link>
           <Link to="/contato" {...item}>
             Contato
+          </Link>
+          <Link to="/meus-programas" {...item}>
+            Entrar
           </Link>
         </nav>
         <div className="right">
           <Link to="/cursos" className="iconbtn" aria-label="Buscar cursos">
             <Search size={18} />
           </Link>
-          <Link to="/meus-programas" className="btn sm">
-            Portal do Aluno
+          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm">
+            Receber a primeira demanda
           </Link>
         </div>
       </div>

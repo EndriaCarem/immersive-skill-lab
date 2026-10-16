@@ -14,7 +14,7 @@ export const Route = createFileRoute("/programa/$slug")({
       { title: "Curso — Empiria" },
       { name: "description", content: "Método, o que você vai dominar e a grade curricular do curso." },
       { property: "og:title", content: "Curso — Empiria" },
-      { property: "og:description", content: "Garanta sua vaga na pré-venda." },
+      { property: "og:description", content: "Preço de lançamento até 30/11." },
     ],
   }),
   component: ProgramPage,
@@ -115,7 +115,7 @@ function ProgramPage() {
                 </div>
               ) : null}
               <button className="btn wide lg" style={{ marginTop: 18 }} onClick={start} disabled={!program.activities.length}>
-                {enrolled ? "Continuar curso" : "Garantir vaga na pré-venda"}
+                {enrolled ? "Continuar curso" : "Garantir o preço de lançamento"}
               </button>
               <h4 style={{ marginTop: 24 }}>O curso inclui</h4>
               <ul className="inc" style={{ listStyle: "none", padding: 0, margin: 0 }}>

@@ -1,126 +1,192 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Star } from "lucide-react";
+import { useState } from "react";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
+import { ReviewWindow } from "@/components/ReviewWindow";
 import { useStore } from "@/lib/store";
-import art from "@/assets/art-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Empiria — Formação jurídica prática em arbitragem" },
-      { name: "description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega. Casos reais, correção individual e certificado com nota." },
-      { property: "og:title", content: "Empiria — Formação jurídica prática" },
+      { title: "Empiria — Escritório simulado de arbitragem" },
+      { name: "description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega. Demandas reais, revisão de sênior e nota por critério." },
+      { property: "og:title", content: "Empiria — No padrão das grandes bancas" },
       { property: "og:description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Landing,
 });
 
+const GOALS = [
+  { k: "Meu primeiro estágio", t: "Chegue ao primeiro estágio sabendo entregar no dia um: o relatório, o e-mail, o prazo." },
+  { k: "Migrar para a arbitragem", t: "Domine a prática da arbitragem no seu ritmo, com a correção de quem atua na área." },
+  { k: "Conduzir o meu caso", t: "Conduza o caso do seu cliente sem subcontratar nem dividir honorários com uma banca especializada." },
+];
+const PARTNERS = ["IbraWork", "CBMA", "Arbipédia", "Fenalaw", "São Paulo Arbitration Week"];
+const SCREENS = [
+  ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
+  ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
+  ["A revisão", "Nota por critério, trechos riscados e comentários de quem supervisiona você."],
+  ["O gabarito", "Trancado até o envio. Depois, peça modelo comentada e vídeo do professor."],
+];
+const WHY = [
+  ["Feito por quem corrige", "As rubricas são as que plenos e seniores usam para aprovar uma peça."],
+  ["Material para abrir no trabalho", "Modelos e gabaritos comentados na praxe das câmaras brasileiras."],
+  ["Tecnologia a serviço do critério", "A Nidia aplica a rubrica e aponta a forma. O conteúdo é seu."],
+];
+const AUDIENCE = [
+  ["Estagiários e recém-formados", "Ninguém avalia o estagiário pela teoria. Chegue sabendo entregar.", "Arbitragem — Nível 1"],
+  ["Advogados em transição", "Migre para a arbitragem com prática real, sem largar o que já faz.", "Introdução à Arbitragem"],
+  ["Advogados com carteira própria", "Fora do eixo RJ–SP, conduza o próprio caso com segurança.", "Arbitragem — Nível 1"],
+];
+const FAQ = [
+  ["As aulas são gravadas ou ao vivo?", "As demandas e o material ficam disponíveis no seu ritmo. A correção é individual, feita por sênior, com prazo de devolutiva."],
+  ["Posso usar IA?", "Pode, desde que declare como usou. A Nidia classifica o uso sem punir e avisa quando o raciocínio foi terceirizado sem reelaboração."],
+  ["Os casos são reais?", "São casos fictícios construídos a partir da prática real, sem informação confidencial de clientes."],
+  ["Isso substitui um estágio?", "Não. Prepara você para o estágio, para que a primeira chance não seja o primeiro contato com o ofício."],
+  ["O certificado tem validade?", "É verificável publicamente por código e traz a nota de cada critério. Não é um certificado de presença."],
+  ["E se eu discordar da nota?", "Você pode pedir até duas revisões humanas por atividade."],
+];
+
 function Landing() {
   const programs = useStore((s) => s.programs);
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
+  const [goal, setGoal] = useState(0);
   return (
     <SiteShell>
-      <section className="wrap grid2" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "center", paddingTop: 64, paddingBottom: 56 }}>
+      <section className="wrap grid2" style={{ display: "grid", gridTemplateColumns: "1fr 1.05fr", gap: 48, alignItems: "center", paddingTop: 64, paddingBottom: 56 }}>
         <div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <span className="pillbadge">✦ Formação Jurídica Prática</span>
-            <span className="pillbadge soft">Pré-venda Fenalaw</span>
-          </div>
+          <span className="pillbadge">No padrão das grandes bancas</span>
           <h1 className="display">
-            O que você <em>redige</em> quando o caso chega.
+            O que você redige quando o caso chega.
           </h1>
           <p className="lead">
-            Não é um curso sobre arbitragem. Você assume uma banca fictícia, recebe as demandas da sócia, entrega a peça e é corrigido
-            critério a critério.
+            Um escritório simulado de arbitragem. Você recebe a demanda, entrega a peça e é revisado por quem supervisiona, critério a critério.
           </p>
-          <div style={{ display: "flex", gap: 10, marginTop: 30, flexWrap: "wrap" }}>
+          <div className="h-eyebrow" style={{ marginTop: 28, marginBottom: 0 }}>Qual é o seu objetivo?</div>
+          <div className="goals" style={{ marginTop: 10 }} role="tablist">
+            {GOALS.map((g, i) => (
+              <button key={g.k} role="tab" aria-selected={goal === i} className={goal === i ? "on" : ""} onClick={() => setGoal(i)}>
+                {g.k}
+              </button>
+            ))}
+          </div>
+          <p className="goal-copy">{GOALS[goal]?.t}</p>
+          <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
             <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
-              Garantir vaga na pré-venda
+              Receber a primeira demanda
             </Link>
             <Link to="/sobre" className="btn ghost lg">
-              Conhecer o método
+              Ver como funciona
             </Link>
           </div>
         </div>
-        <div className="bento">
-          <div className="b img">
-            <img src={art} alt="" width={1200} height={912} />
-            <div className="float">
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div className="avs">
-                  <i>RF</i>
-                  <i>TM</i>
-                  <i>+</i>
-                </div>
-                <Star size={16} fill="#E2B33C" color="#E2B33C" />
-                <b>8,4</b>
-              </div>
-              <div style={{ fontWeight: 700, marginTop: 6 }}>+300 alunos formados</div>
-            </div>
-          </div>
-          <div className="b dark">
-            <div className="metric">8,4</div>
-            <div style={{ marginTop: 8, fontSize: 14, color: "#DCCFE2" }}>Nota média nas entregas corrigidas</div>
-          </div>
-          <div className="b">
-            <div className="metric">100%</div>
-            <div style={{ marginTop: 8, fontSize: 14, color: "var(--slate)" }}>Prática real: caso, demanda, devolutiva e gabarito</div>
-          </div>
-        </div>
+        <ReviewWindow />
       </section>
 
       <section className="wrap">
-        <div className="statbar">
-          <div>
-            <b>+300</b>
-            <span>Alunos formados</span>
-          </div>
-          <div>
-            <b>{programs.filter((p) => p.status === "published").length}</b>
-            <span>Cursos práticos e teóricos</span>
-          </div>
-          <div>
-            <b>2</b>
-            <span>Parceiros institucionais: Arbipédia e CJA/CBMA</span>
-          </div>
+        <div className="partners" aria-label="Parceiros">
+          {PARTNERS.map((p) => <span key={p}>{p}</span>)}
         </div>
       </section>
 
-      <section className="wrap" style={{ paddingTop: 88 }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 20, marginBottom: 30 }}>
-          <div>
-            <span className="pillbadge soft">✦ Cursos de lançamento</span>
-            <h2 className="sec-title" style={{ marginTop: 14 }}>
-              Conheça os cursos
-            </h2>
-          </div>
-          <Link to="/cursos" className="iconbtn" style={{ marginLeft: "auto", width: 56, height: 56, background: "var(--grad)", color: "var(--paper)" }} aria-label="Ver todos os cursos">
-            <ArrowUpRight />
-          </Link>
-        </div>
-        <div className="cards">
-          {featured.map((p) => (
-            <CourseCard key={p.id} p={p} />
-          ))}
-        </div>
-      </section>
-
-      <section className="wrap" style={{ paddingTop: 88 }}>
-        <div className="grid2" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-          {[
-            ["01", "O caso", "O contexto chega antes da demanda, como no escritório."],
-            ["02", "A demanda", "A sócia pede a peça. Sem roteiro, com o assistente de ofício."],
-            ["03", "A devolutiva", "Correção por rubrica, critério a critério, com nota."],
-            ["04", "O gabarito", "Peça de referência e debriefing — só depois da entrega."],
-          ].map(([n, t, d]) => (
-            <div key={n} className="card">
-              <div className="kind">{n}</div>
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">O produto</div>
+        <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
+        <div className="g4" style={{ marginTop: 28 }}>
+          {SCREENS.map(([t, d], i) => (
+            <div key={t} className="tile">
+              <span className="n">0{i + 1}</span>
               <h3>{t}</h3>
-              <p style={{ marginBottom: 0 }}>{d}</p>
+              <p>{d}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Por que existe</div>
+        <p className="essay">
+          Ninguém avalia o estagiário pela teoria. Avalia pelo relatório aprovado sem reescrever, pelo e-mail correto, pelo prazo cumprido.
+          Esse ofício só se aprendia dentro das grandes bancas, depois da contratação. A Empiria entrega esse preparo antes da primeira chance.
+        </p>
+        <div className="quote" style={{ marginTop: 28 }}>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Por que a Empiria</div>
+        <div className="g3">
+          {WHY.map(([t, d]) => (
+            <div key={t} className="tile"><h3>{t}</h3><p>{d}</p></div>
+          ))}
+        </div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Para quem</div>
+        <h2 className="sec-title">Três pontos de partida</h2>
+        <div className="g3" style={{ marginTop: 28 }}>
+          {AUDIENCE.map(([t, d, c], i) => (
+            <div key={t} className={`tile`} style={goal === i ? { borderColor: "var(--plum-mid)" } : undefined}>
+              <h3>{t}</h3>
+              <p>{d}</p>
+              <p style={{ marginTop: 14, fontWeight: 700, color: "var(--plum-mid)" }}>Recomendado: {c}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 20, marginBottom: 28, flexWrap: "wrap" }}>
+          <div>
+            <div className="h-eyebrow">Os cursos</div>
+            <h2 className="sec-title" style={{ margin: 0 }}>Preço de lançamento até 30/11</h2>
+          </div>
+          <Link to="/cursos" className="btn ghost" style={{ marginLeft: "auto" }}>Ver todos os cursos</Link>
+        </div>
+        <div className="cards">
+          {featured.map((p) => <CourseCard key={p.id} p={p} />)}
+        </div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Quem ensina</div>
+        <h2 className="sec-title">Plenos e seniores de grandes bancas do país</h2>
+        <div className="g3" style={{ marginTop: 28 }}>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="slot"><i />Professor a anunciar</div>
+          ))}
+        </div>
+      </section>
+
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Quem somos</div>
+        <div className="g3">
+          <div className="tile"><h3>Rebeca Franzoni</h3><p>Fundadora e diretora acadêmica. PUC-SP, CJA/CBMA, Vis Moot.</p></div>
+          <div className="tile"><h3>Tainá Malta Rodrigues</h3><p>Cofundadora e sócia. UERJ, CJA/CBMA, PUC-Rio.</p></div>
+          <div className="tile"><h3>IbraWork e Thomas Law</h3><p>Investimento, estrutura e tecnologia, incluindo o motor da Nidia.</p></div>
+        </div>
+      </section>
+
+      <section className="wrap h-sec faq">
+        <div className="h-eyebrow">Perguntas frequentes</div>
+        {FAQ.map(([q, a]) => (
+          <details key={q}>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </section>
+
+      <section className="wrap h-sec" style={{ paddingBottom: 40 }}>
+        <div className="final">
+          <h2>A primeira demanda está esperando.</h2>
+          <p>Arbitragem — Nível 1 por R$ 890 até 30/11. Depois, R$ 1.190.</p>
+          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg" style={{ marginTop: 16 }}>
+            Garantir o preço de lançamento
+          </Link>
         </div>
       </section>
     </SiteShell>

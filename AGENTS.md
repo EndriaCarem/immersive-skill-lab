@@ -13,3 +13,4 @@
 - Visual styles are ported from the uploaded mockup as plain CSS classes in src/styles.css; reuse those classes so screens stay faithful to the mockup.
 - Marketing pages use SiteShell (floating nav + footer); app screens use AppShell, which wraps SiteShell in a rounded frame, so navigation stays identical everywhere.
 - Uploaded files (covers, attachments) are stored as blobs in IndexedDB via src/lib/files.ts and referenced by id from the store; rich text is saved as HTML in *Html fields and always rendered through the sanitizing Rich component.
+- Brand manual v2 overrides live at the end of src/styles.css (flat buttons, 1px borders, signal colors, Newsreader via .doc-voice/.rich); the review-mark visual is the shared ReviewWindow component, reused on home and devolutiva.
