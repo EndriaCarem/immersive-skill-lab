@@ -663,7 +663,7 @@ body{background:var(--plum-tint)}
 
 /* Clean centered hero */
 .hero-c { text-align: center; padding-top: 88px; padding-bottom: 64px; display: flex; flex-direction: column; align-items: center; }
-.hero-c .display { max-width: 15ch; margin: 22px auto 0; font-size: clamp(44px, 6.4vw, 84px); line-height: 1.02; letter-spacing: -0.035em; }
+.hero-c .display { max-width: 17ch; margin: 22px auto 0; font-size: clamp(40px, 5.6vw, 76px); line-height: 1.02; letter-spacing: -0.035em; }
 .hero-c .lead { max-width: 46ch; margin: 22px auto 0; }
 .hero-c .hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
 .hero-c .hero-doc { width: 100%; max-width: 880px; margin-top: 64px; text-align: left; }
