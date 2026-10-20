@@ -790,6 +790,17 @@ body{background:var(--plum-tint)}
 .account-page h1{font-family:var(--font-brand);color:var(--plum);letter-spacing:0;font-size:38px}
 .account-page h2{font-family:var(--font-brand);color:var(--plum);font-size:22px;letter-spacing:0;margin:26px 0 16px}
 .auth-page{max-width:540px;padding-top:64px}
+.auth-page .commerce-form{margin-bottom:20px}
+.auth-secondary{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px;color:var(--slate);font-size:14px}
+.auth-secondary button,.auth-recovery button{min-height:44px;padding:8px;font-weight:600;color:var(--plum)}
+.auth-recovery{display:flex;justify-content:center;margin-top:0}
+.auth-back{display:flex;justify-content:center;align-items:center;gap:8px;border-top:1px solid var(--edge);padding-top:24px;margin-top:24px;color:var(--slate);font-size:14px;min-height:44px}
+.auth-back:hover{color:var(--plum)}
+.auth-message{margin:0}
+.founder-card{overflow:hidden}
+.founder-portrait{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;margin-bottom:20px}
+.avs img{width:32px;height:32px;flex-shrink:0;object-fit:cover;border-radius:50%;border:2px solid var(--paper);margin-left:-8px}
+.avs img:first-child{margin-left:0}
 .commerce-form{display:grid;gap:16px;max-width:680px;margin:24px 0}
 .commerce-form .field,.checkout-layout .field{display:grid;gap:6px;color:var(--ink);font-weight:600}
 .commerce-form input,.commerce-form textarea,.commerce-form select,.checkout-layout input:not([type=checkbox]),.checkout-layout select,.commercial-page input,.commercial-page select{width:100%;min-width:0;border:1px solid var(--edge);border-radius:6px;padding:12px;background:var(--paper);color:var(--ink);font:inherit;font-size:16px}
