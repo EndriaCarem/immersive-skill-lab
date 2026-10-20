@@ -22,3 +22,4 @@
 - Public-page responsive layouts and mobile navigation are shared through SiteShell and semantic CSS classes to keep institutional and catalog pages consistent.
 - Founder identity and portrait references are centralized in src/lib/founders.ts so profile cards and compact avatars use the same mapping.
 - Classify authentication failures by provider code or known message in src/lib/auth-errors.ts, never HTTP status alone, so different validation failures are not misreported.
+- Signup without a session navigates to the public /confirmar-cadastro route; only a confirmed authenticated session grants access to protected account pages.
