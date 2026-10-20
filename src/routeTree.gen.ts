@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CursosRouteImport } from './routes/cursos'
 import { Route as InteresseRouteImport } from './routes/interesse'
 import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
+import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
 import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
 import { Route as AdminProgramaIdRouteImport } from './routes/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
@@ -27,6 +34,20 @@ import { Route as EstagioSlugNGabaritoRouteImport } from './routes/estagio.$slug
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatoRoute = ContatoRouteImport.update({
@@ -49,10 +70,25 @@ const MeusProgramasRoute = MeusProgramasRouteImport.update({
   path: '/meus-programas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
+  id: '/compras',
+  path: '/compras',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMinhaContaRoute = AuthenticatedMinhaContaRouteImport.update({
+  id: '/minha-conta',
+  path: '/minha-conta',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
@@ -69,6 +105,12 @@ const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
   path: '/programa/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminComercialRoute =
+  AuthenticatedAdminComercialRouteImport.update({
+    id: '/admin/comercial',
+    path: '/admin/comercial',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AdminProgramaIdRoute = AdminProgramaIdRouteImport.update({
   id: '/admin/programa/$id',
   path: '/admin/programa/$id',
@@ -97,14 +139,20 @@ const EstagioSlugNGabaritoRoute = EstagioSlugNGabaritoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/compras': typeof AuthenticatedComprasRoute
+  '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
@@ -113,14 +161,20 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/compras': typeof AuthenticatedComprasRoute
+  '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
@@ -130,14 +184,21 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/_authenticated/compras': typeof AuthenticatedComprasRoute
+  '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/programa/$id': typeof AdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
@@ -148,14 +209,20 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/checkout'
     | '/contato'
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/reset-password'
     | '/sobre'
+    | '/compras'
+    | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
+    | '/admin/comercial'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
@@ -164,14 +231,20 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/checkout'
     | '/contato'
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/reset-password'
     | '/sobre'
+    | '/compras'
+    | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin'
+    | '/admin/comercial'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
@@ -180,14 +253,21 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/checkout'
     | '/contato'
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/reset-password'
     | '/sobre'
+    | '/_authenticated/compras'
+    | '/_authenticated/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
     | '/admin/'
+    | '/_authenticated/admin/comercial'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
@@ -197,10 +277,14 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
   ContatoRoute: typeof ContatoRoute
   CursosRoute: typeof CursosRoute
   InteresseRoute: typeof InteresseRoute
   MeusProgramasRoute: typeof MeusProgramasRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SobreRoute: typeof SobreRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
@@ -219,6 +303,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contato': {
@@ -249,12 +354,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeusProgramasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sobre': {
       id: '/sobre'
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/compras': {
+      id: '/_authenticated/compras'
+      path: '/compras'
+      fullPath: '/compras'
+      preLoaderRoute: typeof AuthenticatedComprasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/minha-conta': {
+      id: '/_authenticated/minha-conta'
+      path: '/minha-conta'
+      fullPath: '/minha-conta'
+      preLoaderRoute: typeof AuthenticatedMinhaContaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -276,6 +402,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/programa/$slug'
       preLoaderRoute: typeof ProgramaSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/comercial': {
+      id: '/_authenticated/admin/comercial'
+      path: '/admin/comercial'
+      fullPath: '/admin/comercial'
+      preLoaderRoute: typeof AuthenticatedAdminComercialRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/admin/programa/$id': {
       id: '/admin/programa/$id'
@@ -315,12 +448,31 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
+  AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
+  AuthenticatedAdminComercialRoute: typeof AuthenticatedAdminComercialRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedComprasRoute: AuthenticatedComprasRoute,
+  AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
+  AuthenticatedAdminComercialRoute: AuthenticatedAdminComercialRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
   ContatoRoute: ContatoRoute,
   CursosRoute: CursosRoute,
   InteresseRoute: InteresseRoute,
   MeusProgramasRoute: MeusProgramasRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SobreRoute: SobreRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
