@@ -14,6 +14,258 @@ export type Database = {
   }
   public: {
     Tables: {
+      commerce_coupons: {
+        Row: {
+          active: boolean
+          code: string
+          expires_at: string | null
+          id: string
+          kind: string
+          max_uses: number | null
+          uses: number
+          value: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          expires_at?: string | null
+          id?: string
+          kind: string
+          max_uses?: number | null
+          uses?: number
+          value: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          max_uses?: number | null
+          uses?: number
+          value?: number
+        }
+        Relationships: []
+      }
+      commerce_enrollments: {
+        Row: {
+          enrolled_at: string
+          expires_at: string | null
+          id: string
+          order_id: string
+          product_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          order_id: string
+          product_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          enrolled_at?: string
+          expires_at?: string | null
+          id?: string
+          order_id?: string
+          product_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commerce_enrollments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commerce_enrollments_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commerce_order_items: {
+        Row: {
+          id: string
+          order_id: string
+          price_cents: number
+          product_id: string
+          title: string
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          price_cents: number
+          product_id: string
+          title: string
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          price_cents?: number
+          product_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commerce_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commerce_order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commerce_orders: {
+        Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          confirmation_email_status: string
+          conversion_tags: Json
+          coupon_id: string | null
+          created_at: string
+          discount_cents: number
+          id: string
+          installments: number
+          payment_method: string
+          request_id: string
+          source: string
+          status: string
+          subtotal_cents: number
+          terms_accepted_at: string
+          terms_id: string
+          terms_ip: unknown
+          total_cents: number
+          user_id: string
+        }
+        Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          confirmation_email_status?: string
+          conversion_tags?: Json
+          coupon_id?: string | null
+          created_at?: string
+          discount_cents?: number
+          id?: string
+          installments?: number
+          payment_method: string
+          request_id: string
+          source?: string
+          status?: string
+          subtotal_cents: number
+          terms_accepted_at?: string
+          terms_id: string
+          terms_ip?: unknown
+          total_cents: number
+          user_id: string
+        }
+        Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          confirmation_email_status?: string
+          conversion_tags?: Json
+          coupon_id?: string | null
+          created_at?: string
+          discount_cents?: number
+          id?: string
+          installments?: number
+          payment_method?: string
+          request_id?: string
+          source?: string
+          status?: string
+          subtotal_cents?: number
+          terms_accepted_at?: string
+          terms_id?: string
+          terms_ip?: unknown
+          total_cents?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commerce_orders_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commerce_orders_terms_id_fkey"
+            columns: ["terms_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commerce_products: {
+        Row: {
+          active: boolean
+          id: string
+          kind: string
+          price_cents: number
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          id: string
+          kind: string
+          price_cents: number
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          id?: string
+          kind?: string
+          price_cents?: number
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      commerce_terms: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          published: boolean
+          version: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          version: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          version?: string
+        }
+        Relationships: []
+      }
       interest_submissions: {
         Row: {
           consent: boolean
@@ -53,15 +305,82 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          full_name: string
+          id: string
+          phone: string
+          tax_id: string
+          updated_at: string
+        }
+        Insert: {
+          full_name?: string
+          id: string
+          phone?: string
+          tax_id?: string
+          updated_at?: string
+        }
+        Update: {
+          full_name?: string
+          id?: string
+          phone?: string
+          tax_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cancel_commerce_order: {
+        Args: { p_order: string; p_reason: string; p_user: string }
+        Returns: string
+      }
+      create_commerce_order: {
+        Args: {
+          p_coupon: string
+          p_installments: number
+          p_ip: unknown
+          p_method: string
+          p_products: string[]
+          p_request: string
+          p_source: string
+          p_tags: Json
+          p_terms: string
+          p_user: string
+        }
+        Returns: string
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "student" | "reviewer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -188,6 +507,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["student", "reviewer", "admin"],
+    },
   },
 } as const
