@@ -51,7 +51,7 @@ function Auth() {
         });
         if (error) throw error;
         if (data.session) await nav({ to: "/minha-conta" });
-        else setMessage("Confira seu e-mail para confirmar o cadastro antes de entrar.");
+        else await nav({ to: "/confirmar-cadastro", replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
