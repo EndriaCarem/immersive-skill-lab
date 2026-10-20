@@ -67,6 +67,7 @@ function TopNav() {
 }
 
 function SiteFooter() {
+  const { isAdmin } = useAccount();
   return (
     <footer className="sitefoot">
       <div className="wrap footer-grid">
@@ -81,7 +82,7 @@ function SiteFooter() {
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
             <Link to="/cursos">Cursos</Link>
             <Link to="/meus-programas">Portal do Aluno</Link>
-            <Link to="/admin">Administração</Link>
+            {isAdmin && <Link to="/admin">Administração</Link>}
           </div>
         </div>
         <div>
