@@ -21,11 +21,11 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
 import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
-import { Route as AdminProgramaIdRouteImport } from './routes/admin.programa.$id'
+import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
 import { Route as EstagioSlugNDevolutivaRouteImport } from './routes/estagio.$slug.$n.devolutiva'
@@ -90,11 +90,6 @@ const AuthenticatedMinhaContaRoute = AuthenticatedMinhaContaRouteImport.update({
   path: '/minha-conta',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CertificadoCodeRoute = CertificadoCodeRouteImport.update({
   id: '/certificado/$code',
   path: '/certificado/$code',
@@ -105,17 +100,23 @@ const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
   path: '/programa/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminComercialRoute =
   AuthenticatedAdminComercialRouteImport.update({
     id: '/admin/comercial',
     path: '/admin/comercial',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AdminProgramaIdRoute = AdminProgramaIdRouteImport.update({
-  id: '/admin/programa/$id',
-  path: '/admin/programa/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedAdminProgramaIdRoute =
+  AuthenticatedAdminProgramaIdRouteImport.update({
+    id: '/admin/programa/$id',
+    path: '/admin/programa/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const EstagioSlugNCasoRoute = EstagioSlugNCasoRouteImport.update({
   id: '/estagio/$slug/$n/caso',
   path: '/estagio/$slug/$n/caso',
@@ -151,9 +152,9 @@ export interface FileRoutesByFullPath {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
-  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -173,9 +174,9 @@ export interface FileRoutesByTo {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
-  '/admin': typeof AdminIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
-  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -197,9 +198,9 @@ export interface FileRoutesById {
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
-  '/admin/': typeof AdminIndexRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
-  '/admin/programa/$id': typeof AdminProgramaIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -221,8 +222,8 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
-    | '/admin/'
     | '/admin/comercial'
+    | '/admin/'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
@@ -243,8 +244,8 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
-    | '/admin'
     | '/admin/comercial'
+    | '/admin'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
@@ -266,9 +267,9 @@ export interface FileRouteTypes {
     | '/_authenticated/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
-    | '/admin/'
     | '/_authenticated/admin/comercial'
-    | '/admin/programa/$id'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -288,8 +289,6 @@ export interface RootRouteChildren {
   SobreRoute: typeof SobreRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminProgramaIdRoute: typeof AdminProgramaIdRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -382,13 +381,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinhaContaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/admin/': {
-      id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/certificado/$code': {
       id: '/certificado/$code'
       path: '/certificado/$code'
@@ -403,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/comercial': {
       id: '/_authenticated/admin/comercial'
       path: '/admin/comercial'
@@ -410,12 +409,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminComercialRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/admin/programa/$id': {
-      id: '/admin/programa/$id'
+    '/_authenticated/admin/programa/$id': {
+      id: '/_authenticated/admin/programa/$id'
       path: '/admin/programa/$id'
       fullPath: '/admin/programa/$id'
-      preLoaderRoute: typeof AdminProgramaIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedAdminProgramaIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/estagio/$slug/$n/caso': {
       id: '/estagio/$slug/$n/caso'
@@ -452,12 +451,16 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
   AuthenticatedAdminComercialRoute: typeof AuthenticatedAdminComercialRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminProgramaIdRoute: typeof AuthenticatedAdminProgramaIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
   AuthenticatedAdminComercialRoute: AuthenticatedAdminComercialRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminProgramaIdRoute: AuthenticatedAdminProgramaIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -476,8 +479,6 @@ const rootRouteChildren: RootRouteChildren = {
   SobreRoute: SobreRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminProgramaIdRoute: AdminProgramaIdRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
