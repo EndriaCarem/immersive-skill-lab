@@ -15,6 +15,13 @@
       "when": 1792495293253,
       "tag": "0001_accounts_commerce_foundation",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792495627596,
+      "tag": "0002_immutable_terms_versions",
+      "breakpoints": true
     }
   ]
 }
