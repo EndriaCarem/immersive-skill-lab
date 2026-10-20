@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CursosRouteImport } from './routes/cursos'
+import { Route as InteresseRouteImport } from './routes/interesse'
 import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -36,6 +37,11 @@ const ContatoRoute = ContatoRouteImport.update({
 const CursosRoute = CursosRouteImport.update({
   id: '/cursos',
   path: '/cursos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InteresseRoute = InteresseRouteImport.update({
+  id: '/interesse',
+  path: '/interesse',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MeusProgramasRoute = MeusProgramasRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
+  '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
   '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -108,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
+  '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
   '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
+  '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
   '/sobre': typeof SobreRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/cursos'
+    | '/interesse'
     | '/meus-programas'
     | '/sobre'
     | '/certificado/$code'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/cursos'
+    | '/interesse'
     | '/meus-programas'
     | '/sobre'
     | '/certificado/$code'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/contato'
     | '/cursos'
+    | '/interesse'
     | '/meus-programas'
     | '/sobre'
     | '/certificado/$code'
@@ -187,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContatoRoute: typeof ContatoRoute
   CursosRoute: typeof CursosRoute
+  InteresseRoute: typeof InteresseRoute
   MeusProgramasRoute: typeof MeusProgramasRoute
   SobreRoute: typeof SobreRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/cursos'
       fullPath: '/cursos'
       preLoaderRoute: typeof CursosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interesse': {
+      id: '/interesse'
+      path: '/interesse'
+      fullPath: '/interesse'
+      preLoaderRoute: typeof InteresseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meus-programas': {
@@ -299,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContatoRoute: ContatoRoute,
   CursosRoute: CursosRoute,
+  InteresseRoute: InteresseRoute,
   MeusProgramasRoute: MeusProgramasRoute,
   SobreRoute: SobreRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,

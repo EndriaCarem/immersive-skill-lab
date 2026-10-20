@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
 import { useStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/cursos")({
   head: () => ({
@@ -12,6 +13,8 @@ export const Route = createFileRoute("/cursos")({
       { name: "description", content: "Cursos práticos e teóricos de arbitragem com correção individual e certificado com nota." },
       { property: "og:title", content: "Cursos — Empiria" },
       { property: "og:description", content: "Arbitragem — Nível 1, Introdução à Arbitragem e os próximos lançamentos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Catalog,
@@ -28,9 +31,9 @@ function Catalog() {
   );
   return (
     <SiteShell>
-      <section className="wrap" style={{ textAlign: "center", paddingTop: 72, paddingBottom: 36 }}>
+      <section className="wrap public-intro">
         <span className="pillbadge soft">✦ Catálogo Empiria</span>
-        <h1 className="display" style={{ fontSize: "clamp(36px,5vw,60px)" }}>
+        <h1 className="display">
           Você não assiste. <em>Você faz.</em>
         </h1>
         <p className="lead" style={{ margin: "0 auto 30px" }}>
@@ -38,14 +41,13 @@ function Catalog() {
         </p>
         <label className="searchpill">
           <Search size={18} color="var(--slate)" />
-          <input placeholder="Buscar curso ou habilidade…" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
-          <span className="btn sm">Buscar</span>
+          <input placeholder="Buscar curso ou habilidade…" value={q} maxLength={160} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
         </label>
         <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 20 }}>
           {kinds.map((k) => (
-            <button key={k} className={`filter ${k === kind ? "on" : ""}`} onClick={() => setKind(k)}>
+            <Button variant="ghost" key={k} className={`filter ${k === kind ? "on" : ""}`} aria-pressed={k === kind} onClick={() => setKind(k)}>
               {k}
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -60,6 +62,7 @@ function Catalog() {
             Nenhum curso encontrado.
           </p>
         )}
+        <div className="catalog-interest"><p>Quer conversar sobre a formação?</p><Link to="/interesse" search={{ curso: "" }} className="btn ghost">Registrar interesse</Link></div>
       </section>
     </SiteShell>
   );

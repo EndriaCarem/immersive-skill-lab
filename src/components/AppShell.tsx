@@ -1,10 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Search } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 
 function TopNav() {
+  const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") { setOpen(false); toggleRef.current?.focus(); } };
+    document.addEventListener("keydown", escape);
+    return () => document.removeEventListener("keydown", escape);
+  }, [open]);
   const item = { activeProps: { className: "on" } };
   return (
     <div className="topnav">
@@ -12,7 +25,7 @@ function TopNav() {
         <Link to="/" className="logo" aria-label="Empiria — início">
           <img src={logoDark.url} alt="Empiria" />
         </Link>
-        <nav>
+        <nav className="desktop-nav" aria-label="Navegação principal">
           <Link to="/" activeOptions={{ exact: true }} {...item}>
             Início
           </Link>
@@ -33,11 +46,20 @@ function TopNav() {
           <Link to="/cursos" className="iconbtn" aria-label="Buscar cursos">
             <Search size={18} />
           </Link>
-          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm">
+          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm nav-cta">
             Receber a primeira demanda
           </Link>
+          <Button ref={toggleRef} variant="ghost" size="icon" className="iconbtn mobile-toggle" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen((v) => !v)}>{open ? <X size={20} /> : <Menu size={20} />}</Button>
         </div>
       </div>
+      {open && <nav id="mobile-navigation" className="mobile-nav" aria-label="Navegação no celular">
+        <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>
+        <Link to="/cursos" {...item}>Cursos</Link>
+        <Link to="/sobre" {...item}>Quem somos</Link>
+        <Link to="/contato" {...item}>Contato</Link>
+        <Link to="/meus-programas" {...item}>Entrar</Link>
+        <Link to="/interesse" search={{ curso: "" }} {...item}>Registrar interesse</Link>
+      </nav>}
     </div>
   );
 }
@@ -45,10 +67,10 @@ function TopNav() {
 function SiteFooter() {
   return (
     <footer className="sitefoot">
-      <div className="wrap" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 30 }}>
+      <div className="wrap footer-grid">
         <div>
           <img src={logoLight.url} alt="Empiria" style={{ height: 30, marginBottom: 16 }} />
-          <p style={{ color: "#DCCFE2", maxWidth: 340, fontSize: 14 }}>
+          <p style={{ color: "var(--on-plum)", maxWidth: 340, fontSize: 14 }}>
             Não é um curso sobre arbitragem; é o que você redige quando o caso chega.
           </p>
         </div>

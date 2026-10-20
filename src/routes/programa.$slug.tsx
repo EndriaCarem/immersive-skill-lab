@@ -15,6 +15,8 @@ export const Route = createFileRoute("/programa/$slug")({
       { name: "description", content: "Método, o que você vai dominar e a grade curricular do curso." },
       { property: "og:title", content: "Curso — Empiria" },
       { property: "og:description", content: "Preço de lançamento até 30/11." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ProgramPage,
@@ -37,12 +39,12 @@ function ProgramPage() {
   const practical = program.kind.toLowerCase().includes("prático");
   return (
     <SiteShell>
-      <section className="wrap grid2" style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 380px", gap: 48, paddingTop: 48 }}>
+      <section className="wrap program-layout">
         <div>
           <div className="crumbs">
             <Link to="/cursos">Cursos</Link> › <span>{program.kind}</span> › <b>{program.title}</b>
           </div>
-          <h1 className="display" style={{ fontSize: "clamp(38px,5vw,64px)", margin: "18px 0 16px" }}>
+          <h1 className="display">
             {program.title}
           </h1>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -117,10 +119,11 @@ function ProgramPage() {
               <button className="btn wide lg" style={{ marginTop: 18 }} onClick={start} disabled={!program.activities.length}>
                 {enrolled ? "Continuar curso" : "Garantir o preço de lançamento"}
               </button>
+              <Link to="/interesse" search={{ curso: program.title }} className="btn ghost wide course-interest">Registrar interesse</Link>
               <h4 style={{ marginTop: 24 }}>O curso inclui</h4>
               <ul className="inc" style={{ listStyle: "none", padding: 0, margin: 0 }}>
                 {(program.includes ?? []).map((t, i) => {
-                  const I = icons[i % icons.length]!;
+                  const I = icons[i % icons.length] ?? BookOpen;
                   return (
                     <li key={t}>
                       <I size={18} />
