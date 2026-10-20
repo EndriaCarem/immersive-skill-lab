@@ -12,7 +12,7 @@ export function InterestForm({ source = "interest", initialInterest = "" }: { so
   const [interest, setInterest] = useState(initialInterest);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<"name" | "email" | "interest" | "message" | "consent" | "form", string>>>({});
   const requestId = useRef<string | null>(null);
   const save = useServerFn(submitInterest);
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -42,7 +42,7 @@ export function InterestForm({ source = "interest", initialInterest = "" }: { so
     <p>Seus dados foram recebidos pela Empiria para contato sobre {interest}.</p>
     <Button className="btn ghost" onClick={() => { setSent(false); requestId.current = null; }}>Enviar outro registro</Button>
   </div>;
-  const error = (field: string) => errors[field] ? <small id={`error-${field}`} className="form-error">{errors[field]}</small> : null;
+  const error = (field: keyof typeof errors) => errors[field] ? <small id={`error-${field}`} className="form-error">{errors[field]}</small> : null;
   return <form className="interest-form" onSubmit={submit} noValidate aria-busy={busy}>
     <h2>{source === "contact" ? "Envie sua mensagem" : "Deixe seu interesse"}</h2>
     <div className="interest-fields">

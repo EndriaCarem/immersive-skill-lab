@@ -43,7 +43,7 @@ function Contact() {
               </span>
               <div>
                 <b style={{ fontSize: 16 }}>{t}</b>
-                <a className="muted" href={`mailto:${d}`}>{d}</a>
+                <div><a className="muted" href={`mailto:${d}`}>{d}</a></div>
               </div>
             </div>
           ))}
