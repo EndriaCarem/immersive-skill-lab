@@ -21,3 +21,4 @@
 - Interest and contact forms share InterestForm and a Zod schema; public write-only server actions store private submissions in Lovable Cloud, never in the unprotected local admin panel.
 - Public-page responsive layouts and mobile navigation are shared through SiteShell and semantic CSS classes to keep institutional and catalog pages consistent.
 - Founder identity and portrait references are centralized in src/lib/founders.ts so profile cards and compact avatars use the same mapping.
+- Classify authentication failures by provider code or known message in src/lib/auth-errors.ts, never HTTP status alone, so different validation failures are not misreported.
