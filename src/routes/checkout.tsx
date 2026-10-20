@@ -1,15 +1,219 @@
-import {createFileRoute,Link,useNavigate} from '@tanstack/react-router';
-import {useEffect,useState} from 'react';
-import {useServerFn} from '@tanstack/react-start';
-import {z} from 'zod';
-import {SiteShell} from '@/components/AppShell';
-import {Button} from '@/components/ui/button';
-import {supabase} from '@/integrations/supabase/client';
-import type {Tables} from '@/integrations/supabase/types';
-import {useAccount} from '@/lib/account';
-import {createOrder} from '@/lib/commerce.functions';
-import {commerceHead,purchaseSchema} from '@/lib/commerce-schema';
-import {brl} from '@/lib/store';
-export const Route=createFileRoute('/checkout')({validateSearch:z.object({curso:z.string().max(100).catch('').default('')}),head:()=>commerceHead('Matrícula','Selecione seus cursos e acompanhe a abertura dos pagamentos.'),component:Checkout});
-function Checkout(){const {curso}=Route.useSearch();const {user}=useAccount();const [products,setProducts]=useState<Tables<'commerce_products'>[]>([]);const [terms,setTerms]=useState<Tables<'commerce_terms'>|null>(null);const [selected,setSelected]=useState<string[]>([]);const [method,setMethod]=useState<'pix'|'boleto'|'card'>('pix');const [installments,setInstallments]=useState(1);const [coupon,setCoupon]=useState('');const [consent,setConsent]=useState(false);const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);const [loaded,setLoaded]=useState(false);const [requestId,setRequestId]=useState('');const create=useServerFn(createOrder);const nav=useNavigate();useEffect(()=>{setRequestId(crypto.randomUUID());void Promise.all([supabase.from('commerce_products').select('*').eq('active',true),supabase.from('commerce_terms').select('*').eq('published',true).order('created_at',{ascending:false}).limit(1)]).then(([p,t])=>{if(p.error||t.error)setMessage('Não foi possível carregar a matrícula.');setProducts(p.data??[]);setTerms(t.data?.[0]??null);setSelected((p.data??[]).filter(x=>x.slug===curso).map(x=>x.id));setLoaded(true);});},[curso]);const total=products.filter(x=>selected.includes(x.id)).reduce((s,x)=>s+x.price_cents,0);async function submit(e:React.FormEvent){e.preventDefault();if(!terms)return;setBusy(true);setMessage('');try{const url=new URL(window.location.href);const tags=Object.fromEntries(['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].flatMap(k=>url.searchParams.get(k)?[[k,url.searchParams.get(k)??'']]:[]));const input=purchaseSchema.parse({productIds:selected,coupon,method,installments:method==='card'?installments:1,termsId:terms.id,consent,requestId,source:tags['utm_source']??'direct',tags});await create({data:input});await nav({to:'/compras'});}catch(e){setMessage(e instanceof Error?e.message:'Não foi possível registrar seu pedido.');}finally{setBusy(false);}}
-return <SiteShell><main className="account-page"><div className="eyebrow">Conta, compra e matrícula</div><h1>Sua matrícula</h1><div className="integration-notice"><b>Pagamentos em preparação</b><p>Mercado Pago ainda não conectado. Nenhuma cobrança será realizada nesta etapa.</p></div>{!loaded?<p>Carregando cursos…</p>:<form onSubmit={submit} className="checkout-layout"><div><h2>Selecione os cursos</h2>{!products.length&&<p className="muted">Os produtos comerciais ainda não foram publicados.</p>}{products.map(p=><label className="product-option" key={p.id}><input type="checkbox" checked={selected.includes(p.id)} onChange={()=>{setSelected(a=>a.includes(p.id)?a.filter(x=>x!==p.id):[...a,p.id]);setRequestId(crypto.randomUUID());}}/><span><b>{p.title}</b><small>{p.kind}</small></span><b>{brl(p.price_cents/100)}</b></label>)}<h2>Forma de pagamento</h2><div className="commerce-actions">{(['pix','boleto','card'] as const).map(m=><Button key={m} type="button" className={method===m?'btn':'btn ghost'} aria-pressed={method===m} onClick={()=>{setMethod(m);setRequestId(crypto.randomUUID());}}>{m==='card'?'Cartão':m==='pix'?'Pix':'Boleto'}</Button>)}</div>{method==='card'&&<label className="field">Parcelas<select value={installments} onChange={e=>setInstallments(Number(e.target.value))}>{[1,2,3,4,5,6].map(n=><option key={n} value={n}>{n}x — condições a confirmar no pagamento</option>)}</select></label>}<p className="muted sm">As condições de pagamento serão confirmadas após a integração.</p>{terms?<details className="terms-text"><summary>Termos de matrícula · versão {terms.version}</summary><p>{terms.body}</p></details>:<p className="integration-notice">Os termos de matrícula aguardam publicação pela Empiria.</p>}<label className="consent-field"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={!terms}/><span>Li e aceito os termos de matrícula publicados.</span></label></div><aside className="checkout-summary"><h2>Resumo</h2><p>{selected.length} curso(s)</p><b className="summary-total">{brl(total/100)}</b><label className="field">Cupom<input value={coupon} maxLength={40} onChange={e=>{setCoupon(e.target.value);setRequestId(crypto.randomUUID());}}/></label><p className="muted sm">O desconto será validado ao registrar o pedido. Pedido com total zero gera matrícula gratuita.</p>{user?<Button className="btn wide" disabled={busy||!terms||!consent||!selected.length}>{busy?'Registrando…':'Registrar pedido'}</Button>:<Link to="/auth" className="btn wide">Entrar para continuar</Link>}<p role="alert" className="form-error">{message}</p></aside></form>}</main></SiteShell>;}
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { SiteShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+import { useAccount } from "@/lib/account";
+import { createOrder } from "@/lib/commerce.functions";
+import { commerceHead, purchaseSchema } from "@/lib/commerce-schema";
+import { brl } from "@/lib/store";
+export const Route = createFileRoute("/checkout")({
+  validateSearch: z.object({ curso: z.string().max(100).catch("").default("") }),
+  head: () =>
+    commerceHead("Matrícula", "Selecione seus cursos e acompanhe a abertura dos pagamentos."),
+  component: Checkout,
+});
+function Checkout() {
+  const { curso } = Route.useSearch();
+  const { user } = useAccount();
+  const [products, setProducts] = useState<Tables<"commerce_products">[]>([]);
+  const [terms, setTerms] = useState<Tables<"commerce_terms"> | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [method, setMethod] = useState<"pix" | "boleto" | "card">("pix");
+  const [installments, setInstallments] = useState(1);
+  const [coupon, setCoupon] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [requestId, setRequestId] = useState("");
+  const create = useServerFn(createOrder);
+  const nav = useNavigate();
+  useEffect(() => {
+    setRequestId(crypto.randomUUID());
+    void Promise.all([
+      supabase.from("commerce_products").select("*").eq("active", true),
+      supabase
+        .from("commerce_terms")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false })
+        .limit(1),
+    ]).then(([p, t]) => {
+      if (p.error || t.error) setMessage("Não foi possível carregar a matrícula.");
+      setProducts(p.data ?? []);
+      setTerms(t.data?.[0] ?? null);
+      setSelected((p.data ?? []).filter((x) => x.slug === curso).map((x) => x.id));
+      setLoaded(true);
+    });
+  }, [curso]);
+  const total = products
+    .filter((x) => selected.includes(x.id))
+    .reduce((s, x) => s + x.price_cents, 0);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!terms) return;
+    setBusy(true);
+    setMessage("");
+    try {
+      const url = new URL(window.location.href);
+      const tags = Object.fromEntries(
+        ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].flatMap((k) =>
+          url.searchParams.get(k) ? [[k, url.searchParams.get(k) ?? ""]] : [],
+        ),
+      );
+      const input = purchaseSchema.parse({
+        productIds: selected,
+        coupon,
+        method,
+        installments: method === "card" ? installments : 1,
+        termsId: terms.id,
+        consent,
+        requestId,
+        source: tags["utm_source"] ?? "direct",
+        tags,
+      });
+      await create({ data: input });
+      await nav({ to: "/compras" });
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "Não foi possível registrar seu pedido.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <SiteShell>
+      <main className="account-page">
+        <div className="eyebrow">Conta, compra e matrícula</div>
+        <h1>Sua matrícula</h1>
+        <div className="integration-notice">
+          <b>Pagamentos em preparação</b>
+          <p>Mercado Pago ainda não conectado. Nenhuma cobrança será realizada nesta etapa.</p>
+        </div>
+        {!loaded ? (
+          <p>Carregando cursos…</p>
+        ) : (
+          <form onSubmit={submit} className="checkout-layout">
+            <div>
+              <h2>Selecione os cursos</h2>
+              {!products.length && (
+                <p className="muted">Os produtos comerciais ainda não foram publicados.</p>
+              )}
+              {products.map((p) => (
+                <label className="product-option" key={p.id}>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(p.id)}
+                    onChange={() => {
+                      setSelected((a) =>
+                        a.includes(p.id) ? a.filter((x) => x !== p.id) : [...a, p.id],
+                      );
+                      setRequestId(crypto.randomUUID());
+                    }}
+                  />
+                  <span>
+                    <b>{p.title}</b>
+                    <small>{p.kind}</small>
+                  </span>
+                  <b>{brl(p.price_cents / 100)}</b>
+                </label>
+              ))}
+              <h2>Forma de pagamento</h2>
+              <div className="commerce-actions">
+                {(["pix", "boleto", "card"] as const).map((m) => (
+                  <Button
+                    key={m}
+                    type="button"
+                    className={method === m ? "btn" : "btn ghost"}
+                    aria-pressed={method === m}
+                    onClick={() => {
+                      setMethod(m);
+                      setRequestId(crypto.randomUUID());
+                    }}
+                  >
+                    {m === "card" ? "Cartão" : m === "pix" ? "Pix" : "Boleto"}
+                  </Button>
+                ))}
+              </div>
+              {method === "card" && (
+                <label className="field">
+                  Parcelas
+                  <select
+                    value={installments}
+                    onChange={(e) => setInstallments(Number(e.target.value))}
+                  >
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <option key={n} value={n}>
+                        {n}x — condições a confirmar no pagamento
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+              <p className="muted sm">
+                As condições de pagamento serão confirmadas após a integração.
+              </p>
+              {terms ? (
+                <details className="terms-text">
+                  <summary>Termos de matrícula · versão {terms.version}</summary>
+                  <p>{terms.body}</p>
+                </details>
+              ) : (
+                <p className="integration-notice">
+                  Os termos de matrícula aguardam publicação pela Empiria.
+                </p>
+              )}
+              <label className="consent-field">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  disabled={!terms}
+                />
+                <span>Li e aceito os termos de matrícula publicados.</span>
+              </label>
+            </div>
+            <aside className="checkout-summary">
+              <h2>Resumo</h2>
+              <p>{selected.length} curso(s)</p>
+              <b className="summary-total">{brl(total / 100)}</b>
+              <label className="field">
+                Cupom
+                <input
+                  value={coupon}
+                  maxLength={40}
+                  onChange={(e) => {
+                    setCoupon(e.target.value);
+                    setRequestId(crypto.randomUUID());
+                  }}
+                />
+              </label>
+              <p className="muted sm">
+                O desconto será validado ao registrar o pedido. Pedido com total zero gera matrícula
+                gratuita.
+              </p>
+              {user ? (
+                <Button
+                  className="btn wide"
+                  disabled={busy || !terms || !consent || !selected.length}
+                >
+                  {busy ? "Registrando…" : "Registrar pedido"}
+                </Button>
+              ) : (
+                <Link to="/auth" className="btn wide">
+                  Entrar para continuar
+                </Link>
+              )}
+              <p role="alert" className="form-error">
+                {message}
+              </p>
+            </aside>
+          </form>
+        )}
+      </main>
+    </SiteShell>
+  );
+}

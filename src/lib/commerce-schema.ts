@@ -1,7 +1,69 @@
-import { z } from 'zod';
-export const purchaseSchema = z.object({ productIds: z.array(z.string().min(1).max(80)).min(1).max(10).refine(a => new Set(a).size === a.length), coupon: z.string().trim().max(40).default(''), method: z.enum(['pix','boleto','card']), installments: z.number().int().min(1).max(6), termsId: z.string().uuid(), consent: z.literal(true), requestId: z.string().uuid(), source: z.string().max(160).default('direct'), tags: z.record(z.string().max(200)).refine(x => Object.keys(x).length <= 10).default({}) }).refine(x => x.method === 'card' || x.installments === 1, { message: 'Parcelamento disponível somente no cartão.' });
-export const profileSchema = z.object({ full_name: z.string().trim().min(2).max(100), phone: z.string().trim().max(25), tax_id: z.string().trim().max(25) });
-export const couponSchema = z.object({ code: z.string().trim().min(2).max(40).regex(/^[A-Za-z0-9_-]+$/).transform(x=>x.toUpperCase()), kind: z.enum(['percent','fixed']), value: z.number().int().positive(), active: z.boolean(), max_uses: z.number().int().positive().nullable(), expires_at: z.string().datetime().nullable() }).refine(x => x.kind !== 'percent' || x.value <= 100);
-export function discountCents(subtotal: number, kind: 'percent'|'fixed', value: number) { return Math.min(subtotal, kind === 'percent' ? Math.floor(subtotal * value / 100) : value); }
-export const statusLabel: Record<string,string> = { awaiting_integration:'Aguardando abertura dos pagamentos', pending:'Pagamento pendente', paid:'Pago', free:'Pedido gratuito', cancelled:'Cancelado', cancellation_requested:'Cancelamento solicitado', refunded:'Reembolsado', rejected:'Pagamento recusado' };
-export function commerceHead(title: string, description: string) { return { meta: [{title: `${title} — Empiria`},{name:'description',content:description},{property:'og:title',content:`${title} — Empiria`},{property:'og:description',content:description},{property:'og:type',content:'website'},{name:'twitter:card',content:'summary_large_image'}] }; }
+import { z } from "zod";
+export const purchaseSchema = z
+  .object({
+    productIds: z
+      .array(z.string().min(1).max(80))
+      .min(1)
+      .max(10)
+      .refine((a) => new Set(a).size === a.length),
+    coupon: z.string().trim().max(40).default(""),
+    method: z.enum(["pix", "boleto", "card"]),
+    installments: z.number().int().min(1).max(6),
+    termsId: z.string().uuid(),
+    consent: z.literal(true),
+    requestId: z.string().uuid(),
+    source: z.string().max(160).default("direct"),
+    tags: z
+      .record(z.string().max(200))
+      .refine((x) => Object.keys(x).length <= 10)
+      .default({}),
+  })
+  .refine((x) => x.method === "card" || x.installments === 1, {
+    message: "Parcelamento disponível somente no cartão.",
+  });
+export const profileSchema = z.object({
+  full_name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().max(25),
+  tax_id: z.string().trim().max(25),
+});
+export const couponSchema = z
+  .object({
+    code: z
+      .string()
+      .trim()
+      .min(2)
+      .max(40)
+      .regex(/^[A-Za-z0-9_-]+$/)
+      .transform((x) => x.toUpperCase()),
+    kind: z.enum(["percent", "fixed"]),
+    value: z.number().int().positive(),
+    active: z.boolean(),
+    max_uses: z.number().int().positive().nullable(),
+    expires_at: z.string().datetime().nullable(),
+  })
+  .refine((x) => x.kind !== "percent" || x.value <= 100);
+export function discountCents(subtotal: number, kind: "percent" | "fixed", value: number) {
+  return Math.min(subtotal, kind === "percent" ? Math.floor((subtotal * value) / 100) : value);
+}
+export const statusLabel: Record<string, string> = {
+  awaiting_integration: "Aguardando abertura dos pagamentos",
+  pending: "Pagamento pendente",
+  paid: "Pago",
+  free: "Pedido gratuito",
+  cancelled: "Cancelado",
+  cancellation_requested: "Cancelamento solicitado",
+  refunded: "Reembolsado",
+  rejected: "Pagamento recusado",
+};
+export function commerceHead(title: string, description: string) {
+  return {
+    meta: [
+      { title: `${title} — Empiria` },
+      { name: "description", content: description },
+      { property: "og:title", content: `${title} — Empiria` },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  };
+}

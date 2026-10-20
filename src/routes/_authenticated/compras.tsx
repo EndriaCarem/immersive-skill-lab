@@ -1,12 +1,118 @@
-import {createFileRoute,Link} from '@tanstack/react-router';
-import {useSuspenseQuery} from '@tanstack/react-query';
-import {useServerFn} from '@tanstack/react-start';
-import {useState} from 'react';
-import {AppShell} from '@/components/AppShell';
-import {Button} from '@/components/ui/button';
-import {accountOptions} from './minha-conta';
-import {cancelOrder} from '@/lib/commerce.functions';
-import {commerceHead,statusLabel} from '@/lib/commerce-schema';
-import {brl} from '@/lib/store';
-export const Route=createFileRoute('/_authenticated/compras')({head:()=>commerceHead('Minhas compras','Histórico de pedidos, matrículas e solicitações de cancelamento.'),loader:({context})=>context.queryClient.ensureQueryData(accountOptions()),component:Purchases});
-function Purchases(){const {data}=useSuspenseQuery(accountOptions());const cancel=useServerFn(cancelOrder);const {queryClient}=Route.useRouteContext();const [selected,setSelected]=useState<string|null>(null);const [reason,setReason]=useState('');const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);async function submit(e:React.FormEvent){e.preventDefault();if(!selected)return;setBusy(true);try{await cancel({data:{id:selected,reason}});await queryClient.invalidateQueries({queryKey:['account']});setSelected(null);setMessage('Cancelamento registrado. A confirmação por e-mail ainda não está disponível.');}catch(e){setMessage(e instanceof Error?e.message:'Não foi possível cancelar.');}finally{setBusy(false);}}return <AppShell><main className="account-page"><div className="eyebrow">Conta e matrícula</div><h1>Minhas compras</h1><nav className="commerce-actions"><Link to="/minha-conta">Minha conta</Link><Link to="/checkout" search={{curso:''}}>Selecionar cursos</Link></nav><p role="status">{message}</p>{!data.orders.length&&<p className="muted">Você ainda não tem pedidos.</p>}<div className="order-list">{data.orders.map(o=><article className="order-row" key={o.id}><header><div><span className="muted sm">{new Date(o.created_at).toLocaleDateString('pt-BR')} · Pedido {o.id.slice(0,8)}</span><h3>{o.commerce_order_items.map(i=>i.title).join(' + ')}</h3></div><b>{brl(o.total_cents/100)}</b></header><span className="sig mid">{statusLabel[o.status]??o.status}</span>{o.status==='awaiting_integration'&&<p className="muted sm">Nenhuma cobrança realizada. A matrícula paga depende da abertura dos pagamentos.</p>}<p className="muted sm">Termos aceitos em {new Date(o.terms_accepted_at).toLocaleString('pt-BR')}</p>{!['cancelled','refunded','cancellation_requested','rejected'].includes(o.status)&&<Button className="btn ghost" onClick={()=>{setSelected(o.id);setReason('');}}>Solicitar cancelamento</Button>}{selected===o.id&&<form className="commerce-form" onSubmit={submit}><label className="field">Motivo do cancelamento<textarea required minLength={3} maxLength={1000} value={reason} onChange={e=>setReason(e.target.value)}/></label><div className="commerce-actions"><Button className="btn" disabled={busy}>Confirmar cancelamento</Button><Button type="button" variant="ghost" onClick={()=>setSelected(null)}>Voltar</Button></div></form>}</article>)}</div></main></AppShell>;}
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { AppShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { accountOptions } from "./minha-conta";
+import { cancelOrder } from "@/lib/commerce.functions";
+import { commerceHead, statusLabel } from "@/lib/commerce-schema";
+import { brl } from "@/lib/store";
+export const Route = createFileRoute("/_authenticated/compras")({
+  head: () =>
+    commerceHead(
+      "Minhas compras",
+      "Histórico de pedidos, matrículas e solicitações de cancelamento.",
+    ),
+  loader: ({ context }) => context.queryClient.ensureQueryData(accountOptions()),
+  component: Purchases,
+});
+function Purchases() {
+  const { data } = useSuspenseQuery(accountOptions());
+  const cancel = useServerFn(cancelOrder);
+  const { queryClient } = Route.useRouteContext();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selected) return;
+    setBusy(true);
+    try {
+      await cancel({ data: { id: selected, reason } });
+      await queryClient.invalidateQueries({ queryKey: ["account"] });
+      setSelected(null);
+      setMessage("Cancelamento registrado. A confirmação por e-mail ainda não está disponível.");
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "Não foi possível cancelar.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <AppShell>
+      <main className="account-page">
+        <div className="eyebrow">Conta e matrícula</div>
+        <h1>Minhas compras</h1>
+        <nav className="commerce-actions">
+          <Link to="/minha-conta">Minha conta</Link>
+          <Link to="/checkout" search={{ curso: "" }}>
+            Selecionar cursos
+          </Link>
+        </nav>
+        <p role="status">{message}</p>
+        {!data.orders.length && <p className="muted">Você ainda não tem pedidos.</p>}
+        <div className="order-list">
+          {data.orders.map((o) => (
+            <article className="order-row" key={o.id}>
+              <header>
+                <div>
+                  <span className="muted sm">
+                    {new Date(o.created_at).toLocaleDateString("pt-BR")} · Pedido {o.id.slice(0, 8)}
+                  </span>
+                  <h3>{o.commerce_order_items.map((i) => i.title).join(" + ")}</h3>
+                </div>
+                <b>{brl(o.total_cents / 100)}</b>
+              </header>
+              <span className="sig mid">{statusLabel[o.status] ?? o.status}</span>
+              {o.status === "awaiting_integration" && (
+                <p className="muted sm">
+                  Nenhuma cobrança realizada. A matrícula paga depende da abertura dos pagamentos.
+                </p>
+              )}
+              <p className="muted sm">
+                Termos aceitos em {new Date(o.terms_accepted_at).toLocaleString("pt-BR")}
+              </p>
+              {!["cancelled", "refunded", "cancellation_requested", "rejected"].includes(
+                o.status,
+              ) && (
+                <Button
+                  className="btn ghost"
+                  onClick={() => {
+                    setSelected(o.id);
+                    setReason("");
+                  }}
+                >
+                  Solicitar cancelamento
+                </Button>
+              )}
+              {selected === o.id && (
+                <form className="commerce-form" onSubmit={submit}>
+                  <label className="field">
+                    Motivo do cancelamento
+                    <textarea
+                      required
+                      minLength={3}
+                      maxLength={1000}
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                    />
+                  </label>
+                  <div className="commerce-actions">
+                    <Button className="btn" disabled={busy}>
+                      Confirmar cancelamento
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={() => setSelected(null)}>
+                      Voltar
+                    </Button>
+                  </div>
+                </form>
+              )}
+            </article>
+          ))}
+        </div>
+      </main>
+    </AppShell>
+  );
+}
