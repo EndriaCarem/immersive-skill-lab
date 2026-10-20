@@ -6,6 +6,7 @@ import { SiteShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { commerceHead } from "@/lib/commerce-schema";
 import { ArrowLeft } from "lucide-react";
+import { authErrorKind } from "@/lib/auth-errors";
 export const Route = createFileRoute("/auth")({
   head: () => commerceHead("Entrar", "Acesse sua conta de aluno da Empiria."),
   component: Auth,
@@ -57,7 +58,9 @@ function Auth() {
         await nav({ to: "/minha-conta" });
       }
     } catch (error) {
-      if (error instanceof Error && error.message.includes("email address is not allowed")) {
+      if (authErrorKind(error) === "weak_password") {
+        setMessage("Essa senha é muito comum ou fácil de adivinhar. Escolha uma senha única e mais longa, evitando nomes, datas e sequências como 12345678.");
+      } else if (authErrorKind(error) === "invalid_email") {
         setMessage("Use um e-mail válido que possa receber a confirmação do cadastro.");
       } else
         setMessage(
