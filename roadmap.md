@@ -5,9 +5,12 @@
 - [x] Verificar envio, privacidade dos registros, navegação e telas; manter testes existentes.
 
 # Conta, compra e matrícula
-- [ ] Criar contas com perfil, login e recuperação de senha; proteger acessos administrativos.
-- [ ] Armazenar catálogo comercial, pedidos e matrículas no Cloud com privacidade e operações atômicas.
-- [ ] Preparar compra de múltiplos cursos, cupons, pedido gratuito, aceite de termos e origem da matrícula.
-- [ ] Disponibilizar histórico, cancelamento pelo aluno e gestão comercial compartilhada.
-- [ ] Verificar regras, fluxos autenticados e telas de celular/computador.
+- [x] Preparar contas com perfil, login e recuperação de senha; proteger acessos administrativos.
+- [x] Armazenar catálogo comercial, pedidos e matrículas no Cloud com privacidade e operações atômicas.
+- [x] Preparar compra de múltiplos cursos, cupons, pedido gratuito, aceite de termos e origem da matrícula.
+- [x] Disponibilizar histórico, cancelamento pelo aluno e gestão comercial compartilhada.
+- [x] Verificar regras e páginas públicas de conta/compra no celular e computador: 18 testes aprovados, sem erros de execução.
+- [ ] Validar conta, pedido gratuito, histórico e cancelamento autenticados — aguardando primeiro cadastro confirmado; não há usuários de acesso para sessão de teste.
+- [ ] Liberar administração comercial — aguardando identificação da conta autorizada de Diego; nenhum cadastro recebe papel administrativo automaticamente.
+- [ ] Habilitar registro de pedidos — aguardando texto dos termos aprovado pela Empiria e publicação por administrador.
 - [ ] Ativar Mercado Pago e confirmação por Resend — aguardando credenciais e autorização de Diego.
