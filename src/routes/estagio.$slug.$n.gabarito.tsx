@@ -11,6 +11,8 @@ export const Route = createFileRoute("/estagio/$slug/$n/gabarito")({
       { title: "Gabarito comentado — Empiria" },
       { name: "description", content: "Vídeo de debriefing do professor e peça de referência para download." },
       { property: "og:title", content: "Gabarito comentado — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Liberado somente após a sua entrega." },
     ],
   }),

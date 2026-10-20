@@ -11,6 +11,8 @@ export const Route = createFileRoute("/certificado/$code")({
       { title: `Certificado ${params.code} — Empiria` },
       { name: "description", content: "Certificado digital com nota e verificação pública por código." },
       { property: "og:title", content: `Certificado ${params.code} — Empiria` },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Certificado com nota por critério, verificável por link." },
     ],
   }),

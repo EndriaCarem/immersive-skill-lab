@@ -11,6 +11,8 @@ export const Route = createFileRoute("/estagio/$slug/$n/caso")({
       { title: "O caso — Empiria" },
       { name: "description", content: "Briefing do caso, contexto do cliente e documentos anexos." },
       { property: "og:title", content: "O caso — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Entenda o caso antes de receber a demanda." },
     ],
   }),

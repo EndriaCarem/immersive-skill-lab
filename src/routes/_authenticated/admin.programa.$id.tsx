@@ -1,3 +1,4 @@
+import { adminGuard } from "@/lib/admin-guard";
 import { createFileRoute, Link, useBlocker } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -20,12 +21,15 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export const Route = createFileRoute("/admin/programa/$id")({
+export const Route = createFileRoute("/_authenticated/admin/programa/$id")({
+  beforeLoad: adminGuard,
   head: () => ({
     meta: [
       { title: "Editar curso — Empiria" },
       { name: "description", content: "Editor de cursos: informações, atividades com texto formatado, mídias e anexos." },
       { property: "og:title", content: "Editar curso — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Editor de cursos da Empiria." },
     ],
   }),

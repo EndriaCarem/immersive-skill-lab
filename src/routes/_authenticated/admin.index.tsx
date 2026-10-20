@@ -1,3 +1,4 @@
+import { adminGuard } from "@/lib/admin-guard";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -5,12 +6,15 @@ import { GradeWorkbench } from "@/components/GradeWorkbench";
 import { toast } from "sonner";
 import { actions, brl, fmt, subScore, useStore, type Submission, slaStatus, SLA_HOURS } from "@/lib/store";
 
-export const Route = createFileRoute("/admin/")({
+export const Route = createFileRoute("/_authenticated/admin/")({
+  beforeLoad: adminGuard,
   head: () => ({
     meta: [
       { title: "Administração — Empiria" },
       { name: "description", content: "Gerencie programas, atividades, inscritos e entregas." },
       { property: "og:title", content: "Administração — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Painel do criador da plataforma." },
     ],
   }),
@@ -59,6 +63,8 @@ function Admin() {
       <main className="pane">
         <div className="eyebrow">Painel executivo</div>
         <h1>Administração</h1>
+        <Link to="/admin/comercial" className="btn ghost">Operação comercial</Link>
+        <p className="muted sm">Conteúdo e correções abaixo são demonstrativos, salvos neste navegador. Pedidos e matrículas reais estão na operação comercial.</p>
 
         <div className="kpis">
           <div className="kpi">
