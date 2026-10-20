@@ -20,6 +20,7 @@ export function CourseCard({ p }: { p: Program }) {
           </span>
         ) : null}
       </div>
+      {soon && <Link to="/interesse" search={{ curso: p.title }} className="btn ghost course-interest">Avisar quando abrir</Link>}
       <div className="cbody">
         <span className="tag">{soon ? "Em breve" : p.kind}</span>
         <h3>{p.title}</h3>

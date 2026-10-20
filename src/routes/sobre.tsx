@@ -8,6 +8,8 @@ export const Route = createFileRoute("/sobre")({
       { name: "description", content: "Conheça Rebeca Franzoni e Tainá Malta Rodrigues, o método da Empiria e os parceiros Arbipédia e CJA/CBMA." },
       { property: "og:title", content: "Sobre a Empiria" },
       { property: "og:description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: About,
@@ -33,7 +35,7 @@ function About() {
         <p className="quote">Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
 
         <h4>Fundadoras</h4>
-        <div className="cards" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
+        <div className="cards founders-grid">
           {founders.map((f) => (
             <div className="card" key={f.name}>
               <div className="avatar" style={{ width: 52, height: 52, fontSize: 16, background: "var(--plum)" }}>
@@ -63,7 +65,7 @@ function About() {
         </p>
 
         <h4>Parceiros institucionais</h4>
-        <div className="cards" style={{ gridTemplateColumns: "repeat(2,1fr)" }}>
+        <div className="cards founders-grid">
           <div className="card">
             <div className="kind">Parceiro</div>
             <h3>Arbipédia</h3>
