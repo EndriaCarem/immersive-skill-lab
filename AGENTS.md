@@ -12,6 +12,7 @@
 - Simulation content, submissions and grading remain an isolated browser-local demo; real accounts, commercial products, orders and enrollments use Cloud and must never merge demo learner records.
 - Commercial writes use validated authenticated server functions and atomic database operations; prices, coupons, consent and entitlements are server-authoritative.
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.
+- Administrative navigation uses an account-scoped role RPC query and stays hidden until verified; navigation visibility never replaces route or server authorization.
 - External payment and app-email adapters remain inactive until authorized integration; missing credentials never generate paid orders or sent-email claims.
 - Published terms are immutable versioned records; changes create a new version so existing order acceptance remains auditable.
 - Visual styles are ported from the uploaded mockup as plain CSS classes in src/styles.css; reuse those classes so screens stay faithful to the mockup.
