@@ -127,11 +127,11 @@ function Auth() {
           <Button
             variant="link"
             onClick={() => {
-              setMode(mode === "reset" ? "login" : "reset");
+              setMode("reset");
               setMessage("");
             }}
           >
-            {mode === "reset" ? "Voltar para entrar" : "Esqueci minha senha"}
+            Esqueci minha senha
           </Button>
         </div>}
         <Link to="/cursos" className="auth-back">
