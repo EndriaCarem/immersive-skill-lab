@@ -12,6 +12,8 @@ export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
       { title: "A demanda — Empiria" },
       { name: "description", content: "Instrução da tarefa, materiais de apoio e envio da sua entrega." },
       { property: "og:title", content: "A demanda — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Receba a demanda e envie sua entrega para correção." },
     ],
   }),

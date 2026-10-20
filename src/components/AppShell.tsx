@@ -3,11 +3,13 @@ import type { ReactNode } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { useAccount } from "@/lib/account";
 import { Button } from "@/components/ui/button";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 
 function TopNav() {
+  const { user } = useAccount();
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -38,8 +40,8 @@ function TopNav() {
           <Link to="/contato" {...item}>
             Contato
           </Link>
-          <Link to="/meus-programas" {...item}>
-            Entrar
+          <Link to={user ? "/minha-conta" : "/auth"} {...item}>
+            {user ? "Minha conta" : "Entrar"}
           </Link>
         </nav>
         <div className="right">
@@ -57,7 +59,7 @@ function TopNav() {
         <Link to="/cursos" {...item}>Cursos</Link>
         <Link to="/sobre" {...item}>Quem somos</Link>
         <Link to="/contato" {...item}>Contato</Link>
-        <Link to="/meus-programas" {...item}>Entrar</Link>
+        <Link to={user ? "/minha-conta" : "/auth"} {...item}>{user ? "Minha conta" : "Entrar"}</Link>
         <Link to="/interesse" search={{ curso: "" }} {...item}>Registrar interesse</Link>
       </nav>}
     </div>

@@ -3,8 +3,9 @@ import { Award, BookOpen, CalendarClock, Check, FileCheck2 } from "lucide-react"
 import { SiteShell } from "@/components/AppShell";
 import { NotFoundBlock } from "@/components/ActivityLayout";
 import { coverFor } from "@/components/CourseCard";
-import { actions, brl, useStore } from "@/lib/store";
+import { brl, useStore } from "@/lib/store";
 import { Rich } from "@/components/Rich";
+import { Button } from "@/components/ui/button";
 import { FileList } from "@/components/FileList";
 import { useFileUrl } from "@/lib/files";
 
@@ -29,12 +30,8 @@ function ProgramPage() {
   const nav = useNavigate();
   const program = useStore((s) => s.programs.find((p) => p.slug === slug));
   const coverUrl = useFileUrl(program?.coverFile?.id);
-  const enrolled = useStore((s) => !!program && s.enrollments.some((e) => e.programId === program.id && e.student === s.student));
   if (!program) return <NotFoundBlock />;
-  const start = () => {
-    actions.enroll(program.id);
-    if (program.activities.length) nav({ to: "/estagio/$slug/$n/caso", params: { slug, n: "1" } });
-  };
+  const start = () => nav({ to: "/checkout", search: { curso: slug } });
   const saving = program.fullPrice && program.price ? Math.round((1 - program.price / program.fullPrice) * 100) : 0;
   const practical = program.kind.toLowerCase().includes("prático");
   return (
@@ -116,9 +113,9 @@ function ProgramPage() {
                   Tabela cheia <s>{brl(program.fullPrice)}</s>
                 </div>
               ) : null}
-              <button className="btn wide lg" style={{ marginTop: 18 }} onClick={start} disabled={!program.activities.length}>
-                {enrolled ? "Continuar curso" : "Garantir o preço de lançamento"}
-              </button>
+              <Button className="btn wide lg" style={{ marginTop: 18 }} onClick={start} disabled={program.status !== "published"}>
+                Garantir o preço de lançamento
+              </Button>
               <Link to="/interesse" search={{ curso: program.title }} className="btn ghost wide course-interest">Registrar interesse</Link>
               <h4 style={{ marginTop: 24 }}>O curso inclui</h4>
               <ul className="inc" style={{ listStyle: "none", padding: 0, margin: 0 }}>

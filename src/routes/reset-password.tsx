@@ -1,0 +1,68 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { SiteShell } from "@/components/AppShell";
+import { Button } from "@/components/ui/button";
+import { commerceHead } from "@/lib/commerce-schema";
+export const Route = createFileRoute("/reset-password")({
+  head: () => commerceHead("Redefinir senha", "Defina uma nova senha de acesso à Empiria."),
+  component: Reset,
+});
+function Reset() {
+  const [valid, setValid] = useState(false);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  useEffect(() => {
+    setValid(new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery");
+  }, []);
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setBusy(true);
+    const d = new FormData(e.currentTarget);
+    if (d.get("password") !== d.get("confirm")) {
+      setMessage("As senhas precisam ser iguais.");
+      setBusy(false);
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: String(d.get("password")) });
+    setMessage(
+      error
+        ? "O link expirou ou não foi possível alterar a senha. Solicite outro link."
+        : "Senha alterada. Você já pode entrar.",
+    );
+    setBusy(false);
+  }
+  return (
+    <SiteShell>
+      <main className="account-page auth-page">
+        <h1>Redefinir senha</h1>
+        {valid ? (
+          <form className="commerce-form" onSubmit={submit}>
+            <label className="field">
+              Nova senha
+              <input
+                name="password"
+                type="password"
+                minLength={8}
+                maxLength={128}
+                required
+                autoComplete="new-password"
+              />
+            </label>
+            <label className="field">
+              Confirmar senha
+              <input name="confirm" type="password" required autoComplete="new-password" />
+            </label>
+            <Button className="btn" disabled={busy}>
+              Salvar nova senha
+            </Button>
+          </form>
+        ) : (
+          <p>Abra o link enviado ao seu e-mail para redefinir a senha.</p>
+        )}
+        <p role="status">{message}</p>
+        <Link to="/auth">Voltar para entrar</Link>
+      </main>
+    </SiteShell>
+  );
+}

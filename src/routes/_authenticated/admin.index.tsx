@@ -1,16 +1,29 @@
+import { adminGuard } from "@/lib/admin-guard";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { GradeWorkbench } from "@/components/GradeWorkbench";
 import { toast } from "sonner";
-import { actions, brl, fmt, subScore, useStore, type Submission, slaStatus, SLA_HOURS } from "@/lib/store";
+import {
+  actions,
+  brl,
+  fmt,
+  subScore,
+  useStore,
+  type Submission,
+  slaStatus,
+  SLA_HOURS,
+} from "@/lib/store";
 
-export const Route = createFileRoute("/admin/")({
+export const Route = createFileRoute("/_authenticated/admin/")({
+  beforeLoad: adminGuard,
   head: () => ({
     meta: [
       { title: "Administração — Empiria" },
       { name: "description", content: "Gerencie programas, atividades, inscritos e entregas." },
       { property: "og:title", content: "Administração — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Painel do criador da plataforma." },
     ],
   }),
@@ -18,7 +31,11 @@ export const Route = createFileRoute("/admin/")({
 });
 
 type Tab = "programas" | "inscritos" | "entregas";
-const TAB_LABEL: Record<Tab, string> = { programas: "Cursos", inscritos: "Alunos inscritos", entregas: "Fila de correção" };
+const TAB_LABEL: Record<Tab, string> = {
+  programas: "Cursos",
+  inscritos: "Alunos inscritos",
+  entregas: "Fila de correção",
+};
 const STATUS_LABEL = { published: "Publicado", soon: "Em breve", draft: "Rascunho" } as const;
 
 function Admin() {
@@ -31,27 +48,47 @@ function Admin() {
   const [grading, setGrading] = useState<Submission | null>(null);
   const prog = (id: string) => state.programs.find((p) => p.id === id);
   const term = q.trim().toLowerCase();
-  const has = (...xs: (string | undefined)[]) => !term || xs.some((x) => x?.toLowerCase().includes(term));
+  const has = (...xs: (string | undefined)[]) =>
+    !term || xs.some((x) => x?.toLowerCase().includes(term));
 
   // KPIs
   const revenue = state.enrollments.reduce((sum, e) => sum + (prog(e.programId)?.price ?? 0), 0);
   const activeStudents = new Set(state.enrollments.map((e) => e.student)).size;
   const pending = state.submissions.filter((s) => !s.grades).length;
-  const totalActs = state.enrollments.reduce((n, e) => n + (prog(e.programId)?.activities.length ?? 0), 0);
+  const totalActs = state.enrollments.reduce(
+    (n, e) => n + (prog(e.programId)?.activities.length ?? 0),
+    0,
+  );
   const doneActs = state.enrollments.reduce((n, e) => {
     const p = prog(e.programId);
-    return n + (p ? p.activities.filter((a) => state.submissions.some((s) => s.activityId === a.id && s.programId === p.id && s.student === e.student)).length : 0);
+    return (
+      n +
+      (p
+        ? p.activities.filter((a) =>
+            state.submissions.some(
+              (s) => s.activityId === a.id && s.programId === p.id && s.student === e.student,
+            ),
+          ).length
+        : 0)
+    );
   }, 0);
   const completion = totalActs ? Math.round((doneActs / totalActs) * 100) : 0;
 
-  const programs = state.programs.filter((p) => (statusF === "all" || p.status === statusF) && has(p.title, p.area, p.kind));
+  const programs = state.programs.filter(
+    (p) => (statusF === "all" || p.status === statusF) && has(p.title, p.area, p.kind),
+  );
   const enrollments = state.enrollments.filter((e) => has(e.student, prog(e.programId)?.title));
   const subs = [...state.submissions]
     .reverse()
-    .filter((s) => (subF === "all" || (subF === "pending" ? !s.grades : !!s.grades)))
+    .filter((s) => subF === "all" || (subF === "pending" ? !s.grades : !!s.grades))
     .filter((s) => {
       const p = prog(s.programId);
-      return has(s.student, p?.title, p?.activities.find((a) => a.id === s.activityId)?.title, s.fileName);
+      return has(
+        s.student,
+        p?.title,
+        p?.activities.find((a) => a.id === s.activityId)?.title,
+        s.fileName,
+      );
     });
 
   return (
@@ -59,6 +96,13 @@ function Admin() {
       <main className="pane">
         <div className="eyebrow">Painel executivo</div>
         <h1>Administração</h1>
+        <Link to="/admin/comercial" className="btn ghost">
+          Operação comercial
+        </Link>
+        <p className="muted sm">
+          Conteúdo e correções abaixo são demonstrativos, salvos neste navegador. Pedidos e
+          matrículas reais estão na operação comercial.
+        </p>
 
         <div className="kpis">
           <div className="kpi">
@@ -71,7 +115,14 @@ function Admin() {
             <b>{activeStudents}</b>
             <span>com ao menos uma matrícula</span>
           </div>
-          <button className={`kpi ${pending ? "alert" : ""}`} style={{ textAlign: "left", cursor: "pointer" }} onClick={() => { setTab("entregas"); setSubF("pending"); }}>
+          <button
+            className={`kpi ${pending ? "alert" : ""}`}
+            style={{ textAlign: "left", cursor: "pointer" }}
+            onClick={() => {
+              setTab("entregas");
+              setSubF("pending");
+            }}
+          >
             <small>Peças a avaliar</small>
             <b>{pending}</b>
             <span>{pending ? "Abrir fila de correção →" : "Fila em dia"}</span>
@@ -79,7 +130,9 @@ function Admin() {
           <div className="kpi">
             <small>Taxa de conclusão</small>
             <b>{completion}%</b>
-            <span>{doneActs} de {totalActs} atividades entregues</span>
+            <span>
+              {doneActs} de {totalActs} atividades entregues
+            </span>
           </div>
         </div>
 
@@ -95,19 +148,39 @@ function Admin() {
         <div className="admbar">
           <input
             className="input"
-            placeholder={tab === "programas" ? "Buscar curso, área ou tipo" : tab === "inscritos" ? "Buscar aluno ou curso" : "Buscar aluno, curso, atividade ou arquivo"}
+            placeholder={
+              tab === "programas"
+                ? "Buscar curso, área ou tipo"
+                : tab === "inscritos"
+                  ? "Buscar aluno ou curso"
+                  : "Buscar aluno, curso, atividade ou arquivo"
+            }
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
           {tab === "programas" &&
             (["all", "published", "soon", "draft"] as const).map((s) => (
-              <button key={s} className={`filter ${statusF === s ? "on" : ""}`} onClick={() => setStatusF(s)}>
+              <button
+                key={s}
+                className={`filter ${statusF === s ? "on" : ""}`}
+                onClick={() => setStatusF(s)}
+              >
                 {s === "all" ? "Todos" : STATUS_LABEL[s]}
               </button>
             ))}
           {tab === "entregas" &&
-            ([["pending", "Aguardando correção"], ["graded", "Corrigidas"], ["all", "Todas"]] as const).map(([k, l]) => (
-              <button key={k} className={`filter ${subF === k ? "on" : ""}`} onClick={() => setSubF(k)}>
+            (
+              [
+                ["pending", "Aguardando correção"],
+                ["graded", "Corrigidas"],
+                ["all", "Todas"],
+              ] as const
+            ).map(([k, l]) => (
+              <button
+                key={k}
+                className={`filter ${subF === k ? "on" : ""}`}
+                onClick={() => setSubF(k)}
+              >
                 {l}
               </button>
             ))}
@@ -140,13 +213,19 @@ function Admin() {
               </thead>
               <tbody>
                 {programs.length === 0 && (
-                  <tr><td colSpan={6} className="muted">Nenhum curso encontrado.</td></tr>
+                  <tr>
+                    <td colSpan={6} className="muted">
+                      Nenhum curso encontrado.
+                    </td>
+                  </tr>
                 )}
                 {programs.map((p) => (
                   <tr key={p.id}>
                     <td>
                       <b>{p.title}</b>
-                      <div className="muted sm">{p.kind} · {p.area}</div>
+                      <div className="muted sm">
+                        {p.kind} · {p.area}
+                      </div>
                     </td>
                     <td>{STATUS_LABEL[p.status]}</td>
                     <td>{p.activities.length}</td>
@@ -156,7 +235,15 @@ function Admin() {
                       <Link to="/admin/programa/$id" params={{ id: p.id }} className="btn ghost sm">
                         Editar
                       </Link>{" "}
-                      <button className="btn ghost sm" onClick={() => { if (confirm(`Excluir "${p.title}"?`)) { actions.deleteProgram(p.id); toast("Curso excluído", { description: p.title }); } }}>
+                      <button
+                        className="btn ghost sm"
+                        onClick={() => {
+                          if (confirm(`Excluir "${p.title}"?`)) {
+                            actions.deleteProgram(p.id);
+                            toast("Curso excluído", { description: p.title });
+                          }
+                        }}
+                      >
                         Excluir
                       </button>
                     </td>
@@ -164,7 +251,11 @@ function Admin() {
                 ))}
               </tbody>
             </table>
-            <button className="btn ghost sm" style={{ marginTop: 24 }} onClick={() => confirm("Restaurar dados de exemplo?") && actions.reset()}>
+            <button
+              className="btn ghost sm"
+              style={{ marginTop: 24 }}
+              onClick={() => confirm("Restaurar dados de exemplo?") && actions.reset()}
+            >
               Restaurar dados de exemplo
             </button>
           </>
@@ -182,11 +273,22 @@ function Admin() {
             </thead>
             <tbody>
               {enrollments.length === 0 && (
-                <tr><td colSpan={4} className="muted">Nenhum aluno encontrado.</td></tr>
+                <tr>
+                  <td colSpan={4} className="muted">
+                    Nenhum aluno encontrado.
+                  </td>
+                </tr>
               )}
               {enrollments.map((e, i) => {
                 const p = prog(e.programId);
-                const done = p ? p.activities.filter((a) => state.submissions.some((s) => s.activityId === a.id && s.programId === p.id && s.student === e.student)).length : 0;
+                const done = p
+                  ? p.activities.filter((a) =>
+                      state.submissions.some(
+                        (s) =>
+                          s.activityId === a.id && s.programId === p.id && s.student === e.student,
+                      ),
+                    ).length
+                  : 0;
                 return (
                   <tr key={i}>
                     <td>{e.student}</td>
@@ -216,7 +318,13 @@ function Admin() {
             </thead>
             <tbody>
               {subs.length === 0 && (
-                <tr><td colSpan={6} className="muted">{subF === "pending" ? "Nenhuma peça aguardando correção." : "Nenhuma entrega encontrada."}</td></tr>
+                <tr>
+                  <td colSpan={6} className="muted">
+                    {subF === "pending"
+                      ? "Nenhuma peça aguardando correção."
+                      : "Nenhuma entrega encontrada."}
+                  </td>
+                </tr>
               )}
               {subs.map((s) => {
                 const p = prog(s.programId);
@@ -230,9 +338,23 @@ function Admin() {
                     </td>
                     <td>
                       {s.fileName}
-                      <div className="muted sm">{new Date(s.submittedAt).toLocaleString("pt-BR")}</div>
-                      {!s.grades && (() => { const sl = slaStatus(s.submittedAt); return <span className={`sig ${sl.k}`} style={{ marginTop: 4 }}>Entregue {sl.label} · SLA {SLA_HOURS}h</span>; })()}
-                      {!!s.humanReviews?.length && <span className="sig mid" style={{ marginTop: 4 }}>{s.reviewedAt ? "Correção humana concluída" : "Correção humana pedida"}</span>}
+                      <div className="muted sm">
+                        {new Date(s.submittedAt).toLocaleString("pt-BR")}
+                      </div>
+                      {!s.grades &&
+                        (() => {
+                          const sl = slaStatus(s.submittedAt);
+                          return (
+                            <span className={`sig ${sl.k}`} style={{ marginTop: 4 }}>
+                              Entregue {sl.label} · SLA {SLA_HOURS}h
+                            </span>
+                          );
+                        })()}
+                      {!!s.humanReviews?.length && (
+                        <span className="sig mid" style={{ marginTop: 4 }}>
+                          {s.reviewedAt ? "Correção humana concluída" : "Correção humana pedida"}
+                        </span>
+                      )}
                     </td>
                     <td className="sm">{s.aiUse}</td>
                     <td>{fmt(subScore(s))}</td>
@@ -248,9 +370,13 @@ function Admin() {
           </table>
         )}
 
-        <GradeWorkbench sub={grading} queue={subs} onChange={setGrading} onClose={() => setGrading(null)} />
+        <GradeWorkbench
+          sub={grading}
+          queue={subs}
+          onChange={setGrading}
+          onClose={() => setGrading(null)}
+        />
       </main>
     </AppShell>
   );
 }
-

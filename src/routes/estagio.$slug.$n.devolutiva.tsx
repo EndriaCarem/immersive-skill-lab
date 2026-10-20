@@ -12,6 +12,8 @@ export const Route = createFileRoute("/estagio/$slug/$n/devolutiva")({
       { title: "Devolutiva — Empiria" },
       { name: "description", content: "Ficha de avaliação por critério, orientações e pontos de reflexão após a entrega." },
       { property: "og:title", content: "Devolutiva — Empiria" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { property: "og:description", content: "Sua ficha de avaliação por critério." },
     ],
   }),

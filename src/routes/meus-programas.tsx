@@ -1,118 +1,87 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
-import { ActivityRail } from "@/components/ActivityLayout";
-import { actions, completedCount, fmt, programAverage, useStore } from "@/lib/store";
-
+import { useAccount } from "@/lib/account";
+import { accountData } from "@/lib/commerce.functions";
+import { commerceHead } from "@/lib/commerce-schema";
 export const Route = createFileRoute("/meus-programas")({
-  head: () => ({
-    meta: [
-      { title: "Meus programas — Empiria" },
-      { name: "description", content: "Seus programas, progresso por atividade, anotações e certificados." },
-      { property: "og:title", content: "Meus programas — Empiria" },
-      { property: "og:description", content: "Acompanhe seu progresso e seus certificados." },
-    ],
-  }),
+  head: () => commerceHead("Meus programas", "Acompanhe suas matrículas da Empiria."),
   component: Portal,
 });
-
 function Portal() {
-  const state = useStore((s) => s);
-  const nav = useNavigate();
-  const [note, setNote] = useState("");
-  const mine = state.programs.filter((p) => state.enrollments.some((e) => e.programId === p.id && e.student === state.student));
-  const certs = state.certificates.filter((c) => c.student === state.student);
-  const notes = state.notes;
-
+  const { user, ready } = useAccount();
+  const fetch = useServerFn(accountData);
+  const [data, setData] = useState<Awaited<ReturnType<typeof accountData>> | null>(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    setData(null);
+    if (!user) return;
+    let active = true;
+    void fetch()
+      .then((d) => {
+        if (active) setData(d);
+      })
+      .catch(() => {
+        if (active) setError("Não foi possível carregar suas matrículas.");
+      });
+    return () => {
+      active = false;
+    };
+  }, [user, fetch]);
   return (
     <AppShell>
-      <div className="body">
-        <aside className="rail">
-          <label className="field">
-            <span>Seu nome no certificado</span>
-            <input value={state.student} onChange={(e) => actions.setStudent(e.target.value)} />
-          </label>
-          <h4>Certificados conquistados</h4>
-          {certs.length === 0 && <p className="muted sm">Nenhum ainda. Conclua um programa para emitir.</p>}
-          <div className="files">
-            {certs.map((c) => (
-              <Link key={c.code} to="/certificado/$code" params={{ code: c.code }} className="file">
-                <span className="ic">CERT</span>
-                {state.programs.find((p) => p.id === c.programId)?.title}
-                <span className="dl">Ver</span>
-              </Link>
-            ))}
-          </div>
-          <h4>Minhas anotações</h4>
-          {notes.map((n) => (
-            <div className="note" key={n.id} style={{ marginBottom: 8 }}>
-              <div className="ts">
-                {state.programs.find((p) => p.id === n.programId)?.title} · {new Date(n.at).toLocaleDateString("pt-BR")}
-              </div>
-              {n.text}
-            </div>
-          ))}
-          {mine[0] && (
-            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-              <input className="input" value={note} placeholder="Nova anotação…" onChange={(e) => setNote(e.target.value)} />
-              <button
-                className="btn sm"
-                onClick={() => {
-                  if (note.trim() && mine[0]) actions.addNote(mine[0].id, mine[0].activities[0]?.id ?? "", note.trim());
-                  setNote("");
-                }}
-              >
-                Salvar
-              </button>
-            </div>
-          )}
-        </aside>
-        <main className="pane">
-          <div className="eyebrow">Portal do aluno</div>
-          <h1>Meus programas</h1>
-          {mine.length === 0 && (
-            <p>
-              Você ainda não está inscrito. <Link to="/" style={{ color: "var(--plum)", fontWeight: 600 }}>Ver catálogo</Link>
-            </p>
-          )}
-          {mine.map((p) => {
-            const done = completedCount(state, p);
-            const total = p.activities.length;
-            const finished = total > 0 && done === total;
-            const cert = certs.find((c) => c.programId === p.id);
-            return (
-              <div className="panel" key={p.id}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
-                  <div>
-                    <div className="eyebrow">{finished ? "Concluído" : "Em andamento"}</div>
-                    <h3>{p.title}</h3>
-                    <p className="muted sm">
-                      {done} de {total} concluídas · média {fmt(programAverage(state, p))}
-                    </p>
-                  </div>
-                  <div style={{ marginLeft: "auto", minWidth: 190 }}>
-                    <div className="track">
-                      <i style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
-                    </div>
-                  </div>
-                </div>
-                <ActivityRail program={p} current={done} />
-                <div style={{ marginTop: 14 }}>
-                  {finished ? (
-                    <button className="btn" onClick={() => nav({ to: "/certificado/$code", params: { code: cert?.code ?? actions.issueCertificate(p.id) } })}>
-                      {cert ? "Ver certificado" : "Emitir certificado"}
-                    </button>
-                  ) : (
-                    <Link to="/estagio/$slug/$n/caso" params={{ slug: p.slug, n: String(done + 1) }} className="btn">
-                      Continuar atividade {done + 1}
+      <main className="account-page">
+        <div className="eyebrow">Portal do aluno</div>
+        <h1>Meus programas</h1>
+        {!ready ? (
+          <p>Carregando…</p>
+        ) : !user ? (
+          <>
+            <p>Entre para consultar suas matrículas.</p>
+            <Link to="/auth" className="btn">
+              Entrar
+            </Link>
+          </>
+        ) : (
+          <>
+            <nav className="commerce-actions">
+              <Link to="/minha-conta">Minha conta</Link>
+              <Link to="/compras">Minhas compras</Link>
+            </nav>
+            {error ? (
+              <p role="alert">{error}</p>
+            ) : !data ? (
+              <p>Carregando matrículas…</p>
+            ) : (
+              <>
+                {!data.enrollments.some((e) => e.status === "active") && (
+                  <>
+                    <p className="muted">Você ainda não tem matrículas ativas.</p>
+                    <Link to="/cursos" className="btn ghost">
+                      Ver cursos
                     </Link>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </main>
-      </div>
+                  </>
+                )}
+                {data.enrollments
+                  .filter((e) => e.status === "active")
+                  .map((e) => (
+                    <article className="order-row" key={e.id}>
+                      <h3>{e.commerce_products?.title}</h3>
+                      <span className="sig ok">Matrícula ativa</span>
+                      <p className="muted sm">
+                        Matriculado em {new Date(e.enrolled_at).toLocaleDateString("pt-BR")}
+                      </p>
+                      <p>
+                        O início e as condições de acesso ao conteúdo serão informados pela Empiria.
+                      </p>
+                    </article>
+                  ))}
+              </>
+            )}
+          </>
+        )}
+      </main>
     </AppShell>
   );
 }
