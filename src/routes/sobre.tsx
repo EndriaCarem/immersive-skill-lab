@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
+import { founders } from "@/lib/founders";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -14,11 +15,6 @@ export const Route = createFileRoute("/sobre")({
   }),
   component: About,
 });
-
-const founders = [
-  { name: "Rebeca Franzoni", initials: "RF" },
-  { name: "Tainá Malta Rodrigues", initials: "TM" },
-];
 
 const method = [
   ["O caso", "O contexto chega antes da demanda, na mesma ordem em que chegaria no escritório."],
@@ -37,10 +33,8 @@ function About() {
         <h4>Fundadoras</h4>
         <div className="cards founders-grid">
           {founders.map((f) => (
-            <div className="card" key={f.name}>
-              <div className="avatar" style={{ width: 52, height: 52, fontSize: 16, background: "var(--plum)" }}>
-                {f.initials}
-              </div>
+            <div className="card founder-card" key={f.name}>
+              <img className="founder-portrait" src={f.photo} alt={f.name} width={384} height={384} />
               <h3>{f.name}</h3>
               <div className="kind">Fundadora</div>
             </div>

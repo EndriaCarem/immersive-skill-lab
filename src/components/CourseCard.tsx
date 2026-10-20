@@ -4,6 +4,7 @@ import coverPratico from "@/assets/cover-pratico.jpg";
 import coverTeorico from "@/assets/cover-teorico.jpg";
 import art from "@/assets/art-hero.jpg";
 import { useFileUrl } from "@/lib/files";
+import { founders } from "@/lib/founders";
 
 export const coverFor = (p: Program) => (p.cover === "pratico" ? coverPratico : p.cover === "teorico" ? coverTeorico : art);
 
@@ -33,8 +34,7 @@ export function CourseCard({ p }: { p: Program }) {
         )}
         <div className="cfoot">
           <div className="avs">
-            <i>RF</i>
-            <i>TM</i>
+            {founders.map((founder) => <img key={founder.name} src={founder.photo} alt={founder.name} title={founder.name} width={32} height={32} loading="lazy" />)}
           </div>
           <span>
             <b style={{ color: "var(--ink)" }}>Rebeca Franzoni · Tainá Malta Rodrigues</b>

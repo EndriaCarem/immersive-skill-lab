@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { commerceHead } from "@/lib/commerce-schema";
+import { ArrowLeft } from "lucide-react";
 export const Route = createFileRoute("/auth")({
   head: () => commerceHead("Entrar", "Acesse sua conta de aluno da Empiria."),
   component: Auth,
@@ -108,20 +109,21 @@ function Auth() {
                   ? "Enviar link"
                   : "Entrar"}
           </Button>
-          <p role="status" className="muted">
-            {message}
-          </p>
+          {message && <p role="status" className="muted auth-message">{message}</p>}
         </form>
-        <div className="commerce-actions">
+        <div className="auth-secondary">
+          <span>{mode === "signup" ? "Já tem uma conta?" : mode === "reset" ? "Lembrou sua senha?" : "Ainda não tem conta?"}</span>
           <Button
             variant="link"
             onClick={() => {
-              setMode(mode === "signup" ? "login" : "signup");
+              setMode(mode === "login" ? "signup" : "login");
               setMessage("");
             }}
           >
-            {mode === "signup" ? "Já tenho conta" : "Criar conta"}
+            {mode === "login" ? "Criar conta" : "Entrar"}
           </Button>
+        </div>
+        {mode === "login" && <div className="auth-recovery">
           <Button
             variant="link"
             onClick={() => {
@@ -131,8 +133,9 @@ function Auth() {
           >
             {mode === "reset" ? "Voltar para entrar" : "Esqueci minha senha"}
           </Button>
-        </div>
-        <Link to="/cursos" className="back-link">
+        </div>}
+        <Link to="/cursos" className="auth-back">
+          <ArrowLeft size={16} aria-hidden="true" />
           Voltar aos cursos
         </Link>
       </main>
