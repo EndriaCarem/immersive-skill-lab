@@ -30,17 +30,6 @@ function About() {
         <div className="eyebrow">Sobre a Empiria</div>
         <p className="quote">Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
 
-        <h4>Fundadoras</h4>
-        <div className="cards founders-grid">
-          {founders.map((f) => (
-            <div className="card founder-card" key={f.name}>
-              <img className="founder-portrait" src={f.photo} alt={f.name} width={384} height={384} />
-              <h3>{f.name}</h3>
-              <div className="kind">Fundadora</div>
-            </div>
-          ))}
-        </div>
-
         <h4>O método</h4>
         <ul className="acts">
           {method.map(([t, d], i) => (
@@ -57,6 +46,17 @@ function About() {
           Rebeca e Tainá desenharam a sequência a partir da rotina de bancas de arbitragem: o aluno recebe, produz e é avaliado como seria no
           primeiro ano de escritório.
         </p>
+
+        <h4>Fundadoras</h4>
+        <div className="cards founders-grid">
+          {founders.map((f) => (
+            <div className="card founder-card" key={f.name}>
+              <img className="founder-portrait" src={f.photo} alt={f.name} width={384} height={384} />
+              <h3>{f.name}</h3>
+              <div className="kind">Fundadora</div>
+            </div>
+          ))}
+        </div>
 
         <h4>Parceiros institucionais</h4>
         <div className="cards founders-grid">

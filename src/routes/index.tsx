@@ -19,8 +19,8 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/** Backlog EMP-006: only partners confirmed by the client may appear. None confirmed yet. */
-const PARTNERS: string[] = [];
+/** Backlog EMP-006: only partners confirmed by the client may appear (same as /sobre). */
+const PARTNERS: string[] = ["Arbipédia", "CJA/CBMA"];
 const SCREENS: [string, string][] = [
   ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
   ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
@@ -122,7 +122,7 @@ function useReveal() {
       [".profs-grid > *", "side"],
       [".faq-item", "left"],
       [".g3 > *", "pop"],
-      [".partners > *", "pop"],
+      [".marquee", "up"],
       [".essay, .quote", "wipe"],
       [".cycle-why", "up"],
       [".h-sec > .final", "zoom"],
@@ -176,8 +176,13 @@ function Landing() {
 
       {PARTNERS.length > 0 && (
         <section className="wrap">
-          <div className="partners" aria-label="Parceiros">
-            {PARTNERS.map((p) => <span key={p}>{p}</span>)}
+          <div className="marquee" aria-label={`Parceiros: ${PARTNERS.join(", ")}`}>
+            <div className="marquee-label">Parceiros institucionais</div>
+            <div className="marquee-mask">
+              <div className="marquee-track" aria-hidden="true">
+                {Array.from({ length: 8 }).flatMap((_, k) => PARTNERS.map((p) => <span key={`${k}-${p}`} className="marquee-logo">{p}</span>))}
+              </div>
+            </div>
           </div>
         </section>
       )}
