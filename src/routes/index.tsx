@@ -110,27 +110,28 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-function useReveal(dep: number) {
+function useReveal() {
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const sel = ".hero-c > *, .h-sec > .h-eyebrow, .h-sec > .sec-title, .h-sec > p, .h-sec > .final, .profs > div > *:not(.profs-grid), .cards > *, .profs-grid > *, .faq-item, .g3 > *, .partners > *, .essay, .quote, .cycle-why";
-    const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => !el.closest(".cycle-pin") && !el.classList.contains("sr-in"));
+    const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => !el.closest(".cycle-pin"));
     els.forEach((el) => {
       const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
-      el.style.setProperty("--sr-d", `${Math.min(sibs.indexOf(el), 6) * 140}ms`);
+      el.style.setProperty("--sr-d", `${Math.min(sibs.indexOf(el), 6) * 90}ms`);
       el.classList.add("sr");
     });
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("sr-in"); io.unobserve(e.target); } });
-    }, { threshold: 0.15, rootMargin: "0px 0px -12% 0px" });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [dep]);
+  }, []);
 }
 
 function Landing() {
+  useReveal();
   const programs = useStore((s) => s.programs);
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
-  useReveal(featured.length);
   return (
     <SiteShell>
       <section className="wrap hero-c">
