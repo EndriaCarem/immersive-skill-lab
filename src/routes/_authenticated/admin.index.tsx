@@ -98,6 +98,9 @@ function Admin() {
         <h1>Administração</h1>
         <Link to="/admin/comercial" className="btn ghost">
           Operação comercial
+        </Link>{" "}
+        <Link to="/admin/webinars" className="btn ghost">
+          Webinars
         </Link>
         <p className="muted sm">
           Conteúdo e correções abaixo são demonstrativos, salvos neste navegador. Pedidos e
