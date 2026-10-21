@@ -904,3 +904,11 @@ body{background:var(--plum-tint)}
 .cycle-grid{min-height:240px}
 .cycle-hint{margin-top:36px}
 @media (max-width:900px){.cycle-grid{min-height:400px}.cycle-hint{margin-top:20px}}
+/* Product cycle: hover-only */
+.cycle-grid{min-height:0}
+.ccycle{opacity:1}
+.ccycle:hover,.ccycle:focus-visible{outline:none;background:var(--plum);transform:translateY(-6px);box-shadow:0 24px 50px -24px color-mix(in oklab,var(--plum) 70%,transparent)}
+.ccycle:hover h3,.ccycle:focus-visible h3{color:var(--paper)}
+.ccycle:hover .cbody2,.ccycle:focus-visible .cbody2{grid-template-rows:1fr;opacity:1}
+.ccycle:hover .cbody2>p,.ccycle:focus-visible .cbody2>p{color:color-mix(in oklab,var(--paper) 85%,transparent)}
+@media (hover:none){.ccycle .cbody2{grid-template-rows:1fr;opacity:1}}
