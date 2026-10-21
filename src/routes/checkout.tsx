@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { useAccount } from "@/lib/account";
-import { createOrder } from "@/lib/commerce.functions";
-import { commerceHead, purchaseSchema } from "@/lib/commerce-schema";
+import { createOrder, previewCoupon } from "@/lib/commerce.functions";
+import { commerceHead, discountCents, purchaseSchema } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
 export const Route = createFileRoute("/checkout")({
   validateSearch: z.object({ curso: z.string().max(100).catch("").default("") }),
