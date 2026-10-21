@@ -3,7 +3,6 @@ import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
 import { ReviewWindow } from "@/components/ReviewWindow";
 import { useStore } from "@/lib/store";
-import { founders } from "@/lib/founders";
 import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
