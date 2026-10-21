@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { founders } from "@/lib/founders";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -24,6 +25,12 @@ const method = [
 ];
 
 function About() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".fbio");
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.25 });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
   return (
     <AppShell>
       <main className="pane">
@@ -48,13 +55,20 @@ function About() {
         </p>
 
         <h4>Fundadoras</h4>
-        <div className="cards founders-grid">
-          {founders.map((f) => (
-            <div className="card founder-card" key={f.name}>
-              <img className="founder-portrait" src={f.photo} alt={f.name} width={384} height={384} />
-              <h3>{f.name}</h3>
-              <div className="kind">Fundadora</div>
-            </div>
+        <div className="fbios">
+          {founders.map((f, i) => (
+            <article className="fbio" key={f.name} style={{ ["--i" as string]: i }}>
+              <img className="fbio-photo" src={f.photo} alt={f.name} width={120} height={120} loading="lazy" />
+              <div>
+                <h3>{f.name}</h3>
+                <div className="fbio-role">{f.role}</div>
+                <p className="fbio-text doc-voice">
+                  {f.bio.split(" ").map((w, k) => (
+                    <span key={k} style={{ ["--w" as string]: k }}>{w} </span>
+                  ))}
+                </p>
+              </div>
+            </article>
           ))}
         </div>
 
