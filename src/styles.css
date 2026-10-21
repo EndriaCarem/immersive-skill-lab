@@ -928,3 +928,4 @@ body{background:var(--plum-tint)}
 .cycle-grid{height:230px}
 .cycle-why{margin-top:40px}
 @media (max-width:900px){.cycle-grid{height:auto;min-height:360px}}
+.cycle-grid{height:200px}.cycle-why{margin-top:24px}@media (max-width:900px){.cycle-grid{height:auto}}
