@@ -51,6 +51,9 @@ function TopNav() {
           <Link to="/cursos" className="iconbtn" aria-label="Buscar cursos">
             <Search size={18} />
           </Link>
+          <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} className="btn ghost sm nav-cta">
+            Começar pelo teórico
+          </Link>
           <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm nav-cta">
             Receber a primeira demanda
           </Link>
@@ -64,6 +67,8 @@ function TopNav() {
         <Link to="/sobre" {...item}>Quem somos</Link>
         <Link to="/contato" {...item}>Contato</Link>
         <Link to={user ? "/minha-conta" : "/auth"} {...item}>{user ? "Minha conta" : "Entrar"}</Link>
+        <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} {...item}>Receber a primeira demanda</Link>
+        <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} {...item}>Começar pelo teórico</Link>
         <Link to="/interesse" search={{ curso: "" }} {...item}>Registrar interesse</Link>
       </nav>}
     </div>
