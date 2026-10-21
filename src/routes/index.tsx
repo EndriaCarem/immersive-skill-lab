@@ -171,12 +171,12 @@ function Landing() {
           <h2 className="sec-title">Quem ensina faz esse trabalho hoje.</h2>
           <p className="profs-lead">Plenos e seniores das principais bancas do país, um por atividade e de bancas diferentes: o padrão não é o de uma casa só.</p>
           <div className="profs-grid">
-            {[
+            {([
               ["01", "Notificação e requerimento", "Arbitragem"],
               ["02", "Resposta ao requerimento", "Arbitragem"],
               ["03", "Termo de arbitragem", "Arbitragem"],
               ["04", "Alegações iniciais", "Arbitragem"],
-            ].map(([n, peca, area]) => (
+            ] as const).map(([n, peca, area]) => (
               <article key={n} className="prof">
                 <div className="prof-ph" aria-hidden="true">
                   <span className="prof-num">{n}</span>
