@@ -123,7 +123,7 @@ function useReveal() {
       [".h-sec > .sec-title, .profs > div > .sec-title", "words"],
       [".h-sec > p, .profs-lead", "up"],
       [".cards > *", "flip"],
-      [".profs-grid > *", "side"],
+      [".profs-grid > *", "up"],
       [".faq-item", "left"],
       [".g3 > *", "pop"],
       [".marquee", "up"],
@@ -143,7 +143,7 @@ function useReveal() {
       if (el.dataset["sr"] === "side") el.dataset["side"] = i % 2 ? "r" : "l";
       el.classList.add("sr");
     });
-    const tilts = Array.from(document.querySelectorAll<HTMLElement>(".cards > *, .profs-grid > *"));
+    const tilts = Array.from(document.querySelectorAll<HTMLElement>(".cards > *"));
     const onMove = (e: PointerEvent) => {
       const el = e.currentTarget as HTMLElement; const r = el.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
