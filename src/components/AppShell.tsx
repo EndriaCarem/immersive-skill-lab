@@ -104,6 +104,7 @@ function TopNav() {
         {user ? (
           <>
             <Link to="/minha-conta" {...item}>Minha conta</Link>
+            <Link to="/compras" {...item}>Minhas compras</Link>
             {isAdmin && <Link to="/admin" {...item}>Administração</Link>}
             <button type="button" onClick={toggle}>{dark ? "Modo claro" : "Modo noturno"}</button>
             <button type="button" onClick={() => void signOut()}>Sair</button>
