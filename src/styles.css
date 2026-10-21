@@ -959,3 +959,4 @@ body{background:var(--plum-tint)}
 .rv.rv-in{opacity:1;transform:none;filter:none}
 .hero-c > .rv{transform:translateY(18px)}
 .cards > .rv,.profs-grid > .rv{transform:translateY(40px) scale(.96)}
+.prof.rv-in:hover{transform:translateY(-4px)}
