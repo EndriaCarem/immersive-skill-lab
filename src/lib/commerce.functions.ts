@@ -171,7 +171,7 @@ export const previewCoupon = createServerFn({ method: "POST" })
     const { data: c } = await supabaseAdmin
       .from("commerce_coupons")
       .select("kind, value, active, expires_at, max_uses, uses")
-      .ilike("code", data.code)
+      .eq("code", data.code.toUpperCase())
       .maybeSingle();
     const valid =
       !!c && c.active && (!c.expires_at || new Date(c.expires_at) > new Date()) && (c.max_uses == null || c.uses < c.max_uses);
