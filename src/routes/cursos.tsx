@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, ArrowRight, BookOpen, Files } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import coverTeorico from "@/assets/cover-teorico.jpg";
 
 export const Route = createFileRoute("/cursos")({
   head: () => ({
@@ -53,6 +54,24 @@ function Catalog() {
         </div>
       </section>
       <section className="wrap">
+        <div className="catalog-theory">
+          <div className="catalog-theory-visual">
+            <img src={coverTeorico} alt="Material de estudo de arbitragem" width={1024} height={640} />
+            <span>Introdução à Arbitragem</span>
+          </div>
+          <div className="catalog-theory-copy">
+            <span className="h-eyebrow">Seu ponto de partida</span>
+            <h2>Entenda o caminho.<br /><em>Depois, entre no caso.</em></h2>
+            <p>Conheça as etapas de uma arbitragem e acompanhe modelos comentados antes de construir suas próprias entregas.</p>
+            <div className="catalog-theory-details">
+              <span><BookOpen size={18} aria-hidden="true" />8 aulas</span>
+              <span><Files size={18} aria-hidden="true" />32 modelos comentados</span>
+            </div>
+            <Button asChild className="btn">
+              <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }}>Começar pelo teórico <ArrowRight size={18} aria-hidden="true" /></Link>
+            </Button>
+          </div>
+        </div>
         <div className="cards cards-center">
           {list.map((p) => (
             <CourseCard key={p.id} p={p} />
