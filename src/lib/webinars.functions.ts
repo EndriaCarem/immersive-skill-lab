@@ -6,20 +6,22 @@ import type { Database } from "@/integrations/supabase/types";
 function publicClient() {
   const url = process.env["SUPABASE_URL"]!;
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+  const shim = (input: RequestInfo | URL, init?: RequestInit) => {
+    const h = new Headers(init?.headers);
+    if (h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+    h.set("apikey", key);
+    return fetch(input, { ...init, headers: h });
+  };
   return createClient<Database>(url, key, {
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    global: key.startsWith("sb_")
-      ? {
-          fetch: (input, init) => {
-            const h = new Headers(init?.headers);
-            if (h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
-            h.set("apikey", key);
-            return fetch(input, { ...init, headers: h });
-          },
-        }
-      : undefined,
+    auth: { persistSession: false, autoRefreshToken: false },
+    ...(key.startsWith("sb_") ? { global: { fetch: shim } } : {}),
   });
 }
+
+export type PublicWebinar = {
+  id: string; slug: string; title: string; summary: string; body_html: string; speaker: string;
+  video_url: string; cover_url: string; starts_at: string | null; created_at: string;
+};
 
 const cols = "id, slug, title, summary, body_html, speaker, video_url, cover_url, starts_at, created_at";
 
@@ -30,7 +32,7 @@ export const listPublishedWebinars = createServerFn({ method: "GET" }).handler(a
     .eq("status", "published")
     .order("starts_at", { ascending: false, nullsFirst: false });
   if (error) throw new Error("Não foi possível carregar os webinars.");
-  return data ?? [];
+  return (data ?? []) as PublicWebinar[];
 });
 
 export const getPublishedWebinar = createServerFn({ method: "GET" })
@@ -43,7 +45,7 @@ export const getPublishedWebinar = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .maybeSingle();
     if (error) throw new Error("Não foi possível carregar o webinar.");
-    return row;
+    return (row ?? null) as PublicWebinar | null;
   });
 
 const tag = z.string().trim().max(80).regex(/^[\w\-. ]*$/u).default("");

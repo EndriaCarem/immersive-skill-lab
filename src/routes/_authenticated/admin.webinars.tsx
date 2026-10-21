@@ -70,9 +70,9 @@ function AdminWebinars() {
 
   async function save() {
     if (!form) return;
-    if (!form.title.trim()) return toast.error("Informe o título.");
+    if (!form.title.trim()) { toast.error("Informe o título."); return; }
     const slug = slugify(form.slug || form.title);
-    if (!slug) return toast.error("Endereço inválido.");
+    if (!slug) { toast.error("Endereço inválido."); return; }
     setBusy(true);
     const row = {
       slug, title: form.title.trim().slice(0, 200), summary: form.summary.slice(0, 400), body_html: form.body_html,
@@ -81,7 +81,7 @@ function AdminWebinars() {
     };
     const res = form.id ? await supabase.from("webinars").update(row).eq("id", form.id) : await supabase.from("webinars").insert(row);
     setBusy(false);
-    if (res.error) return toast.error(res.error.code === "23505" ? "Já existe um webinar com esse endereço." : "Não foi possível salvar.");
+    if (res.error) { toast.error(res.error.code === "23505" ? "Já existe um webinar com esse endereço." : "Não foi possível salvar."); return; }
     toast.success(form.status === "published" ? "Webinar publicado." : "Rascunho salvo.");
     setForm(null);
     qc.invalidateQueries({ queryKey: ["admin-webinars"] });
@@ -90,7 +90,7 @@ function AdminWebinars() {
   async function remove(w: Webinar) {
     if (!confirm(`Excluir "${w.title}"? Os acessos registrados também serão apagados.`)) return;
     const { error } = await supabase.from("webinars").delete().eq("id", w.id);
-    if (error) return toast.error("Não foi possível excluir.");
+    if (error) { toast.error("Não foi possível excluir."); return; }
     toast.success("Webinar excluído.");
     qc.invalidateQueries({ queryKey: ["admin-webinars"] });
   }
