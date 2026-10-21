@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
 
 /** Backlog EMP-006: only partners confirmed by the client may appear. None confirmed yet. */
 const PARTNERS: string[] = [];
-const SCREENS = [
+const SCREENS: [string, string][] = [
   ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
   ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
   ["A revisão", "Nota por critério, trechos riscados e comentários de quem supervisiona você."],
