@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useAccount } from "@/lib/account";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 
@@ -48,6 +49,7 @@ function TopNav() {
           </Link>
         </nav>
         <div className="right">
+          <ThemeToggle />
           <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} className="btn ghost sm nav-cta">
             Começar pelo teórico
           </Link>

@@ -1084,3 +1084,18 @@ body{background:var(--plum-tint)}
 /* Course cards centered (2 cursos) */
 .cards.cards-center{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
 .cards.cards-center>*{flex:0 1 380px;max-width:100%}
+/* ===== Modo noturno (padrão é claro) ===== */
+.theme-toggle{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:999px;border:1px solid var(--edge);background:var(--paper);color:var(--plum);cursor:pointer;transition:background .25s,color .25s,transform .25s}
+.theme-toggle:hover{transform:rotate(-12deg)}
+html.dark{
+  color-scheme:dark;
+  --plum:#D9C6E2; --plum-deep:#F1E8F5; --plum-mid:#C3A2CF; --plum-tint:#2A2032; --plum-edge:#3A2E44;
+  --ink:#EDE8F1; --slate:#B3ABBC; --slate-soft:#8C8496; --rule:#342A3D; --edge:#3A2E44; --lilac:#3A2A47;
+  --paper:#1F1826; --canvas:#16111B; --lavender:#C9A9D4;
+  --ok:#7BD3A2; --ok-bg:#183126; --mid:#E9C176; --mid-bg:#33281A; --no:#F08B8B; --no-bg:#3A1E22; --low:#F08B8B; --low-bg:#3A1E22;
+  --on-plum:#3B2249; --on-plum-soft:#5A3A68;
+  --shadow-lift:0 6px 18px -10px rgba(0,0,0,.6);
+}
+html.dark body{background:var(--canvas);color:var(--ink)}
+html.dark .topnav .logo img{filter:brightness(0) invert(.9)}
+html,body{transition:background-color .3s,color .3s}
