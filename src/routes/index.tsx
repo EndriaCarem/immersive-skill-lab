@@ -3,6 +3,8 @@ import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
 import { ReviewWindow } from "@/components/ReviewWindow";
 import { useStore } from "@/lib/store";
+import { founders } from "@/lib/founders";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -40,6 +42,40 @@ const FAQ = [
   ["E se eu discordar da nota?", "Você pode pedir até duas revisões humanas por atividade."],
 ];
 
+/** Rises into view on scroll and opens its description on hover/tap. */
+function ProductCard({ i, t, d }: { i: number; t: string; d: string }) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const [seen, setSeen] = useState(false);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        setSeen(true);
+        io.disconnect();
+      }
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <button
+      ref={ref}
+      type="button"
+      aria-expanded={open}
+      onClick={() => setOpen((o) => !o)}
+      className={`pcard${seen ? " in" : ""}${open ? " open" : ""}`}
+      style={{ transitionDelay: seen && !open ? `${i * 90}ms` : undefined }}
+    >
+      <span className="n">0{i + 1}</span>
+      <h3>{t}</h3>
+      <p>{d}</p>
+      <span className="hint">Toque para abrir ↑</span>
+    </button>
+  );
+}
+
 function Landing() {
   const programs = useStore((s) => s.programs);
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
@@ -73,11 +109,7 @@ function Landing() {
         <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
         <div className="g4" style={{ marginTop: 28 }}>
           {SCREENS.map(([t, d], i) => (
-            <div key={t} className="tile">
-              <span className="n">0{i + 1}</span>
-              <h3>{t}</h3>
-              <p>{d}</p>
-            </div>
+            <ProductCard key={t} i={i} t={t} d={d} />
           ))}
         </div>
       </section>
@@ -109,7 +141,7 @@ function Landing() {
         <div style={{ display: "flex", alignItems: "flex-end", gap: 20, marginBottom: 28, flexWrap: "wrap" }}>
           <div>
             <div className="h-eyebrow">Os cursos</div>
-            <h2 className="sec-title" style={{ margin: 0 }}>Preço de lançamento até 30/11</h2>
+            <h2 className="sec-title" style={{ margin: 0 }}>Os cursos</h2>
           </div>
           <Link to="/cursos" className="btn ghost" style={{ marginLeft: "auto" }}>Ver todos os cursos</Link>
         </div>
@@ -118,7 +150,24 @@ function Landing() {
         </div>
       </section>
 
-      <section className="wrap h-sec faq">
+      <section className="wrap h-sec">
+        <div className="h-eyebrow">Quem ensina</div>
+        <h2 className="sec-title">Duas advogadas que dão aula e conhecem o outro lado do balcão</h2>
+        <div className="teachers">
+          {founders.map((f) => (
+            <article key={f.name} className="teacher">
+              <img src={f.photo} alt={f.name} width={120} height={120} loading="lazy" />
+              <div>
+                <h3>{f.name}</h3>
+                <div className="role">{f.role}</div>
+                <p>{f.bio}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="wrap h-sec faq-v3">
         <div className="h-eyebrow">Perguntas frequentes</div>
         {FAQ.slice(0, 4).map(([q, a]) => (
           <details key={q}>
