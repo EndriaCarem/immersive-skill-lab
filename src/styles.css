@@ -1099,3 +1099,7 @@ html.dark{
 html.dark body{background:var(--canvas);color:var(--ink)}
 html.dark .topnav .logo img{filter:brightness(0) invert(.9)}
 html,body{transition:background-color .3s,color .3s}
+html.dark .topnav .in{background:color-mix(in oklab,var(--paper) 85%,transparent);border-color:var(--edge)}
+html.dark .btn:not(.ghost){color:#2A1735}
+html.dark .topnav .desktop-nav a{color:var(--slate)}
+html.dark .topnav .desktop-nav a.on{color:var(--ink)}
