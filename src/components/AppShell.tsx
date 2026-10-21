@@ -60,6 +60,7 @@ function TopNav() {
       {!isHome && <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>}
       {user && <Link to="/meus-programas" {...item}>Meus programas</Link>}
       <Link to="/cursos" {...item}>Cursos</Link>
+      <Link to="/webinars" {...item}>Webinars</Link>
       {!user && <Link to="/sobre" {...item}>Quem somos</Link>}
       {!user && <Link to="/contato" {...item}>Contato</Link>}
     </>
@@ -136,7 +137,6 @@ function SiteFooter() {
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
             <Link to="/cursos">Cursos</Link>
             <Link to="/meus-programas">Portal do Aluno</Link>
-            <Link to="/webinars">Webinars</Link>
             {isAdmin && <Link to="/admin">Administração</Link>}
           </div>
         </div>
