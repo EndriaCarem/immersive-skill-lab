@@ -130,13 +130,13 @@ function useReveal() {
     const els: HTMLElement[] = [];
     groups.forEach(([q, v]) => document.querySelectorAll<HTMLElement>(q).forEach((el) => {
       if (el.closest(".cycle-pin") || els.includes(el)) return;
-      el.dataset.sr = v; els.push(el);
+      el.dataset["sr"] = v; els.push(el);
     }));
     els.forEach((el) => {
       const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
       const i = sibs.indexOf(el);
       el.style.setProperty("--sr-d", `${Math.min(i, 6) * 110}ms`);
-      if (el.dataset.sr === "side") el.dataset.side = i % 2 ? "r" : "l";
+      if (el.dataset["sr"] === "side") el.dataset["side"] = i % 2 ? "r" : "l";
       el.classList.add("sr");
     });
     const tilts = Array.from(document.querySelectorAll<HTMLElement>(".cards > *, .profs-grid > *"));
