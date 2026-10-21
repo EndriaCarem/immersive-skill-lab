@@ -56,7 +56,7 @@ function ProductCycle() {
       if (!el || !pin) return;
       const h = pin.offsetHeight;
       el.style.setProperty("--pin-h", `${h}px`);
-      const top = Math.max(84, (window.innerHeight - h) / 2);
+      const top = window.innerHeight >= h + 108 ? 84 : window.innerHeight - h - 24;
       el.style.setProperty("--pin-top", `${top}px`);
       const r = el.getBoundingClientRect();
       const span = r.height - h;
@@ -85,6 +85,14 @@ function ProductCycle() {
             </div>
           ))}
         </div>
+          <div className="cycle-why">
+          <div className="h-eyebrow">Por que existe</div>
+          <p className="essay">
+            Ninguém avalia o estagiário pela teoria. Avalia pelo relatório aprovado sem reescrever, pelo e-mail correto, pelo prazo cumprido.
+            Esse ofício só se aprendia dentro das grandes bancas, depois da contratação. A Empiria entrega esse preparo antes da primeira chance.
+          </p>
+          <div className="quote" style={{ marginTop: 28 }}>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</div>
+          </div>
       </div>
     </section>
   );
@@ -130,14 +138,6 @@ function Landing() {
 
       <ProductCycle />
 
-      <section className="wrap h-sec">
-        <div className="h-eyebrow">Por que existe</div>
-        <p className="essay">
-          Ninguém avalia o estagiário pela teoria. Avalia pelo relatório aprovado sem reescrever, pelo e-mail correto, pelo prazo cumprido.
-          Esse ofício só se aprendia dentro das grandes bancas, depois da contratação. A Empiria entrega esse preparo antes da primeira chance.
-        </p>
-        <div className="quote" style={{ marginTop: 28 }}>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</div>
-      </section>
 
       <section className="wrap h-sec">
         <div className="h-eyebrow">Para quem</div>
