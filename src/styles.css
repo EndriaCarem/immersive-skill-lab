@@ -1119,3 +1119,6 @@ html.dark .sitefoot p,html.dark .sitefoot .muted{color:#DCCFE2!important}
 .marquee-logo{display:inline-flex;align-items:center;background:#fff;border-radius:14px;padding:10px 22px;height:72px}
 .marquee-logo img{height:48px;width:auto;display:block}
 .partner-logo{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;height:96px;padding:12px;margin:10px 0 12px}.partner-logo img{max-height:70px;max-width:100%;width:auto}
+.marquee .marquee-logo{background:none;padding:0 10px;border:0;box-shadow:none}
+.marquee .marquee-logo img{filter:grayscale(1) contrast(1.2);mix-blend-mode:multiply;opacity:.75}
+html.dark .marquee .marquee-logo img{filter:grayscale(1) invert(1) contrast(1.2);mix-blend-mode:screen;opacity:.8}
