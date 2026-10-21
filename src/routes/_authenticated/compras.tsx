@@ -46,13 +46,13 @@ function Purchases() {
         <div className="eyebrow">Conta e matrícula</div>
         <h1>Minhas compras</h1>
         <nav className="commerce-actions">
-          <Link to="/minha-conta">Minha conta</Link>
-          <Link to="/checkout" search={{ curso: "" }}>
-            Selecionar cursos
+          <Link to="/minha-conta">Configurações da conta</Link>
+          <Link to="/cursos" className="btn ghost">
+            Explorar cursos
           </Link>
         </nav>
         <p role="status">{message}</p>
-        {!data.orders.length && <p className="muted">Você ainda não tem pedidos.</p>}
+        {!data.orders.length && <p className="muted">Você ainda não tem pedidos. Encontre seu próximo curso no catálogo.</p>}
         <div className="order-list">
           {data.orders.map((o) => (
             <article className="order-row" key={o.id}>

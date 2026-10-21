@@ -1,5 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { accountData } from "@/lib/commerce.functions";
+import { postLoginDestination } from "@/lib/post-login";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -18,6 +21,16 @@ function Auth() {
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const nav = useNavigate();
+  const readAccount = useServerFn(accountData);
+  async function enterAccount() {
+    let destination: "/cursos" | "/compras" = "/compras";
+    try {
+      destination = postLoginDestination(await readAccount());
+    } catch {
+      // Preserve a recoverable purchases screen rather than assuming no orders.
+    }
+    await nav({ to: destination, replace: true });
+  }
   function changeMode(next: "login" | "signup" | "reset") {
     setMode(next);
     setMessage("");
@@ -57,12 +70,12 @@ function Auth() {
           },
         });
         if (error) throw error;
-        if (data.session) await nav({ to: "/minha-conta" });
+        if (data.session) await enterAccount();
         else await nav({ to: "/confirmar-cadastro", replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        await nav({ to: "/minha-conta" });
+        await enterAccount();
       }
     } catch (error) {
       if (authErrorKind(error) === "weak_password") {
