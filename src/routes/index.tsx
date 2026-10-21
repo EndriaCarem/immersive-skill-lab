@@ -42,28 +42,47 @@ const FAQ: [string, string][] = [
   ["E se eu discordar da nota?", "Você pode pedir até duas revisões humanas por atividade."],
 ];
 
-/** Rises into view on scroll; its description opens while it sits mid-screen (or on hover). */
-function ProductCard({ i, t, d }: { i: number; t: string; d: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [seen, setSeen] = useState(false);
-  const [open, setOpen] = useState(false);
+/** Scroll story: the section pins while you scroll, opening each step of the cycle in turn. */
+function ProductCycle() {
+  const ref = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const appear = new IntersectionObserver(([e]) => {
-      if (e?.isIntersecting) { setSeen(true); appear.disconnect(); }
-    }, { threshold: 0.15 });
-    const focus = new IntersectionObserver(([e]) => setOpen(!!e?.isIntersecting), { rootMargin: "-30% 0px -30% 0px" });
-    appear.observe(el);
-    focus.observe(el);
-    return () => { appear.disconnect(); focus.disconnect(); };
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const span = r.height - window.innerHeight;
+      const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0;
+      setProgress(p);
+      setActive(Math.min(SCREENS.length - 1, Math.floor(p * SCREENS.length)));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); cancelAnimationFrame(raf); };
   }, []);
   return (
-    <div ref={ref} className={`pcard${seen ? " in" : ""}${open ? " open" : ""}`} style={{ transitionDelay: seen ? `${i * 120}ms` : undefined }}>
-      <span className="n">0{i + 1}</span>
-      <h3>{t}</h3>
-      <div className="pbody"><p>{d}</p></div>
-    </div>
+    <section ref={ref} className="cycle">
+      <div className="cycle-pin wrap">
+        <div className="h-eyebrow">O produto</div>
+        <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
+        <div className="cycle-bar"><span style={{ transform: `scaleX(${progress})` }} /></div>
+        <div className="cycle-grid">
+          {SCREENS.map(([t, d], i) => (
+            <div key={t} className={`ccycle${i === active ? " on" : ""}${i < active ? " done" : ""}`}>
+              <span className="n">0{i + 1}</span>
+              <h3>{t}</h3>
+              <div className="cbody2"><p>{d}</p></div>
+            </div>
+          ))}
+        </div>
+        <p className="cycle-hint">Role para avançar no ciclo ↓</p>
+      </div>
+    </section>
   );
 }
 
@@ -105,15 +124,7 @@ function Landing() {
         </section>
       )}
 
-      <section className="wrap h-sec">
-        <div className="h-eyebrow">O produto</div>
-        <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
-        <div className="g4" style={{ marginTop: 28 }}>
-          {SCREENS.map(([t, d], i) => (
-            <ProductCard key={t} i={i} t={t} d={d} />
-          ))}
-        </div>
-      </section>
+      <ProductCycle />
 
       <section className="wrap h-sec">
         <div className="h-eyebrow">Por que existe</div>

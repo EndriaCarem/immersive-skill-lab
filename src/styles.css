@@ -882,3 +882,22 @@ body{background:var(--plum-tint)}
 .faq-a>div{overflow:hidden}
 .faq-a p{margin:0;padding:0 24px 20px;color:var(--slate);max-width:70ch}
 @media (prefers-reduced-motion:reduce){.pcard,.pcard .pbody,.faq-a,.faq-q i{transition:none}}
+/* Product cycle scroll story */
+.cycle{height:260vh;margin-top:96px;position:relative}
+.cycle-pin{position:sticky;top:90px;padding-top:12px}
+.cycle-bar{height:3px;background:var(--edge);border-radius:3px;overflow:hidden;margin:20px 0 22px}
+.cycle-bar span{display:block;height:100%;background:var(--plum);transform-origin:left;transition:transform .25s linear}
+.cycle-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:start}
+.ccycle{background:var(--paper);border:1px solid var(--edge);border-radius:20px;padding:24px;transition:background .9s ease,transform .9s cubic-bezier(.16,1,.3,1),box-shadow .9s ease,opacity .9s ease;opacity:.55}
+.ccycle .n{font-family:var(--font-brand);font-weight:800;color:var(--lavender);font-size:14px}
+.ccycle h3{margin:6px 0 0;font-size:21px;color:var(--plum);transition:color .9s ease}
+.ccycle .cbody2{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows 1s cubic-bezier(.16,1,.3,1),opacity .9s ease}
+.ccycle .cbody2>p{overflow:hidden;min-height:0;margin:0;padding-top:10px;color:var(--slate);font-size:14.5px;transition:color .9s ease}
+.ccycle.done{opacity:.85}
+.ccycle.on{opacity:1;background:var(--plum);transform:translateY(-8px);box-shadow:0 24px 50px -24px color-mix(in oklab,var(--plum) 70%,transparent)}
+.ccycle.on h3{color:var(--paper)}
+.ccycle.on .cbody2{grid-template-rows:1fr;opacity:1}
+.ccycle.on .cbody2>p{color:color-mix(in oklab,var(--paper) 85%,transparent)}
+.cycle-hint{margin:18px 0 0;font-size:12.5px;color:var(--slate-soft)}
+@media (max-width:900px){.cycle-grid{grid-template-columns:1fr;gap:10px}.ccycle{padding:18px 20px}.ccycle.on{transform:none}.cycle-pin{top:72px}}
+@media (prefers-reduced-motion:reduce){.ccycle,.ccycle .cbody2{transition:none}}
