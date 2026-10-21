@@ -171,13 +171,24 @@ function Landing() {
           <h2 className="sec-title">Quem ensina faz esse trabalho hoje.</h2>
           <p className="profs-lead">Plenos e seniores das principais bancas do país, um por atividade e de bancas diferentes: o padrão não é o de uma casa só.</p>
           <div className="profs-grid">
-            {[0, 1, 2, 3].map((i) => (
-              <article key={i} className="prof">
-                <div className="prof-ph" aria-hidden="true"><span className="prof-head" /><span className="prof-body" /></div>
+            {[
+              ["01", "Notificação e requerimento", "Arbitragem"],
+              ["02", "Resposta ao requerimento", "Arbitragem"],
+              ["03", "Termo de arbitragem", "Arbitragem"],
+              ["04", "Alegações iniciais", "Arbitragem"],
+            ].map(([n, peca, area]) => (
+              <article key={n} className="prof">
+                <div className="prof-ph" aria-hidden="true">
+                  <span className="prof-num">{n}</span>
+                  <span className="prof-head" /><span className="prof-body" />
+                  <span className="prof-soon">Foto em breve</span>
+                </div>
                 <div className="prof-info">
+                  <div className="prof-kicker">Atividade {n}</div>
                   <h3>Nome do professor</h3>
                   <div className="prof-role">Sênior · banca</div>
-                  <span className="prof-tag">Arbitragem</span>
+                  <p className="prof-quote doc-voice">Revisa a sua peça de “{peca.toLowerCase()}” como revisaria a de um associado.</p>
+                  <span className="prof-tag">{area}</span>
                 </div>
               </article>
             ))}
