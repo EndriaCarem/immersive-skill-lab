@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { THEME_SCRIPT } from "@/components/ThemeToggle";
 import {
   Outlet,
   Link,
