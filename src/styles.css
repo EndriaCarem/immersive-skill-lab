@@ -1105,3 +1105,12 @@ html.dark .topnav .desktop-nav a{color:var(--slate)}
 html.dark .topnav .desktop-nav a.on{color:var(--ink)}
 html.dark .ccycle.on h3,html.dark .ccycle.on .cnum,html.dark .ccycle.on span{color:#2A1735}
 html.dark .ccycle.on .cbody2>p{color:#3B2249}
+/* Dark mode: textos com cor fixa e blocos de fundo roxo */
+html.dark p,html.dark ul.clean,html.dark .learn li,html.dark .inc li,html.dark .rich,html.dark .callout p,html.dark .acts .ttl,html.dark .rubric .cmt,html.dark .ai-row .why,html.dark .rich blockquote{color:var(--ink)}
+html.dark .msg.ai,html.dark .assist .m.ai{background:var(--plum-tint);color:var(--ink)}
+html.dark .sitefoot,html.dark .final,html.dark .score-top,html.dark .wb-score{background:#2A1735;color:#DCCFE2;border:1px solid var(--edge)}
+html.dark .sitefoot :is(a,p,span,div,li){color:#DCCFE2}
+html.dark .sitefoot :is(h4,h5,.h-eyebrow){color:#B28CBD}
+html.dark .final h2{color:#F4F2F7}
+html.dark .final p{color:#C9A9D4}
+html.dark .final .btn{background:#D9C6E2;color:#2A1735}
