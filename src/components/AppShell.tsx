@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useAccount } from "@/lib/account";
@@ -48,9 +48,6 @@ function TopNav() {
           </Link>
         </nav>
         <div className="right">
-          <Link to="/cursos" className="iconbtn" aria-label="Buscar cursos">
-            <Search size={18} />
-          </Link>
           <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} className="btn ghost sm nav-cta">
             Começar pelo teórico
           </Link>
