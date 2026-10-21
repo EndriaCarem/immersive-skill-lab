@@ -165,10 +165,10 @@ function Landing() {
         </div>
       </section>
 
-      <section className="profs">
-        <div className="wrap">
-          <div className="profs-eyebrow">Professores</div>
-          <h2 className="profs-title">Quem ensina faz esse trabalho hoje.</h2>
+      <section className="wrap h-sec profs">
+        <div>
+          <div className="h-eyebrow">Professores</div>
+          <h2 className="sec-title">Quem ensina faz esse trabalho hoje.</h2>
           <p className="profs-lead">Plenos e seniores das principais bancas do país, um por atividade e de bancas diferentes: o padrão não é o de uma casa só.</p>
           <div className="profs-grid">
             {[0, 1, 2, 3].map((i) => (
