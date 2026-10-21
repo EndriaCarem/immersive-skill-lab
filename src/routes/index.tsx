@@ -86,10 +86,7 @@ function Landing() {
         <h1 className="display">O que você redige quando o caso chega.</h1>
         <p className="lead">Receba a demanda, entregue a peça e seja revisado por quem supervisiona, critério a critério.</p>
         <div className="hero-cta">
-          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn lg">
-            Receber a primeira demanda
-          </Link>
-          <Link to="/sobre" className="btn ghost lg">
+          <Link to="/sobre" className="btn lg">
             Ver como funciona
           </Link>
         </div>
