@@ -53,7 +53,7 @@ function Catalog() {
         </div>
       </section>
       <section className="wrap">
-        <div className="cards">
+        <div className="cards cards-center">
           {list.map((p) => (
             <CourseCard key={p.id} p={p} />
           ))}

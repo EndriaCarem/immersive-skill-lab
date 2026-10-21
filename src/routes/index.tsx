@@ -212,7 +212,7 @@ function Landing() {
           </div>
           <Link to="/cursos" className="btn ghost" style={{ marginLeft: "auto" }}>Ver todos os cursos</Link>
         </div>
-        <div className="cards">
+        <div className="cards cards-center">
           {featured.map((p) => <CourseCard key={p.id} p={p} />)}
         </div>
       </section>
