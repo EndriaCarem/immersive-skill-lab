@@ -922,3 +922,10 @@ body{background:var(--plum-tint)}
 .ccycle:hover:not(.on) .cbody2{grid-template-rows:0fr;opacity:0}
 @media (hover:none){.ccycle .cbody2{grid-template-rows:0fr;opacity:0}.ccycle.on .cbody2{grid-template-rows:1fr;opacity:1}}
 @media (max-width:900px){.cycle-grid{min-height:360px}}
+/* Cycle v4: pinned near the top with "Por que existe" inside, no blank gap */
+.cycle{height:calc(var(--pin-h,700px) + 70vh);margin-top:56px}
+.cycle-grid,.cycle-grid{min-height:0}
+.cycle-grid{height:230px}
+.cycle-why{margin-top:40px}
+@media (max-width:900px){.cycle-grid{height:auto;min-height:360px}}
+.cycle-grid{height:200px}.cycle-why{margin-top:24px}@media (max-width:900px){.cycle-grid{height:auto}}
