@@ -56,3 +56,10 @@ describe("Commerce rules", () => {
     ).toBe(false);
   });
 });
+
+import { discountCents as dc100 } from "@/lib/commerce-schema";
+describe("cupom de 100%", () => {
+  it("zera o total da Arbitragem — Nível 1 (R$ 890)", () => {
+    expect(89000 - dc100(89000, "percent", 100)).toBe(0);
+  });
+});
