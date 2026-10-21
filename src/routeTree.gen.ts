@@ -18,8 +18,10 @@ import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CursosRouteImport } from './routes/cursos'
 import { Route as InteresseRouteImport } from './routes/interesse'
 import { Route as MeusProgramasRouteImport } from './routes/meus-programas'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
@@ -79,6 +81,11 @@ const MeusProgramasRoute = MeusProgramasRouteImport.update({
   path: '/meus-programas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -87,6 +94,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedComprasRoute = AuthenticatedComprasRouteImport.update({
@@ -172,8 +184,10 @@ export interface FileRoutesByFullPath {
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -198,8 +212,10 @@ export interface FileRoutesByTo {
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -226,8 +242,10 @@ export interface FileRoutesById {
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
   '/meus-programas': typeof MeusProgramasRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sobre': typeof SobreRoute
+  '/termos': typeof TermosRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
@@ -254,8 +272,10 @@ export interface FileRouteTypes {
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/privacidade'
     | '/reset-password'
     | '/sobre'
+    | '/termos'
     | '/compras'
     | '/minha-conta'
     | '/certificado/$code'
@@ -280,8 +300,10 @@ export interface FileRouteTypes {
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/privacidade'
     | '/reset-password'
     | '/sobre'
+    | '/termos'
     | '/compras'
     | '/minha-conta'
     | '/certificado/$code'
@@ -307,8 +329,10 @@ export interface FileRouteTypes {
     | '/cursos'
     | '/interesse'
     | '/meus-programas'
+    | '/privacidade'
     | '/reset-password'
     | '/sobre'
+    | '/termos'
     | '/_authenticated/compras'
     | '/_authenticated/minha-conta'
     | '/certificado/$code'
@@ -335,8 +359,10 @@ export interface RootRouteChildren {
   CursosRoute: typeof CursosRoute
   InteresseRoute: typeof InteresseRoute
   MeusProgramasRoute: typeof MeusProgramasRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SobreRoute: typeof SobreRoute
+  TermosRoute: typeof TermosRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
   WebinarsSlugRoute: typeof WebinarsSlugRoute
@@ -412,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeusProgramasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -424,6 +457,13 @@ declare module '@tanstack/react-router' {
       path: '/sobre'
       fullPath: '/sobre'
       preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/compras': {
@@ -558,8 +598,10 @@ const rootRouteChildren: RootRouteChildren = {
   CursosRoute: CursosRoute,
   InteresseRoute: InteresseRoute,
   MeusProgramasRoute: MeusProgramasRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SobreRoute: SobreRoute,
+  TermosRoute: TermosRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
   WebinarsSlugRoute: WebinarsSlugRoute,
