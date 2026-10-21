@@ -1,19 +1,46 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, UserRound, Moon, Sun, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "@/lib/account";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 
+/** Theme preference is an account-area feature: visitors always see the default light theme. */
+function useAccountTheme(signedIn: boolean) {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    let stored = false;
+    try { stored = localStorage.getItem("empiria-theme") === "dark"; } catch { /* ignore */ }
+    const next = signedIn && stored;
+    document.documentElement.classList.toggle("dark", next);
+    setDark(next);
+  }, [signedIn]);
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("empiria-theme", next ? "dark" : "light"); } catch { /* ignore */ }
+  };
+  return { dark, toggle };
+}
+
 function TopNav() {
-  const { user } = useAccount();
+  const { user, isAdmin } = useAccount();
   const [open, setOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { dark, toggle } = useAccountTheme(Boolean(user));
+  const isHome = pathname === "/";
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
@@ -21,56 +48,74 @@ function TopNav() {
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, [open]);
+  const signOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
   const item = { activeProps: { className: "on" } };
+  const links = (
+    <>
+      {!isHome && <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>}
+      {user && <Link to="/meus-programas" {...item}>Meus programas</Link>}
+      <Link to="/cursos" {...item}>Cursos</Link>
+      {!user && <Link to="/sobre" {...item}>Quem somos</Link>}
+      {!user && <Link to="/contato" {...item}>Contato</Link>}
+    </>
+  );
   return (
-    <div className="topnav">
+    <header className="topnav">
       <div className="in">
-        <Link to="/" className="logo" aria-label="Empiria — início">
+        <Link to="/" className="logo" aria-label="Empiria — Ir para o início">
           <img src={logoDark.url} alt="Empiria" />
         </Link>
-        <nav className="desktop-nav" aria-label="Navegação principal">
-          <Link to="/" activeOptions={{ exact: true }} {...item}>
-            Início
-          </Link>
-          <Link to="/cursos" {...item}>
-            Cursos
-          </Link>
-          <Link to="/webinars" {...item}>
-            Webinars
-          </Link>
-          <Link to="/sobre" {...item}>
-            Quem somos
-          </Link>
-          <Link to="/contato" {...item}>
-            Contato
-          </Link>
-          <Link to={user ? "/minha-conta" : "/auth"} {...item}>
-            {user ? "Minha conta" : "Entrar"}
-          </Link>
-        </nav>
+        <nav className="desktop-nav" aria-label="Navegação principal">{links}</nav>
         <div className="right">
-          <ThemeToggle />
-          <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} className="btn ghost sm nav-cta">
-            Começar pelo teórico
-          </Link>
-          <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm nav-cta">
-            Receber a primeira demanda
-          </Link>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="profile-btn" aria-label="Abrir menu do perfil"><UserRound size={18} /></button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild><Link to="/minha-conta">Minha conta</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/compras">Minhas compras</Link></DropdownMenuItem>
+                {isAdmin && <DropdownMenuItem asChild><Link to="/admin">Administração</Link></DropdownMenuItem>}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); toggle(); }}>
+                  {dark ? <Sun size={16} /> : <Moon size={16} />} {dark ? "Modo claro" : "Modo noturno"}
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => void signOut()}><LogOut size={16} /> Sair</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Link to="/auth" className="nav-login">Entrar</Link>
+              <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn sm nav-cta">Receber a primeira demanda</Link>
+            </>
+          )}
           <Button ref={toggleRef} variant="ghost" size="icon" className="iconbtn mobile-toggle" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen((v) => !v)}>{open ? <X size={20} /> : <Menu size={20} />}</Button>
         </div>
       </div>
       {open && <nav id="mobile-navigation" className="mobile-nav" aria-label="Navegação no celular">
-        <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>
-        <Link to="/cursos" {...item}>Cursos</Link>
-        <Link to="/webinars" {...item}>Webinars</Link>
-        <Link to="/sobre" {...item}>Quem somos</Link>
-        <Link to="/contato" {...item}>Contato</Link>
-        <Link to={user ? "/minha-conta" : "/auth"} {...item}>{user ? "Minha conta" : "Entrar"}</Link>
-        <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} {...item}>Receber a primeira demanda</Link>
-        <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} {...item}>Começar pelo teórico</Link>
-        <Link to="/interesse" search={{ curso: "" }} {...item}>Registrar interesse</Link>
+        {links}
+        {user ? (
+          <>
+            <Link to="/minha-conta" {...item}>Minha conta</Link>
+            {isAdmin && <Link to="/admin" {...item}>Administração</Link>}
+            <button type="button" onClick={toggle}>{dark ? "Modo claro" : "Modo noturno"}</button>
+            <button type="button" onClick={() => void signOut()}>Sair</button>
+          </>
+        ) : (
+          <>
+            <Link to="/auth" {...item}>Entrar</Link>
+            <Link to="/programa/$slug" params={{ slug: "arbitragem-nivel-1" }} className="btn">Receber a primeira demanda</Link>
+          </>
+        )}
       </nav>}
-    </div>
+    </header>
   );
 }
 
