@@ -1103,3 +1103,5 @@ html.dark .topnav .in{background:color-mix(in oklab,var(--paper) 85%,transparent
 html.dark .btn:not(.ghost){color:#2A1735}
 html.dark .topnav .desktop-nav a{color:var(--slate)}
 html.dark .topnav .desktop-nav a.on{color:var(--ink)}
+html.dark .ccycle.on h3,html.dark .ccycle.on .cnum,html.dark .ccycle.on span{color:#2A1735}
+html.dark .ccycle.on .cbody2>p{color:#3B2249}
