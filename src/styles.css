@@ -1253,7 +1253,6 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .prof-info{flex:1;display:flex;flex-direction:column}
 .prof-info .prof-tag{margin-top:auto;align-self:flex-start}
 
-/* Header vítreo ao rolar */
-.topnav .in{transition:background-color .35s ease,border-color .35s ease,box-shadow .35s ease,backdrop-filter .35s ease}
-.topnav{position:sticky;top:12px}
-.topnav.scrolled .in{background:color-mix(in oklab,var(--paper) 55%,transparent);backdrop-filter:blur(18px) saturate(160%);border-color:color-mix(in oklab,var(--edge) 70%,transparent);box-shadow:0 10px 30px -18px color-mix(in oklab,var(--plum) 45%,transparent)}
+/* Header vítreo ao rolar: mesmo estilo no topo, vidro fixo ao rolar */
+.topnav{position:sticky;top:0;transition:background-color .35s ease,box-shadow .35s ease,border-color .35s ease}
+.topnav.scrolled{background:color-mix(in oklab,var(--paper) 58%,transparent);backdrop-filter:blur(18px) saturate(160%);border-bottom-color:color-mix(in oklab,var(--edge) 60%,transparent);box-shadow:0 10px 30px -20px color-mix(in oklab,var(--plum) 45%,transparent)}
