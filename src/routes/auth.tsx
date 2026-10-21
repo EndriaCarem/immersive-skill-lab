@@ -109,7 +109,6 @@ function Auth() {
           <Button type="button" variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Criar conta" : "Entrar"}</Button>
         </div>
         <div className="auth-clean-content">
-          <Link to="/" className="auth-brand auth-form-brand" aria-label="Empiria — início"><img src={logo.url} alt="Empiria" /></Link>
           <h1>{mode === "signup" ? "Crie sua conta" : mode === "reset" ? "Recuperar senha" : "Bem-vindo de volta!"}</h1>
           <p className="auth-intro">{mode === "signup" ? "Seu próximo capítulo começa aqui." : mode === "reset" ? "Receba no seu e-mail um link para redefinir sua senha." : "Entre para continuar sua jornada."}</p>
         <form className="auth-clean-form" onSubmit={submit}>
