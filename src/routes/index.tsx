@@ -42,20 +42,49 @@ const FAQ: [string, string][] = [
   ["E se eu discordar da nota?", "Você pode pedir até duas revisões humanas por atividade."],
 ];
 
-/** The four steps of the cycle; each opens its description smoothly on hover. */
+/** Scroll story: the cycle pins mid-screen while you scroll, opening each step in turn, then releases right into the next section. */
 function ProductCycle() {
+  const ref = useRef<HTMLElement>(null);
+  const pinRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = ref.current, pin = pinRef.current;
+      if (!el || !pin) return;
+      const h = pin.offsetHeight;
+      el.style.setProperty("--pin-h", `${h}px`);
+      const top = Math.max(84, (window.innerHeight - h) / 2);
+      el.style.setProperty("--pin-top", `${top}px`);
+      const r = el.getBoundingClientRect();
+      const span = r.height - h;
+      const p = span > 0 ? Math.min(1, Math.max(0, (top - r.top) / span)) : 0;
+      setProgress(p);
+      setActive(Math.min(SCREENS.length - 1, Math.floor(p * SCREENS.length)));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); cancelAnimationFrame(raf); };
+  }, []);
   return (
-    <section className="wrap h-sec">
-      <div className="h-eyebrow">O produto</div>
-      <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
-      <div className="cycle-grid" style={{ marginTop: 28 }}>
-        {SCREENS.map(([t, d], i) => (
-          <div key={t} className="ccycle" tabIndex={0}>
-            <span className="n">0{i + 1}</span>
-            <h3>{t}</h3>
-            <div className="cbody2"><p>{d}</p></div>
-          </div>
-        ))}
+    <section ref={ref} className="cycle">
+      <div ref={pinRef} className="cycle-pin wrap">
+        <div className="h-eyebrow">O produto</div>
+        <h2 className="sec-title">Quatro telas, o mesmo ciclo do escritório</h2>
+        <div className="cycle-bar"><span style={{ transform: `scaleX(${progress})` }} /></div>
+        <div className="cycle-grid">
+          {SCREENS.map(([t, d], i) => (
+            <div key={t} className={`ccycle${i === active ? " on" : ""}${i < active ? " done" : ""}`}>
+              <span className="n">0{i + 1}</span>
+              <h3>{t}</h3>
+              <div className="cbody2"><p>{d}</p></div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

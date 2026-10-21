@@ -912,3 +912,13 @@ body{background:var(--plum-tint)}
 .ccycle:hover .cbody2,.ccycle:focus-visible .cbody2{grid-template-rows:1fr;opacity:1}
 .ccycle:hover .cbody2>p,.ccycle:focus-visible .cbody2>p{color:color-mix(in oklab,var(--paper) 85%,transparent)}
 @media (hover:none){.ccycle .cbody2{grid-template-rows:1fr;opacity:1}}
+/* Product cycle v3: compact pinned story (short scroll, centered, no blank screen) */
+.cycle{height:calc(var(--pin-h,420px) + 90vh);margin-top:72px}
+.cycle-pin{top:var(--pin-top,90px)}
+.cycle-grid{min-height:230px}
+.cycle + .h-sec{padding-top:24px}
+.ccycle:hover:not(.on){background:var(--paper);transform:none;box-shadow:none}
+.ccycle:hover:not(.on) h3{color:var(--plum)}
+.ccycle:hover:not(.on) .cbody2{grid-template-rows:0fr;opacity:0}
+@media (hover:none){.ccycle .cbody2{grid-template-rows:0fr;opacity:0}.ccycle.on .cbody2{grid-template-rows:1fr;opacity:1}}
+@media (max-width:900px){.cycle-grid{min-height:360px}}
