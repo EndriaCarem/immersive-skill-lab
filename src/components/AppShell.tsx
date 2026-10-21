@@ -48,9 +48,6 @@ function TopNav() {
           </Link>
         </nav>
         <div className="right">
-          <Link to="/cursos" className="iconbtn" aria-label="Buscar cursos">
-            <Search size={18} />
-          </Link>
           <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }} className="btn ghost sm nav-cta">
             Começar pelo teórico
           </Link>
