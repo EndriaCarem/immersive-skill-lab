@@ -117,11 +117,11 @@ function useReveal() {
     const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => !el.closest(".cycle-pin"));
     els.forEach((el) => {
       const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
-      el.style.setProperty("--rv-d", `${Math.min(sibs.indexOf(el), 6) * 90}ms`);
-      el.classList.add("rv");
+      el.style.setProperty("--sr-d", `${Math.min(sibs.indexOf(el), 6) * 90}ms`);
+      el.classList.add("sr");
     });
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("rv-in"); io.unobserve(e.target); } });
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("sr-in"); io.unobserve(e.target); } });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
