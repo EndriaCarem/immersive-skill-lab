@@ -1245,3 +1245,15 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .catalog-theory-copy .btn{gap:12px;min-height:44px}
 @media(max-width:700px){.catalog-theory{grid-template-columns:minmax(0,1fr);gap:24px;padding:24px 0}.catalog-theory-visual{aspect-ratio:2/1}.catalog-theory-copy h2{font-size:26px}.catalog-theory-copy .btn{width:100%;white-space:normal}}
 @media(prefers-reduced-motion:reduce){.catalog-theory-visual img{transition:none}.catalog-theory:hover .catalog-theory-visual img{transform:none}}
+
+/* Professores: cards alinhados, mesma altura */
+.profs-grid{align-items:stretch}
+.profs-grid > .prof{display:flex;flex-direction:column;transform:none}
+.profs-grid > .prof.sr:not(.sr-in){transform:translateY(26px)}
+.prof-info{flex:1;display:flex;flex-direction:column}
+.prof-info .prof-tag{margin-top:auto;align-self:flex-start}
+
+/* Header vítreo ao rolar */
+.topnav .in{transition:background-color .35s ease,border-color .35s ease,box-shadow .35s ease,backdrop-filter .35s ease}
+.topnav{position:sticky;top:12px}
+.topnav.scrolled .in{background:color-mix(in oklab,var(--paper) 55%,transparent);backdrop-filter:blur(18px) saturate(160%);border-color:color-mix(in oklab,var(--edge) 70%,transparent);box-shadow:0 10px 30px -18px color-mix(in oklab,var(--plum) 45%,transparent)}
