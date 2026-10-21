@@ -24,3 +24,4 @@
 - Founder identity and portrait references are centralized in src/lib/founders.ts so profile cards and compact avatars use the same mapping.
 - Classify authentication failures by provider code or known message in src/lib/auth-errors.ts, never HTTP status alone, so different validation failures are not misreported.
 - Signup without a session navigates to the public /confirmar-cadastro route; only a confirmed authenticated session grants access to protected account pages.
+- Webinars live in Cloud (webinars, webinar_visits); public pages read published rows via server functions, visits are recorded by a public write-only server action, and admins manage/read through admin RLS — so tracking data is never exposed to visitors.

@@ -347,6 +347,92 @@ export type Database = {
         }
         Relationships: []
       }
+      webinar_visits: {
+        Row: {
+          created_at: string
+          id: string
+          ref: string
+          utm_campaign: string
+          utm_medium: string
+          utm_source: string
+          visitor_id: string
+          webinar_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ref?: string
+          utm_campaign?: string
+          utm_medium?: string
+          utm_source?: string
+          visitor_id: string
+          webinar_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ref?: string
+          utm_campaign?: string
+          utm_medium?: string
+          utm_source?: string
+          visitor_id?: string
+          webinar_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webinar_visits_webinar_id_fkey"
+            columns: ["webinar_id"]
+            isOneToOne: false
+            referencedRelation: "webinars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webinars: {
+        Row: {
+          body_html: string
+          cover_url: string
+          created_at: string
+          id: string
+          slug: string
+          speaker: string
+          starts_at: string | null
+          status: string
+          summary: string
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          body_html?: string
+          cover_url?: string
+          created_at?: string
+          id?: string
+          slug: string
+          speaker?: string
+          starts_at?: string | null
+          status?: string
+          summary?: string
+          title: string
+          updated_at?: string
+          video_url?: string
+        }
+        Update: {
+          body_html?: string
+          cover_url?: string
+          created_at?: string
+          id?: string
+          slug?: string
+          speaker?: string
+          starts_at?: string | null
+          status?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -34,6 +34,9 @@ function TopNav() {
           <Link to="/cursos" {...item}>
             Cursos
           </Link>
+          <Link to="/webinars" {...item}>
+            Webinars
+          </Link>
           <Link to="/sobre" {...item}>
             Quem somos
           </Link>
@@ -57,6 +60,7 @@ function TopNav() {
       {open && <nav id="mobile-navigation" className="mobile-nav" aria-label="Navegação no celular">
         <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>
         <Link to="/cursos" {...item}>Cursos</Link>
+        <Link to="/webinars" {...item}>Webinars</Link>
         <Link to="/sobre" {...item}>Quem somos</Link>
         <Link to="/contato" {...item}>Contato</Link>
         <Link to={user ? "/minha-conta" : "/auth"} {...item}>{user ? "Minha conta" : "Entrar"}</Link>
@@ -82,6 +86,7 @@ function SiteFooter() {
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
             <Link to="/cursos">Cursos</Link>
             <Link to="/meus-programas">Portal do Aluno</Link>
+            <Link to="/webinars">Webinars</Link>
             {isAdmin && <Link to="/admin">Administração</Link>}
           </div>
         </div>

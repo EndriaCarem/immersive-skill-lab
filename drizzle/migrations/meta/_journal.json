@@ -22,6 +22,13 @@
       "when": 1792495627596,
       "tag": "0002_immutable_terms_versions",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792574717680,
+      "tag": "0003_migration",
+      "breakpoints": true
     }
   ]
 }
