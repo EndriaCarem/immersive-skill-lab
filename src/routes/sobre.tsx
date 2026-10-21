@@ -1,3 +1,5 @@
+import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
+import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { founders } from "@/lib/founders";
@@ -76,10 +78,12 @@ function About() {
         <div className="cards founders-grid">
           <div className="card">
             <div className="kind">Parceiro</div>
+            <span className="partner-logo"><img src={arbipediaLogo.url} alt="" /></span>
             <h3>Arbipédia</h3>
           </div>
           <div className="card">
             <div className="kind">Parceiro</div>
+            <span className="partner-logo"><img src={cjaLogo.url} alt="" /></span>
             <h3>CJA/CBMA</h3>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
+import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
@@ -20,7 +22,8 @@ export const Route = createFileRoute("/")({
 });
 
 /** Backlog EMP-006: only partners confirmed by the client may appear (same as /sobre). */
-const PARTNERS: string[] = ["Arbipédia", "CJA/CBMA"];
+const PARTNER_LOGOS = [{ name: "Arbipédia", src: arbipediaLogo.url }, { name: "CJA/CBMA", src: cjaLogo.url }];
+const PARTNERS: string[] = PARTNER_LOGOS.map((p) => p.name);
 const SCREENS: [string, string][] = [
   ["A demanda", "Chega por e-mail, com prazo, limite de páginas e a pasta do caso. Sem roteiro."],
   ["A entrega", "Você redige e envia. A Nidia comenta o método, mas não escreve por você."],
@@ -180,7 +183,7 @@ function Landing() {
             <div className="marquee-label">Parceiros institucionais</div>
             <div className="marquee-mask">
               <div className="marquee-track" aria-hidden="true">
-                {Array.from({ length: 8 }).flatMap((_, k) => PARTNERS.map((p) => <span key={`${k}-${p}`} className="marquee-logo">{p}</span>))}
+                {Array.from({ length: 8 }).flatMap((_, k) => PARTNER_LOGOS.map((p) => <span key={`${k}-${p.name}`} className="marquee-logo"><img src={p.src} alt={p.name} loading="lazy" /></span>))}
               </div>
             </div>
           </div>
