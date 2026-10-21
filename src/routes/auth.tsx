@@ -2,11 +2,12 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { SiteShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { commerceHead } from "@/lib/commerce-schema";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight, Mail, LockKeyhole, Eye, EyeOff } from "lucide-react";
 import { authErrorKind } from "@/lib/auth-errors";
+import logo from "@/assets/empiria-logo.png.asset.json";
+import workspace from "@/assets/auth-workspace.jpg";
 export const Route = createFileRoute("/auth")({
   head: () => commerceHead("Entrar", "Acesse sua conta de aluno da Empiria."),
   component: Auth,
@@ -15,7 +16,13 @@ function Auth() {
   const [mode, setMode] = useState<"login" | "signup" | "reset">("login");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const nav = useNavigate();
+  function changeMode(next: "login" | "signup" | "reset") {
+    setMode(next);
+    setMessage("");
+    setShowPassword(false);
+  }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -73,13 +80,26 @@ function Auth() {
     }
   }
   return (
-    <SiteShell>
-      <main className="account-page auth-page">
-        <div className="eyebrow">Portal Empiria</div>
-        <h1>
-          {mode === "signup" ? "Criar conta" : mode === "reset" ? "Recuperar senha" : "Entrar"}
-        </h1>
-        <form className="commerce-form" onSubmit={submit}>
+    <main className="auth-clean">
+      <aside className="auth-scene" aria-label="Empiria — formação jurídica prática">
+        <img className="auth-scene-photo" src={workspace} alt="Mesa de trabalho com computador, caderno e caneta" width={1024} height={1536} />
+        <Link to="/" className="auth-brand" aria-label="Empiria — início"><img src={logo.url} alt="Empiria" /></Link>
+        <div className="auth-scene-copy">
+          <h2>O próximo passo<br />é <em>na prática.</em></h2>
+          <p>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
+        </div>
+        <small className="auth-scene-footer">© {new Date().getFullYear()} Empiria · Formação jurídica prática</small>
+      </aside>
+      <section className="auth-panel">
+        <div className="auth-clean-switch">
+          <span>{mode === "login" ? "Ainda não tem uma conta?" : "Já tem uma conta?"}</span>
+          <Button type="button" variant="link" onClick={() => changeMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Criar conta" : "Entrar"}</Button>
+        </div>
+        <div className="auth-clean-content">
+          <Link to="/" className="auth-brand auth-form-brand" aria-label="Empiria — início"><img src={logo.url} alt="Empiria" /></Link>
+          <h1>{mode === "signup" ? "Crie sua conta" : mode === "reset" ? "Recuperar senha" : "Bem-vindo de volta!"}</h1>
+          <p className="auth-intro">{mode === "signup" ? "Seu próximo capítulo começa aqui." : mode === "reset" ? "Receba no seu e-mail um link para redefinir sua senha." : "Entre para continuar sua jornada."}</p>
+        <form className="auth-clean-form" onSubmit={submit}>
           {mode === "signup" && (
             <label className="field">
               Nome completo
@@ -88,60 +108,41 @@ function Auth() {
           )}
           <label className="field">
             E-mail
-            <input name="email" type="email" required maxLength={255} autoComplete="email" />
+            <span className="auth-input-wrap"><Mail size={18} aria-hidden="true" /><input name="email" type="email" placeholder="seu@email.com" required maxLength={255} autoComplete="email" /></span>
           </label>
           {mode !== "reset" && (
             <label className="field">
               Senha
-              <input
+              <span className="auth-input-wrap"><LockKeyhole size={18} aria-hidden="true" /><input
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
+                placeholder={mode === "signup" ? "Crie sua senha" : "Digite sua senha"}
                 required
                 minLength={8}
                 maxLength={128}
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              />
+              /><Button type="button" variant="ghost" size="icon" className="auth-password-toggle" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} title={showPassword ? "Ocultar senha" : "Mostrar senha"} onClick={() => setShowPassword((value) => !value)}>{showPassword ? <EyeOff /> : <Eye />}</Button></span>
             </label>
           )}
-          <Button className="btn wide" disabled={busy}>
+          {mode === "login" && <div className="auth-clean-recovery"><Button type="button" variant="link" onClick={() => changeMode("reset")}>Esqueci minha senha</Button></div>}
+          <Button className="btn auth-clean-submit" disabled={busy}>
             {busy
               ? "Aguarde…"
               : mode === "signup"
                 ? "Criar conta"
                 : mode === "reset"
                   ? "Enviar link"
-                  : "Entrar"}
+                   : "Entrar"}<ArrowRight size={18} aria-hidden="true" />
           </Button>
           {message && <p role="status" className="muted auth-message">{message}</p>}
         </form>
-        <div className="auth-secondary">
-          <span>{mode === "signup" ? "Já tem uma conta?" : mode === "reset" ? "Lembrou sua senha?" : "Ainda não tem conta?"}</span>
-          <Button
-            variant="link"
-            onClick={() => {
-              setMode(mode === "login" ? "signup" : "login");
-              setMessage("");
-            }}
-          >
-            {mode === "login" ? "Criar conta" : "Entrar"}
-          </Button>
-        </div>
-        {mode === "login" && <div className="auth-recovery">
-          <Button
-            variant="link"
-            onClick={() => {
-              setMode("reset");
-              setMessage("");
-            }}
-          >
-            Esqueci minha senha
-          </Button>
-        </div>}
-        <Link to="/cursos" className="auth-back">
+        <Link to="/cursos" className="auth-clean-back">
           <ArrowLeft size={16} aria-hidden="true" />
           Voltar aos cursos
         </Link>
-      </main>
-    </SiteShell>
+        </div>
+        <div className="auth-clean-legal"><Link to="/termos">Termos de uso</Link><span>·</span><Link to="/privacidade">Privacidade e LGPD</Link></div>
+      </section>
+    </main>
   );
 }
