@@ -828,3 +828,33 @@ body{background:var(--plum-tint)}
 .commercial-page .kpi{border-radius:8px}
 @media(max-width:900px){.checkout-layout{grid-template-columns:minmax(0,1fr);gap:24px}.checkout-summary{position:static}.account-page{padding:32px 22px}}
 @media(max-width:600px){.account-page h1{font-size:30px}.order-row{padding:18px}.order-row header{flex-direction:column;gap:6px}.product-option{grid-template-columns:20px minmax(0,1fr)}.product-option>b{grid-column:2}.commerce-actions .btn{flex:1}.commercial-page .kpis{gap:8px}.commercial-page .kpi{padding:14px}.commercial-page .kpi b{font-size:24px}}
+
+/* Landing v3: promo badge, interactive product, FAQ cards, teachers */
+.promo-badge{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:1px;background:var(--paper);color:var(--plum);border-radius:12px;padding:7px 12px;box-shadow:0 6px 18px -8px color-mix(in oklab,var(--ink) 40%,transparent);line-height:1.2}
+.promo-badge b{font-family:var(--font-brand);font-size:12px;font-weight:800}
+.promo-badge small{font-size:10.5px;color:var(--slate)}
+.pcard{position:relative;overflow:hidden;cursor:pointer;min-height:220px;display:flex;flex-direction:column;justify-content:flex-end;text-align:left;font:inherit;background:var(--paper);border:1px solid var(--edge);border-radius:20px;padding:24px;transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .4s,background .4s;opacity:0;transform:translateY(40px)}
+.pcard.in{opacity:1;transform:none}
+.pcard .n{font-family:var(--font-brand);font-weight:800;color:var(--lavender);font-size:14px}
+.pcard h3{margin:6px 0 0;font-size:22px;color:var(--plum)}
+.pcard p{margin:0;max-height:0;opacity:0;overflow:hidden;color:var(--slate);font-size:14.5px;transition:max-height .5s,opacity .4s,margin .4s}
+.pcard .hint{margin-top:10px;font-size:12px;color:var(--plum-mid);font-weight:700;transition:opacity .3s}
+.pcard:hover,.pcard.open{transform:translateY(-6px);box-shadow:0 18px 40px -20px color-mix(in oklab,var(--plum) 60%,transparent)}
+.pcard:hover p,.pcard.open p{max-height:200px;opacity:1;margin-top:10px}
+.pcard:hover .hint,.pcard.open .hint{opacity:0}
+.faq-v3 details{background:var(--paper);border:1px solid var(--edge);border-radius:18px;padding:0;margin-bottom:12px;transition:box-shadow .3s}
+.faq-v3 details[open]{box-shadow:0 12px 30px -20px color-mix(in oklab,var(--plum) 50%,transparent)}
+.faq-v3 summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;font-family:var(--font-brand);font-weight:700;font-size:17px;color:var(--plum);list-style:none;cursor:pointer}
+.faq-v3 summary::-webkit-details-marker{display:none}
+.faq-v3 summary::after{content:"+";flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--plum);color:var(--paper);font-size:20px;font-weight:500;transition:transform .3s}
+.faq-v3 details[open] summary::after{transform:rotate(45deg)}
+.faq-v3 details p{margin:0;padding:0 24px 20px;color:var(--slate);max-width:70ch}
+.teachers{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:28px}
+.teacher{display:flex;gap:20px;background:var(--paper);border:1px solid var(--edge);border-radius:20px;padding:22px}
+.teacher img{flex:none;width:120px;height:120px;border-radius:16px;object-fit:cover}
+.teacher h3{margin:0;font-size:20px;color:var(--plum)}
+.teacher .role{font-size:13px;font-weight:700;color:var(--plum-mid);margin:2px 0 10px}
+.teacher p{margin:0;color:var(--slate);font-size:14px;line-height:1.55}
+@media (max-width:900px){.teachers{grid-template-columns:1fr}}
+@media (max-width:560px){.teacher{flex-direction:column}.teacher img{width:96px;height:96px}}
+@media (prefers-reduced-motion:reduce){.pcard{opacity:1;transform:none;transition:none}}

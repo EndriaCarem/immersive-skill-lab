@@ -16,8 +16,9 @@ export function CourseCard({ p }: { p: Program }) {
       <div className="cover">
         <img src={custom ?? coverFor(p)} alt="" loading="lazy" width={1024} height={640} style={soon ? { filter: "grayscale(.6) opacity(.6)" } : undefined} />
         {p.fullPrice ? (
-          <span className="pillbadge" style={{ position: "absolute", top: 12, left: 12, fontSize: 11.5, padding: "5px 12px" }}>
-            ✦ Pré-venda
+          <span className="promo-badge">
+            <b>★ Promoção válida até 30/11</b>
+            <small>Preço sujeito a alteração</small>
           </span>
         ) : null}
       </div>
