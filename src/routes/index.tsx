@@ -113,18 +113,46 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 function useReveal() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const sel = ".hero-c > *, .h-sec > .h-eyebrow, .h-sec > .sec-title, .h-sec > p, .h-sec > .final, .profs > div > *:not(.profs-grid), .cards > *, .profs-grid > *, .faq-item, .g3 > *, .partners > *, .essay, .quote, .cycle-why";
-    const els = Array.from(document.querySelectorAll<HTMLElement>(sel)).filter((el) => !el.closest(".cycle-pin"));
+    const groups: [string, string][] = [
+      [".hero-c > *", "up"],
+      [".h-sec > .h-eyebrow", "wipe"],
+      [".h-sec > .sec-title, .profs > div > .sec-title", "words"],
+      [".h-sec > p, .profs-lead", "up"],
+      [".cards > *", "flip"],
+      [".profs-grid > *", "side"],
+      [".faq-item", "left"],
+      [".g3 > *", "pop"],
+      [".partners > *", "pop"],
+      [".essay, .quote", "wipe"],
+      [".cycle-why", "up"],
+      [".h-sec > .final", "zoom"],
+    ];
+    const els: HTMLElement[] = [];
+    groups.forEach(([q, v]) => document.querySelectorAll<HTMLElement>(q).forEach((el) => {
+      if (el.closest(".cycle-pin") || els.includes(el)) return;
+      el.dataset.sr = v; els.push(el);
+    }));
     els.forEach((el) => {
       const sibs = el.parentElement ? Array.from(el.parentElement.children).filter((c) => els.includes(c as HTMLElement)) : [];
-      el.style.setProperty("--sr-d", `${Math.min(sibs.indexOf(el), 6) * 90}ms`);
+      const i = sibs.indexOf(el);
+      el.style.setProperty("--sr-d", `${Math.min(i, 6) * 110}ms`);
+      if (el.dataset.sr === "side") el.dataset.side = i % 2 ? "r" : "l";
       el.classList.add("sr");
     });
+    const tilts = Array.from(document.querySelectorAll<HTMLElement>(".cards > *, .profs-grid > *"));
+    const onMove = (e: PointerEvent) => {
+      const el = e.currentTarget as HTMLElement; const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty("--tx", `${(-y * 7).toFixed(2)}deg`); el.style.setProperty("--ty", `${(x * 9).toFixed(2)}deg`);
+      el.style.setProperty("--mx", `${((x + 0.5) * 100).toFixed(1)}%`); el.style.setProperty("--my", `${((y + 0.5) * 100).toFixed(1)}%`);
+    };
+    const onLeave = (e: PointerEvent) => { const el = e.currentTarget as HTMLElement; el.style.setProperty("--tx", "0deg"); el.style.setProperty("--ty", "0deg"); };
+    if (window.matchMedia("(hover: hover)").matches) tilts.forEach((el) => { el.classList.add("tilt"); el.addEventListener("pointermove", onMove); el.addEventListener("pointerleave", onLeave); });
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("sr-in"); io.unobserve(e.target); } });
     }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
     els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    return () => { io.disconnect(); tilts.forEach((el) => { el.removeEventListener("pointermove", onMove); el.removeEventListener("pointerleave", onLeave); }); };
   }, []);
 }
 
