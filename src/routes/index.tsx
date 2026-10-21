@@ -51,7 +51,7 @@ function ProductCard({ i, t, d }: { i: number; t: string; d: string }) {
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) {
+      if (e?.isIntersecting) {
         setSeen(true);
         io.disconnect();
       }
