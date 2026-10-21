@@ -6,6 +6,10 @@ import { CourseCard } from "@/components/CourseCard";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import coverTeorico from "@/assets/cover-teorico.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAccount } from "@/lib/account";
+import { accountData } from "@/lib/commerce.functions";
 
 export const Route = createFileRoute("/cursos")({
   head: () => ({
@@ -22,6 +26,14 @@ export const Route = createFileRoute("/cursos")({
 });
 
 function Catalog() {
+  const { user, ready } = useAccount();
+  const readAccount = useServerFn(accountData);
+  const account = useQuery({
+    queryKey: ["account", "catalog", user?.id],
+    queryFn: () => readAccount(),
+    enabled: ready && Boolean(user),
+  });
+  const starting = Boolean(user) && account.isSuccess && account.data.orders.length === 0 && account.data.enrollments.length === 0;
   const programs = useStore((s) => s.programs);
   const [kind, setKind] = useState("Todos");
   const [q, setQ] = useState("");
@@ -34,12 +46,12 @@ function Catalog() {
   return (
     <SiteShell>
       <section className="wrap public-intro">
-        <span className="pillbadge soft">✦ Catálogo Empiria</span>
+        <span className="pillbadge soft">{starting ? "Seu primeiro passo na Empiria" : user ? "Explore seu próximo passo" : "✦ Catálogo Empiria"}</span>
         <h1 className="display">
-          Você não assiste. <em>Você faz.</em>
+          {starting ? <>Sua jornada começa <em>com o primeiro curso.</em></> : user ? <>Continue construindo <em>sua prática.</em></> : <>Você não assiste. <em>Você faz.</em></>}
         </h1>
         <p className="lead" style={{ margin: "0 auto 30px" }}>
-          Programas com correção individualizada em cada entrega — o que a faculdade não dá e o escritório só oferece a quem já contratou.
+          {starting ? "Que bom ter você aqui. Comece pelos fundamentos da arbitragem ou entre direto na prática de um escritório simulado. Escolha o caminho que faz sentido para o seu momento." : user ? "Encontre a formação que acompanha seu momento profissional e dê o próximo passo na sua experiência jurídica." : "Programas com correção individualizada em cada entrega — o que a faculdade não dá e o escritório só oferece a quem já contratou."}
         </p>
         <label className="searchpill">
           <Search size={18} color="var(--slate)" />
@@ -60,7 +72,7 @@ function Catalog() {
             <span>Introdução à Arbitragem</span>
           </div>
           <div className="catalog-theory-copy">
-            <span className="h-eyebrow">Seu ponto de partida</span>
+            <span className="h-eyebrow">{starting ? "Por onde você quer começar?" : "Seu ponto de partida"}</span>
             <h2>Entenda o caminho.<br /><em>Depois, entre no caso.</em></h2>
             <p>Conheça as etapas de uma arbitragem e acompanhe modelos comentados antes de construir suas próprias entregas.</p>
             <div className="catalog-theory-details">
@@ -94,7 +106,7 @@ function Catalog() {
             <Link to="/interesse" search={{ curso: "" }} className="btn">Quero ser avisado</Link>
           </div>
         </div>
-        <div className="catalog-interest"><p>Quer conversar sobre a formação?</p><Link to="/interesse" search={{ curso: "" }} className="btn ghost">Registrar interesse</Link></div>
+        <div className="catalog-interest"><p>{starting ? "Precisa de ajuda para escolher seu primeiro curso?" : "Quer conversar sobre a formação?"}</p><Link to="/interesse" search={{ curso: "" }} className="btn ghost">{starting ? "Quero orientação" : "Registrar interesse"}</Link></div>
       </section>
     </SiteShell>
   );
