@@ -1114,3 +1114,4 @@ html.dark .sitefoot :is(h4,h5,.h-eyebrow){color:#B28CBD}
 html.dark .final h2{color:#F4F2F7}
 html.dark .final p{color:#C9A9D4}
 html.dark .final .btn{background:#D9C6E2;color:#2A1735}
+html.dark .sitefoot p,html.dark .sitefoot .muted{color:#DCCFE2!important}
