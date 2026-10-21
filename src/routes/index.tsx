@@ -33,7 +33,7 @@ const AUDIENCE = [
   ["Advogados em transição", "Migre para a arbitragem com prática real, sem largar o que já faz.", "Introdução à Arbitragem"],
   ["Advogados com carteira própria", "Fora do eixo RJ–SP, conduza o próprio caso com segurança.", "Arbitragem — Nível 1"],
 ];
-const FAQ = [
+const FAQ: [string, string][] = [
   ["As aulas são gravadas ou ao vivo?", "As demandas e o material ficam disponíveis no seu ritmo. A correção é individual, feita por sênior, com prazo de devolutiva."],
   ["Posso usar IA?", "Pode, desde que declare como usou. A Nidia classifica o uso sem punir e avisa quando o raciocínio foi terceirizado sem reelaboração."],
   ["Os casos são reais?", "São casos fictícios construídos a partir da prática real, sem informação confidencial de clientes."],
@@ -42,37 +42,41 @@ const FAQ = [
   ["E se eu discordar da nota?", "Você pode pedir até duas revisões humanas por atividade."],
 ];
 
-/** Rises into view on scroll and opens its description on hover/tap. */
+/** Rises into view on scroll; its description opens while it sits mid-screen (or on hover). */
 function ProductCard({ i, t, d }: { i: number; t: string; d: string }) {
-  const ref = useRef<HTMLButtonElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => {
-      if (e?.isIntersecting) {
-        setSeen(true);
-        io.disconnect();
-      }
-    }, { threshold: 0.25 });
-    io.observe(el);
-    return () => io.disconnect();
+    const appear = new IntersectionObserver(([e]) => {
+      if (e?.isIntersecting) { setSeen(true); appear.disconnect(); }
+    }, { threshold: 0.15 });
+    const focus = new IntersectionObserver(([e]) => setOpen(!!e?.isIntersecting), { rootMargin: "-30% 0px -30% 0px" });
+    appear.observe(el);
+    focus.observe(el);
+    return () => { appear.disconnect(); focus.disconnect(); };
   }, []);
   return (
-    <button
-      ref={ref}
-      type="button"
-      aria-expanded={open}
-      onClick={() => setOpen((o) => !o)}
-      className={`pcard${seen ? " in" : ""}${open ? " open" : ""}`}
-      style={{ transitionDelay: seen && !open ? `${i * 90}ms` : undefined }}
-    >
+    <div ref={ref} className={`pcard${seen ? " in" : ""}${open ? " open" : ""}`} style={{ transitionDelay: seen ? `${i * 120}ms` : undefined }}>
       <span className="n">0{i + 1}</span>
       <h3>{t}</h3>
-      <p>{d}</p>
-      <span className="hint">Toque para abrir ↑</span>
-    </button>
+      <div className="pbody"><p>{d}</p></div>
+    </div>
+  );
+}
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`faq-item${open ? " open" : ""}`}>
+      <button type="button" className="faq-q" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <span>{q}</span>
+        <i aria-hidden="true" />
+      </button>
+      <div className="faq-a"><div><p>{a}</p></div></div>
+    </div>
   );
 }
 
@@ -166,12 +170,7 @@ function Landing() {
 
       <section className="wrap h-sec faq-v3">
         <div className="h-eyebrow">Perguntas frequentes</div>
-        {FAQ.slice(0, 4).map(([q, a]) => (
-          <details key={q}>
-            <summary>{q}</summary>
-            <p>{a}</p>
-          </details>
-        ))}
+        {FAQ.slice(0, 4).map(([q, a]) => <FaqItem key={q} q={q} a={a} />)}
       </section>
 
       <section className="wrap h-sec" style={{ paddingBottom: 40 }}>
