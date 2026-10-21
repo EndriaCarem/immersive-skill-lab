@@ -953,3 +953,9 @@ body{background:var(--plum-tint)}
 .prof:hover .prof-head,.prof:hover .prof-body{transform:translateX(-50%) translateY(-6px)}
 .prof-kicker{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--plum-mid);margin-bottom:6px}
 .prof-quote{margin:0 0 14px;font-size:15px;line-height:1.5;color:var(--plum);font-style:italic;border-left:2px solid var(--plum-mid);padding-left:10px}
+
+/* Scroll reveal (landing) */
+.rv{opacity:0;transform:translateY(28px) scale(.985);filter:blur(4px);transition:opacity .9s cubic-bezier(.22,.8,.24,1) var(--rv-d,0ms),transform .9s cubic-bezier(.22,.8,.24,1) var(--rv-d,0ms),filter .9s ease var(--rv-d,0ms)}
+.rv.rv-in{opacity:1;transform:none;filter:none}
+.hero-c > .rv{transform:translateY(18px)}
+.cards > .rv,.profs-grid > .rv{transform:translateY(40px) scale(.96)}
