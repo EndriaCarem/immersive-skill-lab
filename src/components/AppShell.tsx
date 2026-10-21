@@ -101,6 +101,11 @@ function SiteFooter() {
             <Link to="/sobre">Sobre e método</Link>
             <Link to="/contato">Fale conosco</Link>
           </div>
+          <h5 style={{ marginTop: 18 }}>Legal</h5>
+          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+            <Link to="/termos">Termos de uso e matrícula</Link>
+            <Link to="/privacidade">Privacidade e LGPD</Link>
+          </div>
         </div>
         <div>
           <h5>Parceiros</h5>
@@ -111,7 +116,7 @@ function SiteFooter() {
         </div>
       </div>
       <div className="wrap" style={{ marginTop: 36, fontSize: 12.5, color: "var(--lavender)" }}>
-        © {new Date().getFullYear()} Empiria · Formação jurídica prática
+        © {new Date().getFullYear()} Empiria · Formação jurídica prática · <Link to="/privacidade" style={{ color: "inherit" }}>Seus dados e a LGPD</Link>
       </div>
     </footer>
   );
