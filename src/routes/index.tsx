@@ -1,5 +1,6 @@
 import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
 import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
+import logoDark from "@/assets/empiria-logo.png.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteShell } from "@/components/AppShell";
 import { CourseCard } from "@/components/CourseCard";
@@ -165,16 +166,27 @@ function Landing() {
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
   return (
     <SiteShell>
-      <section className="wrap hero-c">
-        <span className="pillbadge">Escritório simulado de arbitragem</span>
-        <h1 className="display">O que você redige quando o caso chega.</h1>
-        <p className="lead">Receba a demanda, entregue a peça e seja revisado por quem supervisiona, critério a critério.</p>
-        <div className="hero-cta">
-          <Link to="/sobre" className="btn lg">
-            Ver como funciona
-          </Link>
+      <section className="wrap hero-c hero-split">
+        <div className="hero-copy">
+          <span className="pillbadge">Escritório simulado de arbitragem</span>
+          <h1 className="display">O que você redige quando o caso chega.</h1>
+          <p className="lead">Receba a demanda, entregue a peça e seja revisado por quem supervisiona, critério a critério.</p>
+          <div className="hero-cta">
+            <Link to="/sobre" className="btn lg">
+              Ver como funciona
+            </Link>
+          </div>
         </div>
-        <div className="hero-doc"><ReviewWindow compact /></div>
+        <div className="hero-doc">
+          <div className="app-frame" aria-label="Prévia da plataforma Empiria">
+            <div className="app-frame-bar">
+              <span className="dots" aria-hidden="true"><i /><i /><i /></span>
+              <img src={logoDark.url} alt="Empiria" />
+              <span className="app-frame-tag">Prévia da plataforma</span>
+            </div>
+            <ReviewWindow compact />
+          </div>
+        </div>
       </section>
 
       {PARTNERS.length > 0 && (
