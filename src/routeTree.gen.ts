@@ -28,6 +28,7 @@ import { Route as WebinarsIndexRouteImport } from './routes/webinars.index'
 import { Route as WebinarsSlugRouteImport } from './routes/webinars.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
+import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authenticated/admin.webinars'
 import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
@@ -129,6 +130,12 @@ const AuthenticatedAdminComercialRoute =
     path: '/admin/comercial',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminWebinarsRoute =
+  AuthenticatedAdminWebinarsRouteImport.update({
+    id: '/admin/webinars',
+    path: '/admin/webinars',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminProgramaIdRoute =
   AuthenticatedAdminProgramaIdRouteImport.update({
     id: '/admin/programa/$id',
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars/': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -199,6 +207,7 @@ export interface FileRoutesByTo {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -226,6 +235,7 @@ export interface FileRoutesById {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars/': typeof WebinarsIndexRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/_authenticated/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -253,6 +263,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars/'
     | '/admin/comercial'
+    | '/admin/webinars'
     | '/admin/'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -278,6 +289,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars'
     | '/admin/comercial'
+    | '/admin/webinars'
     | '/admin'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -304,6 +316,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars/'
     | '/_authenticated/admin/comercial'
+    | '/_authenticated/admin/webinars'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -469,6 +482,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminComercialRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/webinars': {
+      id: '/_authenticated/admin/webinars'
+      path: '/admin/webinars'
+      fullPath: '/admin/webinars'
+      preLoaderRoute: typeof AuthenticatedAdminWebinarsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/programa/$id': {
       id: '/_authenticated/admin/programa/$id'
       path: '/admin/programa/$id'
@@ -511,6 +531,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
   AuthenticatedAdminComercialRoute: typeof AuthenticatedAdminComercialRoute
+  AuthenticatedAdminWebinarsRoute: typeof AuthenticatedAdminWebinarsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminProgramaIdRoute: typeof AuthenticatedAdminProgramaIdRoute
 }
@@ -519,6 +540,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
   AuthenticatedAdminComercialRoute: AuthenticatedAdminComercialRoute,
+  AuthenticatedAdminWebinarsRoute: AuthenticatedAdminWebinarsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminProgramaIdRoute: AuthenticatedAdminProgramaIdRoute,
 }
