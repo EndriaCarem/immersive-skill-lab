@@ -24,6 +24,8 @@ import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as CertificadoCodeRouteImport } from './routes/certificado.$code'
 import { Route as ProgramaSlugRouteImport } from './routes/programa.$slug'
+import { Route as WebinarsIndexRouteImport } from './routes/webinars.index'
+import { Route as WebinarsSlugRouteImport } from './routes/webinars.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
 import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
@@ -106,6 +108,16 @@ const ProgramaSlugRoute = ProgramaSlugRouteImport.update({
   path: '/programa/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WebinarsIndexRoute = WebinarsIndexRouteImport.update({
+  id: '/webinars/',
+  path: '/webinars/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebinarsSlugRoute = WebinarsSlugRouteImport.update({
+  id: '/webinars/$slug',
+  path: '/webinars/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -159,6 +171,8 @@ export interface FileRoutesByFullPath {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
+  '/webinars/$slug': typeof WebinarsSlugRoute
+  '/webinars/': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
@@ -182,6 +196,8 @@ export interface FileRoutesByTo {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
+  '/webinars/$slug': typeof WebinarsSlugRoute
+  '/webinars': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
@@ -207,6 +223,8 @@ export interface FileRoutesById {
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/certificado/$code': typeof CertificadoCodeRoute
   '/programa/$slug': typeof ProgramaSlugRoute
+  '/webinars/$slug': typeof WebinarsSlugRoute
+  '/webinars/': typeof WebinarsIndexRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
@@ -232,6 +250,8 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
+    | '/webinars/$slug'
+    | '/webinars/'
     | '/admin/comercial'
     | '/admin/'
     | '/admin/programa/$id'
@@ -255,6 +275,8 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
+    | '/webinars/$slug'
+    | '/webinars'
     | '/admin/comercial'
     | '/admin'
     | '/admin/programa/$id'
@@ -279,6 +301,8 @@ export interface FileRouteTypes {
     | '/_authenticated/minha-conta'
     | '/certificado/$code'
     | '/programa/$slug'
+    | '/webinars/$slug'
+    | '/webinars/'
     | '/_authenticated/admin/comercial'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/programa/$id'
@@ -302,6 +326,8 @@ export interface RootRouteChildren {
   SobreRoute: typeof SobreRoute
   CertificadoCodeRoute: typeof CertificadoCodeRoute
   ProgramaSlugRoute: typeof ProgramaSlugRoute
+  WebinarsSlugRoute: typeof WebinarsSlugRoute
+  WebinarsIndexRoute: typeof WebinarsIndexRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -415,6 +441,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/webinars/': {
+      id: '/webinars/'
+      path: '/webinars'
+      fullPath: '/webinars/'
+      preLoaderRoute: typeof WebinarsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/webinars/$slug': {
+      id: '/webinars/$slug'
+      path: '/webinars/$slug'
+      fullPath: '/webinars/$slug'
+      preLoaderRoute: typeof WebinarsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/admin'
@@ -500,6 +540,8 @@ const rootRouteChildren: RootRouteChildren = {
   SobreRoute: SobreRoute,
   CertificadoCodeRoute: CertificadoCodeRoute,
   ProgramaSlugRoute: ProgramaSlugRoute,
+  WebinarsSlugRoute: WebinarsSlugRoute,
+  WebinarsIndexRoute: WebinarsIndexRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
