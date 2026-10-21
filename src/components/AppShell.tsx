@@ -66,7 +66,7 @@ function TopNav() {
     </>
   );
   return (
-    <header className="topnav">
+    <header className={`topnav${scrolled ? " scrolled" : ""}`}>
       <div className="in">
         <Link to="/" className="logo" aria-label="Empiria — Ir para o início">
           <img src={logoDark.url} alt="Empiria" />
