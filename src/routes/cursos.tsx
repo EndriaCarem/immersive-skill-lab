@@ -68,7 +68,7 @@ function Catalog() {
               <span><Files size={18} aria-hidden="true" />32 modelos comentados</span>
             </div>
             <Button asChild className="btn">
-              <Link to="/programa/$slug" params={{ slug: "introducao-a-arbitragem" }}>Começar pelo teórico <ArrowRight size={18} aria-hidden="true" /></Link>
+              <Link to="/programa/$slug" params={{ slug: "introducao-arbitragem" }}>Começar pelo teórico <ArrowRight size={18} aria-hidden="true" /></Link>
             </Button>
           </div>
         </div>
