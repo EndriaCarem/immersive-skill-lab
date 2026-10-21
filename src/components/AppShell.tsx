@@ -80,7 +80,7 @@ function TopNav() {
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild><Link to="/minha-conta">Minha conta</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/minha-conta">Configurações da conta</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link to="/compras">Minhas compras</Link></DropdownMenuItem>
                 {isAdmin && <DropdownMenuItem asChild><Link to="/admin">Administração</Link></DropdownMenuItem>}
                 <DropdownMenuSeparator />
@@ -103,7 +103,7 @@ function TopNav() {
         {links}
         {user ? (
           <>
-            <Link to="/minha-conta" {...item}>Minha conta</Link>
+            <Link to="/minha-conta" {...item}>Configurações da conta</Link>
             <Link to="/compras" {...item}>Minhas compras</Link>
             {isAdmin && <Link to="/admin" {...item}>Administração</Link>}
             <button type="button" onClick={toggle}>{dark ? "Modo claro" : "Modo noturno"}</button>

@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const accountOptions = () =>
   queryOptions({ queryKey: ["account"], queryFn: () => accountData() });
 export const Route = createFileRoute("/_authenticated/minha-conta")({
-  head: () => commerceHead("Minha conta", "Dados pessoais e acesso às suas compras e matrículas."),
+  head: () => commerceHead("Configurações da conta", "Atualize seus dados pessoais na Empiria."),
   loader: ({ context }) => context.queryClient.ensureQueryData(accountOptions()),
   component: Account,
 });
@@ -51,7 +51,7 @@ function Account() {
     <AppShell>
       <main className="account-page">
         <div className="eyebrow">Sua conta</div>
-        <h1>Minha conta</h1>
+        <h1>Configurações da conta</h1>
         <nav className="commerce-actions">
           <Link to="/compras" className="btn ghost">
             Minhas compras
