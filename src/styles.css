@@ -50,6 +50,10 @@
   --color-border: var(--rule);
   --color-muted-foreground: var(--slate);
   --color-accent: var(--plum-tint);
+  --color-accent-foreground: var(--plum);
+  --color-popover: var(--paper);
+  --color-popover-foreground: var(--ink);
+  --color-muted: var(--plum-tint);
 }
 :root{ --on-plum-soft:var(--lavender); --on-plum:#DCCFE2; }
 
@@ -1164,3 +1168,17 @@ html.dark .app-frame-bar img{filter:brightness(0) invert(.9)}
   .app-frame-tag{display:none}
 }
 html,body{overflow-x:clip}
+
+/* Signed-in mobile refinements */
+@media(max-width:900px){
+  .topnav .profile-btn{display:none}
+}
+@media(max-width:600px){
+  .apppage{margin-top:12px;padding:0 10px}
+  .apppage>.frame{border-radius:20px}
+  .account-page{padding:26px 18px}
+  .commerce-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .commerce-actions .btn{flex:none;min-height:44px;padding:10px 14px;justify-content:center;text-align:center}
+  .commerce-actions > button:last-child{grid-column:1/-1;justify-self:start;padding-left:0}
+  .commerce-form .btn{width:100%}
+}
