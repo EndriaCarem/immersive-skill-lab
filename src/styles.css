@@ -1115,3 +1115,6 @@ html.dark .final h2{color:#F4F2F7}
 html.dark .final p{color:#C9A9D4}
 html.dark .final .btn{background:#D9C6E2;color:#2A1735}
 html.dark .sitefoot p,html.dark .sitefoot .muted{color:#DCCFE2!important}
+/* Logotipos dos parceiros na faixa */
+.marquee-logo{display:inline-flex;align-items:center;background:#fff;border-radius:14px;padding:10px 22px;height:72px}
+.marquee-logo img{height:48px;width:auto;display:block}
