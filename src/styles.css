@@ -901,3 +901,6 @@ body{background:var(--plum-tint)}
 .cycle-hint{margin:18px 0 0;font-size:12.5px;color:var(--slate-soft)}
 @media (max-width:900px){.cycle-grid{grid-template-columns:1fr;gap:10px}.ccycle{padding:18px 20px}.ccycle.on{transform:none}.cycle-pin{top:72px}}
 @media (prefers-reduced-motion:reduce){.ccycle,.ccycle .cbody2{transition:none}}
+.cycle-grid{min-height:240px}
+.cycle-hint{margin-top:36px}
+@media (max-width:900px){.cycle-grid{min-height:400px}.cycle-hint{margin-top:20px}}
