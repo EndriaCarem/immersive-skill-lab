@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { useAccount } from "@/lib/account";
-import { createOrder } from "@/lib/commerce.functions";
-import { commerceHead, purchaseSchema } from "@/lib/commerce-schema";
+import { createOrder, previewCoupon } from "@/lib/commerce.functions";
+import { commerceHead, discountCents, purchaseSchema } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
 export const Route = createFileRoute("/checkout")({
   validateSearch: z.object({ curso: z.string().max(100).catch("").default("") }),
@@ -31,6 +31,8 @@ function Checkout() {
   const [loaded, setLoaded] = useState(false);
   const [requestId, setRequestId] = useState("");
   const create = useServerFn(createOrder);
+  const preview = useServerFn(previewCoupon);
+  const [couponInfo, setCouponInfo] = useState<Awaited<ReturnType<typeof previewCoupon>> | null>(null);
   const nav = useNavigate();
   useEffect(() => {
     setRequestId(crypto.randomUUID());
@@ -50,9 +52,20 @@ function Checkout() {
       setLoaded(true);
     });
   }, [curso]);
-  const total = products
+  const subtotal = products
     .filter((x) => selected.includes(x.id))
     .reduce((s, x) => s + x.price_cents, 0);
+  const discount = couponInfo?.valid ? discountCents(subtotal, couponInfo.kind, couponInfo.value) : 0;
+  const total = subtotal - discount;
+  const isFree = selected.length > 0 && total === 0;
+  useEffect(() => {
+    const code = coupon.trim();
+    if (!code || !user) { setCouponInfo(null); return; }
+    const t = setTimeout(() => {
+      preview({ data: { code } }).then(setCouponInfo).catch(() => setCouponInfo(null));
+    }, 400);
+    return () => clearTimeout(t);
+  }, [coupon, user, preview]);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!terms) return;
@@ -68,8 +81,8 @@ function Checkout() {
       const input = purchaseSchema.parse({
         productIds: selected,
         coupon,
-        method,
-        installments: method === "card" ? installments : 1,
+        method: isFree ? "pix" : method,
+        installments: !isFree && method === "card" ? installments : 1,
         termsId: terms.id,
         consent,
         requestId,
@@ -77,7 +90,7 @@ function Checkout() {
         tags,
       });
       await create({ data: input });
-      await nav({ to: "/compras" });
+      await nav({ to: isFree ? "/meus-programas" : "/compras" });
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Não foi possível registrar seu pedido.");
     } finally {
@@ -121,6 +134,9 @@ function Checkout() {
                   <b>{brl(p.price_cents / 100)}</b>
                 </label>
               ))}
+              {isFree ? (
+                <div className="integration-notice"><b>Matrícula gratuita</b><p>Seu cupom cobre 100% do valor. Não há pagamento: basta aceitar os termos para ativar a matrícula.</p></div>
+              ) : (<>
               <h2>Forma de pagamento</h2>
               <div className="commerce-actions">
                 {(["pix", "boleto", "card"] as const).map((m) => (
@@ -156,6 +172,7 @@ function Checkout() {
               <p className="muted sm">
                 As condições de pagamento serão confirmadas após a integração.
               </p>
+              </>)}
               {terms ? (
                 <details className="terms-text">
                   <summary>Termos de matrícula · versão {terms.version}</summary>
@@ -179,6 +196,7 @@ function Checkout() {
             <aside className="checkout-summary">
               <h2>Resumo</h2>
               <p>{selected.length} curso(s)</p>
+              {discount > 0 && <p className="muted sm">Subtotal {brl(subtotal / 100)} · desconto −{brl(discount / 100)}</p>}
               <b className="summary-total">{brl(total / 100)}</b>
               <label className="field">
                 Cupom
@@ -192,15 +210,14 @@ function Checkout() {
                 />
               </label>
               <p className="muted sm">
-                O desconto será validado ao registrar o pedido. Pedido com total zero gera matrícula
-                gratuita.
+                {coupon.trim() && couponInfo && !couponInfo.valid ? "Cupom inválido ou expirado." : couponInfo?.valid ? "Cupom aplicado." : "O desconto é confirmado ao registrar. Cupom de 100% ativa a matrícula direto, sem pagamento."}
               </p>
               {user ? (
                 <Button
                   className="btn wide"
                   disabled={busy || !terms || !consent || !selected.length}
                 >
-                  {busy ? "Registrando…" : "Registrar pedido"}
+                  {busy ? "Registrando…" : isFree ? "Ativar matrícula" : "Registrar pedido"}
                 </Button>
               ) : (
                 <Link to="/auth" className="btn wide">

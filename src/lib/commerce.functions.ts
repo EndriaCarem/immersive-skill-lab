@@ -161,3 +161,20 @@ export const saveProduct = createServerFn({ method: "POST" })
     if (error) throw new Error("Não foi possível salvar o produto.");
     return true;
   });
+
+// Read-only coupon preview so a 100% coupon can skip payment UI; the order RPC remains authoritative.
+export const previewCoupon = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((x) => z.object({ code: z.string().trim().min(1).max(40) }).parse(x))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: c } = await supabaseAdmin
+      .from("commerce_coupons")
+      .select("kind, value, active, expires_at, max_uses, uses")
+      .eq("code", data.code.toUpperCase())
+      .maybeSingle();
+    const valid =
+      !!c && c.active && (!c.expires_at || new Date(c.expires_at) > new Date()) && (c.max_uses == null || c.uses < c.max_uses);
+    if (!valid || (c.kind !== "percent" && c.kind !== "fixed")) return { valid: false as const };
+    return { valid: true as const, kind: c.kind as "percent" | "fixed", value: c.value };
+  });
