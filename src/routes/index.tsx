@@ -166,20 +166,23 @@ function Landing() {
         </div>
       </section>
 
-      <section className="wrap h-sec">
-        <div className="h-eyebrow">Quem ensina</div>
-        <h2 className="sec-title">Duas advogadas que dão aula e conhecem o outro lado do balcão</h2>
-        <div className="teachers">
-          {founders.map((f) => (
-            <article key={f.name} className="teacher">
-              <img src={f.photo} alt={f.name} width={120} height={120} loading="lazy" />
-              <div>
-                <h3>{f.name}</h3>
-                <div className="role">{f.role}</div>
-                <p>{f.bio}</p>
-              </div>
-            </article>
-          ))}
+      <section className="profs">
+        <div className="wrap">
+          <div className="profs-eyebrow">Professores</div>
+          <h2 className="profs-title">Quem ensina faz esse trabalho hoje.</h2>
+          <p className="profs-lead">Plenos e seniores das principais bancas do país, um por atividade e de bancas diferentes: o padrão não é o de uma casa só.</p>
+          <div className="profs-grid">
+            {[0, 1, 2, 3].map((i) => (
+              <article key={i} className="prof">
+                <div className="prof-ph" aria-hidden="true"><span className="prof-head" /><span className="prof-body" /></div>
+                <div className="prof-info">
+                  <h3>Nome do professor</h3>
+                  <div className="prof-role">Sênior · banca</div>
+                  <span className="prof-tag">Arbitragem</span>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
