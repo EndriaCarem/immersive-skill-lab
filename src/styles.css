@@ -858,3 +858,9 @@ body{background:var(--plum-tint)}
 @media (max-width:900px){.teachers{grid-template-columns:1fr}}
 @media (max-width:560px){.teacher{flex-direction:column}.teacher img{width:96px;height:96px}}
 @media (prefers-reduced-motion:reduce){.pcard{opacity:1;transform:none;transition:none}}
+/* FAQ v3 refinements: centered plus drawn with bars, smooth open */
+.faq-v3 summary::after{content:"";line-height:1;font-size:0;background:linear-gradient(var(--paper),var(--paper)) center/12px 2px no-repeat,linear-gradient(var(--paper),var(--paper)) center/2px 12px no-repeat,var(--plum);transition:transform .45s cubic-bezier(.4,0,.2,1),background-color .3s}
+.faq-v3 details{interpolate-size:allow-keywords;transition:box-shadow .45s ease}
+.faq-v3 details::details-content{block-size:0;overflow:hidden;opacity:0;transition:block-size .45s cubic-bezier(.4,0,.2,1),opacity .4s ease,content-visibility .45s allow-discrete}
+.faq-v3 details[open]::details-content{block-size:auto;opacity:1}
+@media (prefers-reduced-motion:reduce){.faq-v3 details::details-content{transition:none}}
