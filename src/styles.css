@@ -979,11 +979,9 @@ body{background:var(--plum-tint)}
 .marquee-label{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--plum-mid);margin-bottom:14px}
 .marquee-mask{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .marquee-track{display:flex;gap:64px;width:max-content;animation:marquee 28s linear infinite}
-.marquee:hover .marquee-track{animation-play-state:paused}
 .marquee-logo{font-family:Urbanist,sans-serif;font-weight:900;font-size:26px;color:color-mix(in oklab,var(--plum) 55%,transparent);white-space:nowrap;transition:color .3s}
 .marquee-logo:hover{color:var(--plum)}
 @keyframes marquee{to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.marquee-track{animation:none}}
 /* Fotos das fundadoras menores */
 .founders-grid .founder-portrait{width:140px;height:140px;border-radius:50%;margin:0 auto 14px}
 .founder-card{text-align:center}
