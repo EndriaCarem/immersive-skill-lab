@@ -1182,3 +1182,47 @@ html,body{overflow-x:clip}
   .commerce-actions > button:last-child{grid-column:1/-1;justify-self:start;padding-left:0}
   .commerce-form .btn{width:100%}
 }
+
+/* Clean account entry: dedicated, unframed two-column composition. */
+.auth-clean{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:100dvh;background:var(--paper);letter-spacing:0}
+.auth-scene{position:relative;min-height:100dvh;overflow:hidden;padding:48px 56px;color:var(--plum)}
+.auth-scene-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.auth-brand{position:relative;display:inline-block}
+.auth-brand img{display:block;width:158px;height:auto}
+.auth-scene-copy{position:relative;margin-top:84px;max-width:390px}
+.auth-scene-copy h2{font-family:var(--font-brand);font-size:40px;font-weight:700;line-height:1.16;letter-spacing:0;margin:0 0 20px}
+.auth-scene-copy h2 em{font-style:normal;color:var(--plum-mid)}
+.auth-scene-copy p{font-size:16px;line-height:1.7;color:var(--plum);max-width:34ch}
+.auth-scene-footer{position:absolute;bottom:30px;left:56px;color:var(--plum-tint);font-size:11px}
+.auth-panel{display:flex;flex-direction:column;min-width:0;padding:30px 48px;background:var(--paper)}
+.auth-clean-switch{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:4px;font-size:12px;color:var(--slate)}
+.auth-clean-switch .auth-clean-switch,.auth-clean button{letter-spacing:0}
+.auth-clean-switch button{font-size:12px;color:var(--plum-mid);padding:8px;min-height:44px}
+.auth-clean-content{width:100%;max-width:408px;margin:auto; padding:48px 0}
+.auth-form-brand{margin-bottom:36px}
+.auth-clean-content h1{font-family:var(--font-brand);font-size:28px;line-height:1.2;letter-spacing:0;color:var(--plum);margin:0 0 8px}
+.auth-intro{font-size:14px;color:var(--slate);margin-bottom:30px}
+.auth-clean-form{display:grid;gap:20px}
+.auth-clean-form .field{display:grid;gap:7px;margin:0;font-size:12px;font-weight:600;color:var(--ink)}
+.auth-clean-form .field>span.auth-input-wrap{display:flex;align-items:center;position:relative;gap:12px;border:1px solid var(--edge);border-radius:6px;padding:0 14px;margin:0;min-height:48px;color:var(--slate-soft);text-transform:none;letter-spacing:0}
+.auth-clean-form .auth-input-wrap:focus-within{outline:2px solid var(--plum-edge);border-color:var(--plum-mid)}
+.auth-clean-form .auth-input-wrap>svg{flex:none}
+.auth-clean-form input{width:100%;min-width:0;border:1px solid var(--edge);border-radius:6px;background:transparent;color:var(--ink);font-size:16px;font-weight:400;padding:12px 14px;min-height:48px}
+.auth-clean-form .auth-input-wrap input{border:0;border-radius:0;padding:12px 0;outline:none;min-height:46px}
+.auth-clean-form input::placeholder{color:var(--slate-soft);font-size:13px}
+.auth-password-toggle{color:var(--slate-soft);flex:none;width:32px;height:36px;padding:0}
+.auth-clean-recovery{display:flex;justify-content:flex-end;margin-top:-12px}
+.auth-clean-recovery button{font-size:12px;color:var(--plum-mid);min-height:36px;padding:0}
+.auth-clean-submit{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;border-radius:6px}
+.auth-clean-back{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--slate);font-size:12px;margin-top:24px;min-height:44px}
+.auth-clean-back:hover{color:var(--plum)}
+.auth-clean-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:11px;color:var(--slate);padding:12px 0}
+.auth-clean-legal a:hover{color:var(--plum)}
+.auth-clean-form .auth-message{margin:0;font-size:13px}
+html.dark .auth-brand img{filter:brightness(0) invert(.9)}
+html.dark .auth-scene .auth-brand img{filter:none}
+html.dark .auth-scene-copy{color:var(--on-plum)}
+html.dark .auth-scene-copy h2,html.dark .auth-scene-copy p{color:var(--on-plum)}
+html.dark .auth-scene-copy h2 em{color:var(--on-plum-soft)}
+@media(max-width:1100px){.auth-scene{padding:40px 32px}.auth-scene-copy{margin-top:70px}.auth-scene-copy h2{font-size:34px}.auth-panel{padding:24px 32px}.auth-scene-footer{left:32px}}
+@media(max-width:760px){.auth-clean{grid-template-columns:minmax(0,1fr)}.auth-scene{display:none}.auth-panel{min-height:100dvh;padding:20px 24px}.auth-clean-content{padding:32px 0}.auth-form-brand{margin-bottom:32px}.auth-clean-content h1{font-size:26px}.auth-clean-switch{font-size:12px}}
