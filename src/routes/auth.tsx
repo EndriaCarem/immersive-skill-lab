@@ -99,7 +99,7 @@ function Auth() {
         <Link to="/" className="auth-brand" aria-label="Empiria — início"><img src={logo.url} alt="Empiria" /></Link>
         <div className="auth-scene-copy">
           <h2>O próximo passo<br />é <em>na prática.</em></h2>
-          <p>Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
+          <p>Viva a rotina de um escritório simulado: receba demandas, construa suas entregas e desenvolva segurança para atuar.</p>
         </div>
         <small className="auth-scene-footer">© {new Date().getFullYear()} Empiria · Formação jurídica prática</small>
       </aside>
