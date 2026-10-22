@@ -46,7 +46,7 @@ export async function startTestCheckout(orderId: string, userId: string) {
     method: order.payment_method, installments: order.installments,
   }).select("*").single();
   if (insertError || !attempt) throw new Error("Não foi possível iniciar o teste. Atualize suas compras.");
-  let preference: { id: string; init_point: string; sandbox_init_point?: string | null };
+  let preference: { id: string; init_point: string; sandbox_init_point?: string | null | undefined };
   try {
     const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
     const excluded = excludedMethods(methods, order.payment_method);
