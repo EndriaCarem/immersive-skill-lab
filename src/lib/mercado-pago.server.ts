@@ -56,6 +56,7 @@ export async function createDirectTestPayment(input: DirectPayment, userId: stri
   }).select("*").single();
   if (insertError || !attempt) throw new Error("Não foi possível iniciar o teste. Atualize suas compras.");
   let view: PaymentView;
+  let updatedAt = new Date().toISOString();
   try {
     console.info("[MercadoPago] creating test payment", { attempt: attempt.id, method: input.method, installments, amount: order.total_cents });
     const raw = await mpRequest("/v1/payments", {
@@ -65,12 +66,13 @@ export async function createDirectTestPayment(input: DirectPayment, userId: stri
     const payment = paymentViewSchema.parse(raw);
     if (!matchesTestPayment(payment, attempt, sellerId)) throw new Error("Resposta do Mercado Pago não corresponde a este teste.");
     view = paymentView(payment);
+    updatedAt = payment.date_last_updated;
     console.info("[MercadoPago] test payment created", { attempt: attempt.id, status: payment.status, detail: payment.status_detail });
   } catch (e) {
     await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", attempt.id).is("payment_id", null);
     throw e;
   }
-  const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ payment_id: view.paymentId, status: view.status, checked_at: new Date().toISOString() }).eq("id", attempt.id);
+  const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ payment_id: view.paymentId, status: view.status, checked_at: updatedAt }).eq("id", attempt.id);
   if (saveError) console.error("[MercadoPago] could not save test payment", { attempt: attempt.id });
   // Deliberately never update orders or enrollments from a test payment.
   return view;
