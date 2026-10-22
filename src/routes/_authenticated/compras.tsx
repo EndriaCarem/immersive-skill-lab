@@ -6,7 +6,8 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { accountOptions } from "./minha-conta";
 import { cancelOrder } from "@/lib/commerce.functions";
-import { refreshPaymentTest, startPaymentTest } from "@/lib/mercado-pago.functions";
+import { refreshPaymentTest } from "@/lib/mercado-pago.functions";
+import { PaymentPanel } from "@/components/PaymentPanel";
 import { testPaymentLabel } from "@/lib/mercado-pago-rules";
 import { commerceHead, statusLabel } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
@@ -22,24 +23,19 @@ export const Route = createFileRoute("/_authenticated/compras")({
 function Purchases() {
   const { data } = useSuspenseQuery(accountOptions());
   const cancel = useServerFn(cancelOrder);
-  const startTest = useServerFn(startPaymentTest);
+  const [paying, setPaying] = useState<string | null>(null);
   const refreshTest = useServerFn(refreshPaymentTest);
   const { queryClient } = Route.useRouteContext();
   const [selected, setSelected] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  async function paymentAction(orderId: string, refresh: boolean) {
+  async function paymentAction(orderId: string) {
     setBusy(true);
     setMessage("");
     try {
-      if (refresh) {
-        const result = await refreshTest({ data: { orderId } });
-        setMessage(result.found ? `${testPaymentLabel[result.status] ?? result.status}. Testes não liberam matrículas pagas.` : "Nenhum pagamento encontrado no Mercado Pago para este teste.");
-      } else {
-        const checkout = await startTest({ data: { orderId } });
-        window.location.assign(checkout.url);
-      }
+      const result = await refreshTest({ data: { orderId } });
+      setMessage(result.found ? `${testPaymentLabel[result.status] ?? result.status}. Testes não liberam matrículas pagas.` : "Nenhum pagamento encontrado no Mercado Pago para este teste.");
       await queryClient.invalidateQueries({ queryKey: ["account"] });
     } catch (e) {
       console.error("[Compras] falha no pagamento de teste do Mercado Pago:", e);
@@ -98,9 +94,12 @@ function Purchases() {
               ))}
               {o.status === "awaiting_integration" && o.total_cents > 0 && (
                 <div className="commerce-actions">
-                  <Button className="btn" disabled={busy} onClick={() => void paymentAction(o.id, false)}>Testar pagamento</Button>
-                  {data.paymentTests.some((t) => t.order_id === o.id) && <Button className="btn ghost" disabled={busy} onClick={() => void paymentAction(o.id, true)}>Atualizar resultado do teste</Button>}
+                  <Button className="btn" disabled={busy} onClick={() => setPaying(paying === o.id ? null : o.id)}>{paying === o.id ? "Fechar pagamento" : "Pagar (teste)"}</Button>
+                  {data.paymentTests.some((t) => t.order_id === o.id) && <Button className="btn ghost" disabled={busy} onClick={() => void paymentAction(o.id)}>Atualizar resultado do teste</Button>}
                 </div>
+              )}
+              {paying === o.id && (
+                <PaymentPanel orderId={o.id} totalCents={o.total_cents} initialMethod={(["pix", "boleto", "card"] as const).find((m) => m === o.payment_method) ?? "pix"} onChange={() => void queryClient.invalidateQueries({ queryKey: ["account"] })} />
               )}
               <p className="muted sm">
                 Termos aceitos em {new Date(o.terms_accepted_at).toLocaleString("pt-BR")}

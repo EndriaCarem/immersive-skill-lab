@@ -26,3 +26,19 @@ describe("Mercado Pago test isolation", () => {
     expect(await verifyMpSignature(new Headers(), "12", "test-fixture", now)).toBe(false);
   });
 });
+import { buildPaymentBody, directPaymentSchema } from "@/lib/mercado-pago-rules";
+describe("Checkout Transparente body", () => {
+  const ctx = { attemptId: "a1", amountCents: 89000, email: "aluno@example.com", notificationUrl: "https://x/n" };
+  const orderId = "7f1f2b0e-0f0a-4a5e-9a51-3f3f9e3f3f3f";
+  it("charges the server order amount for Pix", () => {
+    const body = buildPaymentBody(directPaymentSchema.parse({ method: "pix", orderId }), ctx);
+    expect(body).toMatchObject({ transaction_amount: 890, payment_method_id: "pix", external_reference: "empiria-test:a1" });
+  });
+  it("rejects card payments above six installments", () => {
+    expect(() => directPaymentSchema.parse({ method: "card", orderId, token: "tok_12345678", paymentMethodId: "master", installments: 7, payerEmail: "a@b.co" })).toThrow();
+  });
+  it("requires an 11-digit CPF for boleto", () => {
+    const payer = { firstName: "A", lastName: "B", cpf: "123", zip: "01001000", street: "R", number: "1", neighborhood: "C", city: "SP", uf: "sp" };
+    expect(() => directPaymentSchema.parse({ method: "boleto", orderId, payer })).toThrow();
+  });
+});

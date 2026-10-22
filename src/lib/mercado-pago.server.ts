@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { excludedMethods, matchesTestPayment, paymentIdSchema, paymentSchema, MP_TEST_WEBHOOK_PATH } from "./mercado-pago-rules";
+import { buildPaymentBody, matchesTestPayment, paymentIdSchema, paymentView, paymentViewSchema, MP_TEST_WEBHOOK_PATH, type DirectPayment, type PaymentView } from "./mercado-pago-rules";
 
 const MP_API = "https://api.mercadopago.com";
 // Production is intentionally unavailable until test checkout is accepted.
@@ -33,52 +33,55 @@ async function testSeller() {
   return seller.id;
 }
 
-export async function startTestCheckout(orderId: string, userId: string) {
-  await testSeller();
-  const { data: order, error } = await supabaseAdmin.from("commerce_orders").select("*").eq("id", orderId).eq("user_id", userId).single();
+const OPEN_STATUSES = ["pending", "in_process", "approved", "authorized", "in_mediation"];
+
+/** Checkout Transparente (test only): creates the payment directly; amount comes from the order, never the client. */
+export async function createDirectTestPayment(input: DirectPayment, userId: string, email: string) {
+  const sellerId = await testSeller();
+  const { data: order, error } = await supabaseAdmin.from("commerce_orders").select("*").eq("id", input.orderId).eq("user_id", userId).single();
   if (error || !order || order.status !== "awaiting_integration" || order.total_cents <= 0) throw new Error("Este pedido não está disponível para teste de pagamento.");
-  const existing = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("order_id", orderId).maybeSingle();
+  const existing = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("order_id", order.id).maybeSingle();
   if (existing.error) throw new Error("Não foi possível consultar o teste.");
-  if (existing.data?.checkout_url) return { url: existing.data.checkout_url };
-  if (existing.data) throw new Error("Um teste já está sendo preparado. Aguarde ou solicite ajuda à Empiria; não crie cobranças duplicadas.");
+  if (existing.data?.payment_id && OPEN_STATUSES.includes(existing.data.status)) {
+    // Never create a duplicate charge: show the existing payment (e.g. the same Pix code) instead.
+    return paymentView(paymentViewSchema.parse(await mpRequest(`/v1/payments/${existing.data.payment_id}`)));
+  }
+  if (existing.data) {
+    if (existing.data.status === "creating" && Date.now() - new Date(existing.data.created_at).getTime() < 60000) throw new Error("Um pagamento já está sendo processado. Aguarde alguns segundos.");
+    await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", existing.data.id);
+  }
+  const installments = input.method === "card" ? input.installments : 1;
   const { data: attempt, error: insertError } = await supabaseAdmin.from("commerce_payment_tests").insert({
-    order_id: order.id, user_id: userId, amount_cents: order.total_cents,
-    method: order.payment_method, installments: order.installments,
+    order_id: order.id, user_id: userId, amount_cents: order.total_cents, method: input.method, installments,
   }).select("*").single();
   if (insertError || !attempt) throw new Error("Não foi possível iniciar o teste. Atualize suas compras.");
-  let preference: { id: string; init_point: string; sandbox_init_point?: string | null | undefined };
+  let view: PaymentView;
+  let updatedAt = new Date().toISOString();
   try {
-    const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
-    const excluded = excludedMethods(methods, order.payment_method); // kept for logging only
-    console.info("[MercadoPago] creating test preference", { attempt: attempt.id, method: order.payment_method, installments: order.installments, amount: order.total_cents, excluded: excluded.length });
-    preference = z.object({ id: z.string(), init_point: z.string().url(), sandbox_init_point: z.string().url().nullish() }).parse(await mpRequest("/checkout/preferences", {
-      method: "POST", body: JSON.stringify({
-        items: [{ id: order.id, title: "Empiria — teste de matrícula", quantity: 1, currency_id: "BRL", unit_price: order.total_cents / 100 }],
-        external_reference: `empiria-test:${attempt.id}`,
-        // Test mode: show every method (Pix often needs a seller key and otherwise only "saldo" remains).
-        payment_methods: { installments: 6 },
-        back_urls: { success: `${RETURN_ORIGIN}/compras`, pending: `${RETURN_ORIGIN}/compras`, failure: `${RETURN_ORIGIN}/compras` },
-        notification_url: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}`,
-        statement_descriptor: "EMPIRIA TESTE",
-      }),
-    }));
+    console.info("[MercadoPago] creating test payment", { attempt: attempt.id, method: input.method, installments, amount: order.total_cents });
+    const raw = await mpRequest("/v1/payments", {
+      method: "POST", headers: { "X-Idempotency-Key": attempt.id },
+      body: JSON.stringify(buildPaymentBody(input, { attemptId: attempt.id, amountCents: order.total_cents, email, notificationUrl: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}` })),
+    });
+    const payment = paymentViewSchema.parse(raw);
+    if (!matchesTestPayment(payment, attempt, sellerId)) throw new Error("Resposta do Mercado Pago não corresponde a este teste.");
+    view = paymentView(payment);
+    updatedAt = payment.date_last_updated;
+    console.info("[MercadoPago] test payment created", { attempt: attempt.id, status: payment.status, detail: payment.status_detail });
   } catch (e) {
-    // Remove the unfinished attempt so the user can retry without being blocked.
-    await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", attempt.id).is("checkout_url", null);
+    await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", attempt.id).is("payment_id", null);
     throw e;
   }
-  // Test sellers (verified by testSeller) now receive a regular init_point; no real charge is possible.
-  const checkout = new URL(preference.sandbox_init_point || preference.init_point);
-  if (checkout.protocol !== "https:" || !["sandbox.mercadopago.com.br", "www.mercadopago.com.br"].includes(checkout.hostname)) throw new Error("Endereço de teste inválido.");
-  const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ preference_id: preference.id, checkout_url: checkout.href, status: "ready" }).eq("id", attempt.id);
-  if (saveError) throw new Error("Teste criado, mas o endereço não pôde ser salvo. Solicite ajuda antes de tentar novamente.");
-  return { url: checkout.href };
+  const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ payment_id: view.paymentId, status: view.status, checked_at: updatedAt }).eq("id", attempt.id);
+  if (saveError) console.error("[MercadoPago] could not save test payment", { attempt: attempt.id });
+  // Deliberately never update orders or enrollments from a test payment.
+  return view;
 }
 
 export async function reconcileTestPayment(paymentId: string, userId?: string) {
   paymentIdSchema.parse(paymentId);
   const sellerId = await testSeller();
-  const payment = paymentSchema.parse(await mpRequest(`/v1/payments/${paymentId}`));
+  const payment = paymentViewSchema.parse(await mpRequest(`/v1/payments/${paymentId}`));
   const attemptId = z.string().uuid().parse(payment.external_reference.replace(/^empiria-test:/, ""));
   const { data: attempt, error } = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("id", attemptId).single();
   if (error || !attempt || (userId && attempt.user_id !== userId) || !matchesTestPayment(payment, attempt, sellerId)) throw new Error("Pagamento não corresponde a este teste da Empiria.");
@@ -87,12 +90,13 @@ export async function reconcileTestPayment(paymentId: string, userId?: string) {
   }).eq("id", attempt.id).or(`checked_at.is.null,checked_at.lte.${payment.date_last_updated}`);
   if (saveError) throw new Error("Não foi possível atualizar o resultado do teste.");
   // Deliberately never update orders or enrollments from a test payment.
-  return { status: payment.status };
+  return { status: payment.status, view: paymentView(payment) };
 }
 
 export async function refreshOrderTest(orderId: string, userId: string) {
   const { data: attempt, error } = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("order_id", orderId).eq("user_id", userId).maybeSingle();
   if (error || !attempt) throw new Error("Este pedido ainda não possui um teste de pagamento.");
+  if (attempt.payment_id) return { ...(await reconcileTestPayment(attempt.payment_id, userId)), found: true };
   const results = z.object({ results: z.array(z.object({ id: z.number().int().positive() })) }).parse(await mpRequest(`/v1/payments/search?external_reference=${encodeURIComponent(`empiria-test:${attempt.id}`)}&sort=date_created&criteria=desc&limit=1`));
   const result = results.results[0];
   if (!result) return { status: attempt.status, found: false };

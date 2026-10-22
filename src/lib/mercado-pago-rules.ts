@@ -55,3 +55,68 @@ export const testPaymentLabel: Record<string, string> = {
   cancelled: "Teste cancelado", refunded: "Teste reembolsado", charged_back: "Teste contestado",
   in_mediation: "Teste em mediação", authorized: "Teste autorizado",
 };
+const cpf = z.string().transform((v) => v.replace(/\D/g, "")).pipe(z.string().length(11, "CPF deve ter 11 dígitos."));
+export const directPaymentSchema = z.discriminatedUnion("method", [
+  z.object({ method: z.literal("pix"), orderId: z.string().uuid() }),
+  z.object({
+    method: z.literal("boleto"), orderId: z.string().uuid(),
+    payer: z.object({
+      firstName: z.string().trim().min(1).max(60), lastName: z.string().trim().min(1).max(60), cpf,
+      zip: z.string().transform((v) => v.replace(/\D/g, "")).pipe(z.string().length(8, "CEP deve ter 8 dígitos.")),
+      street: z.string().trim().min(1).max(120), number: z.string().trim().min(1).max(20),
+      neighborhood: z.string().trim().min(1).max(80), city: z.string().trim().min(1).max(80),
+      uf: z.string().trim().toUpperCase().regex(/^[A-Z]{2}$/, "UF inválida."),
+    }),
+  }),
+  z.object({
+    method: z.literal("card"), orderId: z.string().uuid(),
+    token: z.string().min(8).max(200), paymentMethodId: z.string().min(2).max(40),
+    issuerId: z.union([z.string(), z.number()]).transform(String).optional(),
+    installments: z.number().int().min(1).max(6),
+    payerEmail: z.string().email().max(200),
+    identification: z.object({ type: z.string().max(10), number: z.string().max(20) }).optional(),
+  }),
+]);
+export type DirectPayment = z.infer<typeof directPaymentSchema>;
+
+/** Builds the Mercado Pago /v1/payments body. Amount always comes from the server-side order. */
+export function buildPaymentBody(input: DirectPayment, ctx: { attemptId: string; amountCents: number; email: string; notificationUrl: string }) {
+  const base = {
+    transaction_amount: ctx.amountCents / 100,
+    description: "Empiria — teste de matrícula",
+    external_reference: `empiria-test:${ctx.attemptId}`,
+    notification_url: ctx.notificationUrl,
+    statement_descriptor: "EMPIRIA TESTE",
+  };
+  if (input.method === "pix") return { ...base, payment_method_id: "pix", payer: { email: ctx.email } };
+  if (input.method === "boleto") {
+    const p = input.payer;
+    return { ...base, payment_method_id: "bolbradesco", payer: {
+      email: ctx.email, first_name: p.firstName, last_name: p.lastName,
+      identification: { type: "CPF", number: p.cpf },
+      address: { zip_code: p.zip, street_name: p.street, street_number: p.number, neighborhood: p.neighborhood, city: p.city, federal_unit: p.uf },
+    } };
+  }
+  return { ...base, token: input.token, installments: input.installments, payment_method_id: input.paymentMethodId,
+    ...(input.issuerId ? { issuer_id: Number(input.issuerId) } : {}),
+    payer: { email: input.payerEmail, ...(input.identification ? { identification: input.identification } : {}) } };
+}
+
+export const paymentViewSchema = paymentSchema.extend({
+  status_detail: z.string().nullish(),
+  point_of_interaction: z.object({ transaction_data: z.object({
+    qr_code: z.string().nullish(), qr_code_base64: z.string().nullish(), ticket_url: z.string().nullish(),
+  }).partial().nullish() }).partial().nullish(),
+  transaction_details: z.object({ external_resource_url: z.string().nullish() }).partial().nullish(),
+  barcode: z.object({ content: z.string().nullish() }).partial().nullish(),
+});
+export function paymentView(p: z.infer<typeof paymentViewSchema>) {
+  const td = p.point_of_interaction?.transaction_data;
+  return {
+    paymentId: String(p.id), status: p.status, statusDetail: p.status_detail ?? null, method: p.payment_type_id,
+    pixCode: td?.qr_code ?? null, pixQrBase64: td?.qr_code_base64 ?? null,
+    boletoUrl: p.transaction_details?.external_resource_url ?? td?.ticket_url ?? null,
+    boletoBarcode: p.barcode?.content ?? null,
+  };
+}
+export type PaymentView = ReturnType<typeof paymentView>;
