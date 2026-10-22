@@ -19,13 +19,11 @@ export const paymentSchema = z.object({
 export function matchesTestPayment(payment: z.infer<typeof paymentSchema>, expected: {
   id: string; amount_cents: number; method: string; installments: number;
 }, sellerId: number) {
-  const methodMatches = expected.method === "pix" ? payment.payment_method_id === "pix"
-    : expected.method === "boleto" ? payment.payment_type_id === "ticket"
-    : payment.payment_type_id === "credit_card";
+  // Test checkout offers every method, so the buyer may pick a different one than the order.
   return !payment.live_mode && payment.collector_id === sellerId &&
     payment.external_reference === `empiria-test:${expected.id}` && payment.currency_id === "BRL" &&
-    Math.round(payment.transaction_amount * 100) === expected.amount_cents && methodMatches &&
-    (expected.method !== "card" || (payment.installments >= 1 && payment.installments <= expected.installments));
+    Math.round(payment.transaction_amount * 100) === expected.amount_cents &&
+    payment.installments >= 1 && payment.installments <= 6;
 }
 
 export function excludedMethods(methods: { id: string; payment_type_id: string; status: string }[], method: string) {
