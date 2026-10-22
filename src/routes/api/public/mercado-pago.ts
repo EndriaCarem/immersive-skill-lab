@@ -3,7 +3,7 @@ import { paymentIdSchema, verifyMpSignature } from "@/lib/mercado-pago-rules";
 
 export const Route = createFileRoute("/api/public/mercado-pago")({
   server: { handlers: { POST: async ({ request }) => {
-    const secret = process.env["MERCADO_PAGO_TEST_WEBHOOK_SECRET"];
+    const secret = process.env["MERCADO_PAGO_ACCESS_TOKEN"] ? process.env["MERCADO_PAGO_WEBHOOK_SECRET"] : process.env["MERCADO_PAGO_TEST_WEBHOOK_SECRET"];
     if (!secret) return new Response("Notifications not configured", { status: 503 });
     const url = new URL(request.url);
     const id = paymentIdSchema.safeParse(url.searchParams.get("data.id"));

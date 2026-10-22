@@ -16,12 +16,15 @@ export const paymentSchema = z.object({
   date_last_updated: z.string().datetime({ offset: true }),
 });
 
+export const paymentReference = (id: string, live: boolean) => `${live ? "empiria" : "empiria-test"}:${id}`;
+export const referenceAttemptId = (ref: string) => ref.replace(/^empiria(-test)?:/, "");
+
 export function matchesTestPayment(payment: z.infer<typeof paymentSchema>, expected: {
-  id: string; amount_cents: number; method: string; installments: number;
+  id: string; amount_cents: number; method: string; installments: number; live?: boolean;
 }, sellerId: number) {
-  // Test checkout offers every method, so the buyer may pick a different one than the order.
-  return !payment.live_mode && payment.collector_id === sellerId &&
-    payment.external_reference === `empiria-test:${expected.id}` && payment.currency_id === "BRL" &&
+  const live = expected.live === true;
+  return payment.live_mode === live && payment.collector_id === sellerId &&
+    payment.external_reference === paymentReference(expected.id, live) && payment.currency_id === "BRL" &&
     Math.round(payment.transaction_amount * 100) === expected.amount_cents &&
     payment.installments >= 1 && payment.installments <= 6;
 }
@@ -50,10 +53,10 @@ export async function verifyMpSignature(headers: Headers, id: string, secret: st
 }
 
 export const testPaymentLabel: Record<string, string> = {
-  creating: "Preparando teste", ready: "Pronto para testar", approved: "Teste aprovado",
-  pending: "Teste pendente", in_process: "Teste em análise", rejected: "Teste recusado",
-  cancelled: "Teste cancelado", refunded: "Teste reembolsado", charged_back: "Teste contestado",
-  in_mediation: "Teste em mediação", authorized: "Teste autorizado",
+  creating: "Preparando pagamento", ready: "Aguardando pagamento", approved: "Pagamento aprovado",
+  pending: "Pagamento pendente", in_process: "Pagamento em análise", rejected: "Pagamento recusado",
+  cancelled: "Pagamento cancelado", refunded: "Pagamento reembolsado", charged_back: "Pagamento contestado",
+  in_mediation: "Pagamento em mediação", authorized: "Pagamento autorizado",
 };
 const cpf = z.string().transform((v) => v.replace(/\D/g, "")).pipe(z.string().length(11, "CPF deve ter 11 dígitos."));
 export const directPaymentSchema = z.discriminatedUnion("method", [
@@ -80,13 +83,13 @@ export const directPaymentSchema = z.discriminatedUnion("method", [
 export type DirectPayment = z.infer<typeof directPaymentSchema>;
 
 /** Builds the Mercado Pago /v1/payments body. Amount always comes from the server-side order. */
-export function buildPaymentBody(input: DirectPayment, ctx: { attemptId: string; amountCents: number; email: string; notificationUrl: string }) {
+export function buildPaymentBody(input: DirectPayment, ctx: { attemptId: string; amountCents: number; email: string; notificationUrl: string; live?: boolean }) {
   const base = {
     transaction_amount: ctx.amountCents / 100,
-    description: "Empiria — teste de matrícula",
-    external_reference: `empiria-test:${ctx.attemptId}`,
+    description: ctx.live ? "Empiria — matrícula" : "Empiria — teste de matrícula",
+    external_reference: paymentReference(ctx.attemptId, ctx.live === true),
     notification_url: ctx.notificationUrl,
-    statement_descriptor: "EMPIRIA TESTE",
+    statement_descriptor: ctx.live ? "EMPIRIA" : "EMPIRIA TESTE",
   };
   if (input.method === "pix") return { ...base, payment_method_id: "pix", payer: { email: ctx.email } };
   if (input.method === "boleto") {
