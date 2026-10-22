@@ -1,4 +1,5 @@
 # Institucional e catálogo
+- [x] Adicionar aviso de lançamento em 28/10 e acesso restrito em todas as rotas com sessão segura persistente.
 - [x] Registrar interesse e mensagens no Lovable Cloud com validação e confirmação real.
 - [x] Disponibilizar captura de interesse no catálogo e nos cursos futuros.
 - [x] Adaptar navegação, rodapé e páginas públicas para celular, tablet e computador.

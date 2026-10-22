@@ -2,6 +2,21 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+import { isSiteAccessPublicPath } from "@/lib/site-access";
+
+const siteAccessMiddleware = createMiddleware().server(async ({ next, request }) => {
+  const url = new URL(request.url);
+  if (isSiteAccessPublicPath(url.pathname)) return next();
+  const { siteAccessSession } = await import("@/lib/site-access.server");
+  const session = await siteAccessSession();
+  if (session.data.unlocked === true) return next();
+  if (url.pathname.startsWith("/api/") || request.headers.get("accept")?.includes("application/json")) {
+    return Response.json({ error: "Restricted access required" }, { status: 401, headers: { "cache-control": "no-store" } });
+  }
+  const destination = new URL("/acesso-restrito", url.origin);
+  destination.searchParams.set("returnTo", url.pathname + url.search);
+  return new Response(null, { status: 302, headers: { location: destination.toString(), "cache-control": "no-store" } });
+});
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
@@ -27,5 +42,5 @@ const csrfMiddleware = createCsrfMiddleware({
 
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [errorMiddleware, csrfMiddleware],
+  requestMiddleware: [errorMiddleware, csrfMiddleware, siteAccessMiddleware],
 }));
