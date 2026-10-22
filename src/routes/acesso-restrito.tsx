@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowRight, LockKeyhole, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { commerceHead } from "@/lib/commerce-schema";
 import { safeAccessReturn, SITE_LAUNCH_DATE } from "@/lib/site-access";
@@ -32,11 +32,11 @@ function RestrictedAccess() {
   return <main className="launch-access">
     <section className="launch-access-intro">
       <img src={logo.url} alt="Empiria" className="launch-access-logo" />
-      <div><span className="launch-access-label">LANÇAMENTO OFICIAL</span><h1>A prática tem<br />data para começar.</h1><p>A plataforma Empiria será lançada oficialmente em <strong>{SITE_LAUNCH_DATE}</strong>.</p><p>Em breve, você poderá viver a rotina de um escritório simulado e desenvolver segurança para atuar.</p></div>
+      <div><h1>A prática tem<br />data para começar.</h1><p>A plataforma Empiria será lançada oficialmente em <strong>{SITE_LAUNCH_DATE}</strong>.</p><p>Em breve, você poderá viver a rotina de um escritório simulado e desenvolver segurança para atuar.</p></div>
       <img src={workspace} alt="Mesa de trabalho com caderno e computador" className="launch-access-photo" />
     </section>
     <section className="launch-access-panel"><div className="launch-access-form">
-      <LockKeyhole size={28} aria-hidden="true" /><h2>Acesso restrito</h2><p>Antes do lançamento, a entrada é exclusiva para pessoas autorizadas.</p>
+      <h2>Acesso restrito</h2><p>Antes do lançamento, a entrada é exclusiva para pessoas autorizadas.</p>
       <form onSubmit={submit}>
         <label className="field">E-mail ou identificador<input name="username" autoComplete="username" required maxLength={100} /></label>
         <label className="field">Senha<span className="auth-input-wrap"><input name="password" type={visible ? "text" : "password"} autoComplete="current-password" required maxLength={128} /><Button type="button" size="icon" variant="ghost" aria-label={visible ? "Ocultar senha" : "Mostrar senha"} onClick={() => setVisible(!visible)}>{visible ? <EyeOff size={18} /> : <Eye size={18} />}</Button></span></label>
