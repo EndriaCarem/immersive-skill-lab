@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { getPaymentConfig, payTestOrder, refreshPaymentTest } from "@/lib/mercado-pago.functions";
-import { testPaymentLabel, type PaymentView } from "@/lib/mercado-pago-rules";
+import { testPaymentLabel, type DirectPayment, type PaymentView } from "@/lib/mercado-pago-rules";
 import { brl } from "@/lib/store";
 
 type Method = "pix" | "boleto" | "card";
@@ -43,7 +43,7 @@ export function PaymentPanel({ orderId, totalCents, initialMethod = "pix", onCha
     console.error(`[Pagamento] falha (${where}):`, e);
     setError(e instanceof Error ? e.message : "Não foi possível concluir o pagamento de teste.");
   }
-  async function run(input: Parameters<typeof pay>[0]["data"]) {
+  async function run(input: DirectPayment) {
     setBusy(true); setError("");
     try {
       const view = await pay({ data: input });
