@@ -220,6 +220,7 @@ export type Database = {
           created_at: string
           id: string
           installments: number
+          live: boolean
           method: string
           order_id: string
           payment_id: string | null
@@ -234,6 +235,7 @@ export type Database = {
           created_at?: string
           id?: string
           installments: number
+          live?: boolean
           method: string
           order_id: string
           payment_id?: string | null
@@ -248,6 +250,7 @@ export type Database = {
           created_at?: string
           id?: string
           installments?: number
+          live?: boolean
           method?: string
           order_id?: string
           payment_id?: string | null
@@ -498,6 +501,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_commerce_payment: {
+        Args: { p_order: string; p_status: string }
+        Returns: string
+      }
       cancel_commerce_order: {
         Args: { p_order: string; p_reason: string; p_user: string }
         Returns: string
