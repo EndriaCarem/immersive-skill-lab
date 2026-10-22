@@ -1283,3 +1283,17 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .launch-access-panel>small{color:var(--slate);margin-top:64px}
 @media(max-width:1000px){.launch-access-intro{padding:40px 32px}.launch-access-panel{padding:40px 32px}.launch-access h1{font-size:36px}}
 @media(max-width:700px){.launch-access{grid-template-columns:minmax(0,1fr)}.launch-access-intro{padding:28px 24px;gap:28px}.launch-access h1{font-size:32px}.launch-access-panel{padding:32px 24px;border-left:0;border-top:1px solid var(--rule)}.launch-access-panel>small{margin-top:32px}}
+
+/* Checkout Transparente (Mercado Pago test) */
+.payment-panel{border:1px solid var(--edge);border-radius:14px;background:var(--paper);padding:22px;display:grid;gap:14px;margin:16px 0;max-width:640px}
+.payment-panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.payment-panel-head h2{margin:0}
+.payment-body{display:grid;gap:12px}
+.boleto-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+.boleto-form .btn{grid-column:1/-1}
+.payment-result{display:grid;gap:12px;justify-items:start}
+.pix-qr{width:220px;max-width:100%;aspect-ratio:1;border:1px solid var(--edge);border-radius:10px;background:#fff;padding:8px}
+.copy-code{display:flex;gap:8px;width:100%}
+.copy-code input{flex:1;min-width:0;border:1px solid var(--edge);border-radius:6px;padding:10px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px}
+.checkout-pay{max-width:640px}
+@media (max-width:560px){.boleto-form{grid-template-columns:1fr}.copy-code{flex-direction:column}.payment-panel{padding:16px}}

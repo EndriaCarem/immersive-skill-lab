@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { useAccount } from "@/lib/account";
 import { createOrder, previewCoupon } from "@/lib/commerce.functions";
-import { startPaymentTest } from "@/lib/mercado-pago.functions";
+import { PaymentPanel } from "@/components/PaymentPanel";
 import { commerceHead, discountCents, purchaseSchema } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
 export const Route = createFileRoute("/checkout")({
@@ -32,7 +32,7 @@ function Checkout() {
   const [loaded, setLoaded] = useState(false);
   const [requestId, setRequestId] = useState("");
   const create = useServerFn(createOrder);
-  const startTest = useServerFn(startPaymentTest);
+  const [pending, setPending] = useState<{ id: string; total: number; method: "pix" | "boleto" | "card" } | null>(null);
   const preview = useServerFn(previewCoupon);
   const [couponInfo, setCouponInfo] = useState<Awaited<ReturnType<typeof previewCoupon>> | null>(null);
   const nav = useNavigate();
@@ -95,8 +95,8 @@ function Checkout() {
       if (isFree) {
         await nav({ to: "/meus-programas" });
       } else {
-        const checkout = await startTest({ data: { orderId: order.id } });
-        window.location.assign(checkout.url);
+        console.info("[Checkout] pedido registrado; abrindo pagamento", order.id);
+        setPending({ id: order.id, total, method });
       }
     } catch (e) {
       console.error("[Checkout] falha ao registrar pedido / iniciar Mercado Pago:", e);
@@ -112,9 +112,14 @@ function Checkout() {
         <h1>Sua matrícula</h1>
         <div className="integration-notice">
           <b>Mercado Pago · ambiente de teste</b>
-          <p>Use somente uma conta compradora e cartões de teste do Mercado Pago. Não há cobrança real nem liberação de matrícula paga nesta etapa.</p>
+          <p>Pague aqui mesmo com Pix, cartão ou boleto, usando dados de teste. Não há cobrança real nem liberação de matrícula paga nesta etapa.</p>
         </div>
-        {!loaded ? (
+        {pending ? (
+          <div className="checkout-pay">
+            <PaymentPanel orderId={pending.id} totalCents={pending.total} initialMethod={pending.method} />
+            <p className="muted sm">Você também encontra este pagamento em <Link to="/compras">Minhas compras</Link>.</p>
+          </div>
+        ) : !loaded ? (
           <p>Carregando cursos…</p>
         ) : (
           <form onSubmit={submit} className="checkout-layout">
@@ -225,7 +230,7 @@ function Checkout() {
                   className="btn wide"
                   disabled={busy || !terms || !consent || !selected.length}
                 >
-                  {busy ? "Preparando…" : isFree ? "Ativar matrícula" : "Testar pagamento no Mercado Pago"}
+                  {busy ? "Preparando…" : isFree ? "Ativar matrícula" : "Continuar para o pagamento"}
                 </Button>
               ) : (
                 <Link to="/auth" className="btn wide">
