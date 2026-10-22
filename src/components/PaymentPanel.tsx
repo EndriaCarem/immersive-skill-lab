@@ -79,7 +79,7 @@ export function PaymentPanel({ orderId, totalCents, initialMethod = "pix", onCha
             onReady: () => { if (!cancelled) setCardState("ready"); },
             onError: (e: unknown) => console.error("[Pagamento] erro no formulário de cartão:", e),
             onSubmit: (f: { token: string; issuer_id?: string | number; payment_method_id: string; installments: number; payer: { email: string; identification?: { type: string; number: string } } }) =>
-              run({ method: "card", orderId, token: f.token, paymentMethodId: f.payment_method_id, issuerId: f.issuer_id, installments: Number(f.installments), payerEmail: f.payer.email, identification: f.payer.identification }),
+              run({ method: "card", orderId, token: f.token, paymentMethodId: f.payment_method_id, issuerId: f.issuer_id == null ? undefined : String(f.issuer_id), installments: Number(f.installments), payerEmail: f.payer.email, identification: f.payer.identification }),
           },
         });
         if (cancelled) controller.unmount(); else brick.current = controller;
