@@ -46,12 +46,12 @@ export async function startTestCheckout(orderId: string, userId: string) {
     method: order.payment_method, installments: order.installments,
   }).select("*").single();
   if (insertError || !attempt) throw new Error("Não foi possível iniciar o teste. Atualize suas compras.");
-  let preference: { id: string; sandbox_init_point: string };
+  let preference: { id: string; init_point: string; sandbox_init_point?: string | null };
   try {
     const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
     const excluded = excludedMethods(methods, order.payment_method);
     console.info("[MercadoPago] creating test preference", { attempt: attempt.id, method: order.payment_method, installments: order.installments, amount: order.total_cents, excluded: excluded.length });
-    preference = z.object({ id: z.string(), sandbox_init_point: z.string().url() }).parse(await mpRequest("/checkout/preferences", {
+    preference = z.object({ id: z.string(), init_point: z.string().url(), sandbox_init_point: z.string().url().nullish() }).parse(await mpRequest("/checkout/preferences", {
       method: "POST", body: JSON.stringify({
         items: [{ id: order.id, title: "Empiria — teste de matrícula", quantity: 1, currency_id: "BRL", unit_price: order.total_cents / 100 }],
         external_reference: `empiria-test:${attempt.id}`,
@@ -66,8 +66,9 @@ export async function startTestCheckout(orderId: string, userId: string) {
     await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", attempt.id).is("checkout_url", null);
     throw e;
   }
-  const checkout = new URL(preference.sandbox_init_point);
-  if (checkout.protocol !== "https:" || checkout.hostname !== "sandbox.mercadopago.com.br") throw new Error("Endereço de teste inválido.");
+  // Test sellers (verified by testSeller) now receive a regular init_point; no real charge is possible.
+  const checkout = new URL(preference.sandbox_init_point || preference.init_point);
+  if (checkout.protocol !== "https:" || !["sandbox.mercadopago.com.br", "www.mercadopago.com.br"].includes(checkout.hostname)) throw new Error("Endereço de teste inválido.");
   const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ preference_id: preference.id, checkout_url: checkout.href, status: "ready" }).eq("id", attempt.id);
   if (saveError) throw new Error("Teste criado, mas o endereço não pôde ser salvo. Solicite ajuda antes de tentar novamente.");
   return { url: checkout.href };
