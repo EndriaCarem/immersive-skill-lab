@@ -42,3 +42,12 @@ describe("Checkout Transparente body", () => {
     expect(() => directPaymentSchema.parse({ method: "boleto", orderId, payer })).toThrow();
   });
 });
+
+describe("Production switch", () => {
+  it("rejects a test payment when the attempt is live", () => {
+    expect(matchesTestPayment(payment, { ...attempt, live: true }, 20)).toBe(false);
+  });
+  it("accepts a live payment with the production reference", () => {
+    expect(matchesTestPayment({ ...payment, live_mode: true, external_reference: "empiria:attempt" }, { ...attempt, live: true }, 20)).toBe(true);
+  });
+});

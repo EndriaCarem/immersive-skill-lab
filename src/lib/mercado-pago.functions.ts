@@ -8,7 +8,10 @@ const input = z.object({ orderId: z.string().uuid() });
 /** Public key is publishable; card data is tokenized in the browser and never reaches our server. */
 export const getPaymentConfig = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => ({ publicKey: process.env["MERCADO_PAGO_TEST_PUBLIC_KEY"] ?? null }));
+  .handler(async () => {
+    const live = Boolean(process.env["MERCADO_PAGO_ACCESS_TOKEN"]);
+    return { live, publicKey: (live ? process.env["MERCADO_PAGO_PUBLIC_KEY"] : process.env["MERCADO_PAGO_TEST_PUBLIC_KEY"]) ?? null };
+  });
 
 export const payTestOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth]).inputValidator((x) => directPaymentSchema.parse(x))

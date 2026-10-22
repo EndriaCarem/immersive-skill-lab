@@ -36,6 +36,13 @@
       "when": 1792685123051,
       "tag": "0004_mercado_pago_test_checkouts",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792697289999,
+      "tag": "0005_migration",
+      "breakpoints": true
     }
   ]
 }
