@@ -1272,6 +1272,9 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .launch-access h2{font-family:var(--font-brand);font-size:30px;line-height:1.2;color:var(--plum);margin-bottom:14px}
 .launch-access-form>p{color:var(--slate);margin-bottom:32px}
 .launch-access-form form{display:grid;gap:20px}
+.launch-access-form .auth-input-wrap{display:flex;align-items:center;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.launch-access-form .auth-input-wrap input{min-width:0;flex:1;border:0;border-radius:0;margin:0}
+.launch-access-form .auth-input-wrap button{flex-shrink:0;margin-right:6px}
 .launch-access-form .btn{width:100%;min-height:48px;gap:12px}
 .launch-access-error{color:var(--low);font-size:14px}
 .launch-access-panel>small{color:var(--slate);margin-top:64px}
