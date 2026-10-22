@@ -212,6 +212,66 @@ export type Database = {
           },
         ]
       }
+      commerce_payment_tests: {
+        Row: {
+          amount_cents: number
+          checked_at: string | null
+          checkout_url: string | null
+          created_at: string
+          id: string
+          installments: number
+          method: string
+          order_id: string
+          payment_id: string | null
+          preference_id: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          checked_at?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          id?: string
+          installments: number
+          method: string
+          order_id: string
+          payment_id?: string | null
+          preference_id?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          checked_at?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          id?: string
+          installments?: number
+          method?: string
+          order_id?: string
+          payment_id?: string | null
+          preference_id?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commerce_payment_tests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "commerce_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commerce_payment_tests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commerce_products: {
         Row: {
           active: boolean
