@@ -13,9 +13,9 @@ const siteAccessMiddleware = createMiddleware().server(async ({ next, request })
   if (url.pathname.startsWith("/api/") || request.headers.get("accept")?.includes("application/json")) {
     return Response.json({ error: "Restricted access required" }, { status: 401, headers: { "cache-control": "no-store" } });
   }
-  const destination = new URL("/acesso-restrito", url.origin);
-  destination.searchParams.set("returnTo", url.pathname + url.search);
-  return new Response(null, { status: 302, headers: { location: destination.toString(), "cache-control": "no-store" } });
+  // Relative location: behind proxies/local dev, url.origin may be an internal host (e.g. localhost).
+  const location = `/acesso-restrito?${new URLSearchParams({ returnTo: url.pathname + url.search })}`;
+  return new Response(null, { status: 302, headers: { location, "cache-control": "no-store" } });
 });
 
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
