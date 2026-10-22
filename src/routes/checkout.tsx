@@ -99,6 +99,7 @@ function Checkout() {
         window.location.assign(checkout.url);
       }
     } catch (e) {
+      console.error("[Checkout] falha ao registrar pedido / iniciar Mercado Pago:", e);
       setMessage(e instanceof Error ? e.message : "Não foi possível registrar seu pedido.");
     } finally {
       setBusy(false);
