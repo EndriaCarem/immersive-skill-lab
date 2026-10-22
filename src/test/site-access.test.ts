@@ -10,19 +10,19 @@ describe("restricted launch access", () => {
   });
   it("uses the requested official launch day", () => { expect(SITE_LAUNCH_DATE).toBe("28 de outubro de 2026"); });
   it("requires both server-configured credentials and fails closed", () => {
-    const previousUser = process.env.SITE_ACCESS_USERNAME;
-    const previousPassword = process.env.SITE_PASSWORD;
-    process.env.SITE_ACCESS_USERNAME = "fixture-user";
-    process.env.SITE_PASSWORD = "fixture-password";
+    const previousUser = process.env["SITE_ACCESS_USERNAME"];
+    const previousPassword = process.env["SITE_PASSWORD"];
+    process.env["SITE_ACCESS_USERNAME"] = "fixture-user";
+    process.env["SITE_PASSWORD"] = "fixture-password";
     try {
       expect(verifySiteCredentials("fixture-user", "wrong")).toBe(false);
       expect(verifySiteCredentials("wrong", "fixture-password")).toBe(false);
       expect(verifySiteCredentials("fixture-user", "fixture-password")).toBe(true);
-      delete process.env.SITE_PASSWORD;
+      delete process.env["SITE_PASSWORD"];
       expect(verifySiteCredentials("fixture-user", "fixture-password")).toBe(false);
     } finally {
-      if (previousUser === undefined) delete process.env.SITE_ACCESS_USERNAME; else process.env.SITE_ACCESS_USERNAME = previousUser;
-      if (previousPassword === undefined) delete process.env.SITE_PASSWORD; else process.env.SITE_PASSWORD = previousPassword;
+      if (previousUser === undefined) delete process.env["SITE_ACCESS_USERNAME"]; else process.env["SITE_ACCESS_USERNAME"] = previousUser;
+      if (previousPassword === undefined) delete process.env["SITE_PASSWORD"]; else process.env["SITE_PASSWORD"] = previousPassword;
     }
   });
   it("only returns visitors to same-site pages", () => {

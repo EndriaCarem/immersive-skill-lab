@@ -8,7 +8,7 @@ import logo from "@/assets/empiria-logo.png.asset.json";
 import workspace from "@/assets/auth-workspace.jpg";
 
 export const Route = createFileRoute("/acesso-restrito")({
-  validateSearch: (search: Record<string, unknown>) => ({ returnTo: safeAccessReturn(search.returnTo) }),
+  validateSearch: (search: Record<string, unknown>) => ({ returnTo: safeAccessReturn(search["returnTo"]) }),
   head: () => ({ ...commerceHead("Lançamento oficial · Acesso restrito", "A Empiria será lançada oficialmente em 28 de outubro de 2026. Acesso restrito a convidados."), meta: [...commerceHead("Lançamento oficial · Acesso restrito", "A Empiria será lançada oficialmente em 28 de outubro de 2026. Acesso restrito a convidados.").meta, { name: "robots", content: "noindex, nofollow" }] }),
   component: RestrictedAccess,
 });
