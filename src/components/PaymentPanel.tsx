@@ -36,12 +36,14 @@ export function PaymentPanel({ orderId, totalCents, initialMethod = "pix", onCha
   const [copied, setCopied] = useState(false);
   const [boleto, setBoleto] = useState(emptyBoleto);
   const [cardState, setCardState] = useState<"loading" | "ready" | "missing" | "error">("loading");
+  const [live, setLive] = useState<boolean | null>(null);
+  useEffect(() => { void config().then((c) => setLive(c.live)).catch(() => setLive(null)); }, [config]);
   const brick = useRef<BrickController | null>(null);
   const containerId = `mp-card-${orderId.slice(0, 8)}`;
 
   function fail(e: unknown, where: string) {
     console.error(`[Pagamento] falha (${where}):`, e);
-    setError(e instanceof Error ? e.message : "Não foi possível concluir o pagamento de teste.");
+    setError(e instanceof Error ? e.message : "Não foi possível concluir o pagamento.");
   }
   async function run(input: DirectPayment) {
     setBusy(true); setError("");
@@ -101,7 +103,7 @@ export function PaymentPanel({ orderId, totalCents, initialMethod = "pix", onCha
         <h2>Pagamento</h2>
         <b>{brl(totalCents / 100)}</b>
       </header>
-      <p className="muted sm">Ambiente de teste do Mercado Pago: nenhuma cobrança real e nenhuma matrícula paga é liberada.</p>
+      <p className="muted sm">{live === false ? "Ambiente de teste do Mercado Pago: nenhuma cobrança real e nenhuma matrícula é liberada." : "Pagamento processado com segurança pelo Mercado Pago. A matrícula é liberada assim que o pagamento é aprovado."}</p>
 
       {result ? (
         <div className="payment-result">
@@ -145,7 +147,7 @@ export function PaymentPanel({ orderId, totalCents, initialMethod = "pix", onCha
 
           {method === "card" && (
             <div className="payment-body">
-              {cardState === "missing" && <p className="integration-notice">O pagamento com cartão aguarda a chave pública de teste do Mercado Pago.</p>}
+              {cardState === "missing" && <p className="integration-notice">O pagamento com cartão ainda não está disponível. Use Pix ou boleto.</p>}
               {cardState === "loading" && <p className="muted">Carregando formulário seguro…</p>}
               <div id={containerId} />
               <p className="muted sm">Os dados do cartão vão direto para o Mercado Pago. Em até 6x.</p>

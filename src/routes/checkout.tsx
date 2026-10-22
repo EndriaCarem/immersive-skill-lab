@@ -111,8 +111,8 @@ function Checkout() {
         <div className="eyebrow">Conta, compra e matrícula</div>
         <h1>Sua matrícula</h1>
         <div className="integration-notice">
-          <b>Mercado Pago · ambiente de teste</b>
-          <p>Pague aqui mesmo com Pix, cartão ou boleto, usando dados de teste. Não há cobrança real nem liberação de matrícula paga nesta etapa.</p>
+          <b>Pagamento seguro · Mercado Pago</b>
+          <p>Pague aqui mesmo com Pix, cartão em até 6x ou boleto. A matrícula é liberada assim que o pagamento for aprovado.</p>
         </div>
         {pending ? (
           <div className="checkout-pay">

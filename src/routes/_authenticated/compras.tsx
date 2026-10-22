@@ -35,7 +35,7 @@ function Purchases() {
     setMessage("");
     try {
       const result = await refreshTest({ data: { orderId } });
-      setMessage(result.found ? `${testPaymentLabel[result.status] ?? result.status}. Testes não liberam matrículas pagas.` : "Nenhum pagamento encontrado no Mercado Pago para este teste.");
+      setMessage(result.found ? `${testPaymentLabel[result.status] ?? result.status}.` : "Nenhum pagamento encontrado no Mercado Pago para este pedido.");
       await queryClient.invalidateQueries({ queryKey: ["account"] });
     } catch (e) {
       console.error("[Compras] falha no pagamento de teste do Mercado Pago:", e);
@@ -69,7 +69,7 @@ function Purchases() {
           </Link>
         </nav>
         <p role="status">{message}</p>
-        <div className="integration-notice"><b>Pagamentos em teste</b><p>O resultado do Mercado Pago é exibido separadamente. Testes não representam dinheiro recebido nem ativam matrículas pagas.</p></div>
+        <div className="integration-notice"><b>Pagamentos via Mercado Pago</b><p>Pix e boleto podem levar alguns minutos para confirmar. A matrícula é liberada assim que o pagamento é aprovado.</p></div>
         {!data.orders.length && <p className="muted">Você ainda não tem pedidos. Encontre seu próximo curso no catálogo.</p>}
         <div className="order-list">
           {data.orders.map((o) => (
@@ -92,10 +92,10 @@ function Purchases() {
               {data.paymentTests.filter((t) => t.order_id === o.id).map((t) => (
                 <p className="muted sm" key={t.order_id}>Mercado Pago: {testPaymentLabel[t.status] ?? t.status}</p>
               ))}
-              {o.status === "awaiting_integration" && o.total_cents > 0 && (
+              {["awaiting_integration", "pending", "rejected"].includes(o.status) && o.total_cents > 0 && (
                 <div className="commerce-actions">
-                  <Button className="btn" disabled={busy} onClick={() => setPaying(paying === o.id ? null : o.id)}>{paying === o.id ? "Fechar pagamento" : "Pagar (teste)"}</Button>
-                  {data.paymentTests.some((t) => t.order_id === o.id) && <Button className="btn ghost" disabled={busy} onClick={() => void paymentAction(o.id)}>Atualizar resultado do teste</Button>}
+                  <Button className="btn" disabled={busy} onClick={() => setPaying(paying === o.id ? null : o.id)}>{paying === o.id ? "Fechar pagamento" : "Pagar"}</Button>
+                  {data.paymentTests.some((t) => t.order_id === o.id) && <Button className="btn ghost" disabled={busy} onClick={() => void paymentAction(o.id)}>Atualizar status do pagamento</Button>}
                 </div>
               )}
               {paying === o.id && (

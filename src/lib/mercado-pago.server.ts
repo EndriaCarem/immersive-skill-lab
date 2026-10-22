@@ -45,6 +45,10 @@ export async function createDirectTestPayment(input: DirectPayment, userId: stri
   if (error || !order || !["awaiting_integration", "pending", "rejected"].includes(order.status) || order.total_cents <= 0) throw new Error("Este pedido não está disponível para teste de pagamento.");
   const existing = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("order_id", order.id).maybeSingle();
   if (existing.error) throw new Error("Não foi possível consultar o teste.");
+  if (existing.data && existing.data.live !== isLiveMode() && existing.data.status !== "approved") {
+    await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", existing.data.id);
+    existing.data = null;
+  }
   if (existing.data?.payment_id && OPEN_STATUSES.includes(existing.data.status)) {
     // Never create a duplicate charge: show the existing payment (e.g. the same Pix code) instead.
     return paymentView(paymentViewSchema.parse(await mpRequest(`/v1/payments/${existing.data.payment_id}`)));
@@ -67,7 +71,7 @@ export async function createDirectTestPayment(input: DirectPayment, userId: stri
       body: JSON.stringify(buildPaymentBody(input, { attemptId: attempt.id, amountCents: order.total_cents, email, live: attempt.live, notificationUrl: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}` })),
     });
     const payment = paymentViewSchema.parse(raw);
-    if (!matchesTestPayment(payment, attempt, sellerId)) throw new Error("Resposta do Mercado Pago não corresponde a este teste.");
+    if (!matchesTestPayment(payment, attempt, sellerId)) throw new Error("Resposta do Mercado Pago não corresponde a este pedido.");
     view = paymentView(payment);
     updatedAt = payment.date_last_updated;
     console.info("[MercadoPago] test payment created", { attempt: attempt.id, status: payment.status, detail: payment.status_detail });
@@ -87,7 +91,7 @@ export async function reconcileTestPayment(paymentId: string, userId?: string) {
   const payment = paymentViewSchema.parse(await mpRequest(`/v1/payments/${paymentId}`));
   const attemptId = z.string().uuid().parse(referenceAttemptId(payment.external_reference));
   const { data: attempt, error } = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("id", attemptId).single();
-  if (error || !attempt || (userId && attempt.user_id !== userId) || !matchesTestPayment(payment, attempt, sellerId)) throw new Error("Pagamento não corresponde a este teste da Empiria.");
+  if (error || !attempt || (userId && attempt.user_id !== userId) || !matchesTestPayment(payment, attempt, sellerId)) throw new Error("Pagamento não corresponde a este pedido da Empiria.");
   const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({
     payment_id: String(payment.id), status: payment.status, checked_at: payment.date_last_updated,
   }).eq("id", attempt.id).or(`checked_at.is.null,checked_at.lte.${payment.date_last_updated}`);
