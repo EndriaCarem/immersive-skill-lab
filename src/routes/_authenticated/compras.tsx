@@ -42,6 +42,7 @@ function Purchases() {
       }
       await queryClient.invalidateQueries({ queryKey: ["account"] });
     } catch (e) {
+      console.error("[Compras] falha no pagamento de teste do Mercado Pago:", e);
       setMessage(e instanceof Error ? e.message : "Não foi possível consultar o pagamento.");
     } finally { setBusy(false); }
   }

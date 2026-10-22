@@ -29,9 +29,11 @@ export function matchesTestPayment(payment: z.infer<typeof paymentSchema>, expec
 }
 
 export function excludedMethods(methods: { id: string; payment_type_id: string; status: string }[], method: string) {
-  return methods.filter((m) => m.status === "active" && !(method === "pix" ? m.id === "pix"
+  // Mercado Pago rejects excluding account_money (400); ids are deduplicated.
+  const ids = methods.filter((m) => m.status === "active" && m.id !== "account_money" && !(method === "pix" ? m.id === "pix"
     : method === "boleto" ? m.payment_type_id === "ticket" : m.payment_type_id === "credit_card"))
-    .map((m) => ({ id: m.id }));
+    .map((m) => m.id);
+  return [...new Set(ids)].map((id) => ({ id }));
 }
 
 export async function verifyMpSignature(headers: Headers, id: string, secret: string, now = Date.now()) {

@@ -14,9 +14,15 @@ async function mpRequest(path: string, init?: RequestInit) {
     signal: AbortSignal.timeout(20000),
   });
   if (!response.ok) {
-    // Do not log provider bodies: some payment errors echo personal or credential data.
-    console.error("Mercado Pago request failed", response.status);
-    throw new Error(`Mercado Pago não concluiu a solicitação (${response.status}). Tente novamente pela página de compras.`);
+    // Log only provider error codes/descriptions, never the full body (may echo personal data).
+    let detail = "";
+    try {
+      const body = (await response.json()) as { message?: string; error?: string; cause?: { code?: unknown; description?: string }[] };
+      const causes = (body.cause ?? []).map((c) => `${c.code ?? ""} ${c.description ?? ""}`.trim()).filter(Boolean).join("; ");
+      detail = [body.error, body.message, causes].filter(Boolean).join(" | ").slice(0, 400);
+    } catch { /* non-JSON body */ }
+    console.error("[MercadoPago] request failed", { path: path.split("?")[0], status: response.status, detail });
+    throw new Error(`Mercado Pago não concluiu a solicitação (${response.status}${detail ? `: ${detail}` : ""}). Tente novamente pela página de compras.`);
   }
   return response.json();
 }
@@ -40,19 +46,29 @@ export async function startTestCheckout(orderId: string, userId: string) {
     method: order.payment_method, installments: order.installments,
   }).select("*").single();
   if (insertError || !attempt) throw new Error("Não foi possível iniciar o teste. Atualize suas compras.");
-  const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
-  const preference = z.object({ id: z.string(), sandbox_init_point: z.string().url() }).parse(await mpRequest("/checkout/preferences", {
-    method: "POST", body: JSON.stringify({
-      items: [{ id: order.id, title: "Empiria — teste de matrícula", quantity: 1, currency_id: "BRL", unit_price: order.total_cents / 100 }],
-      external_reference: `empiria-test:${attempt.id}`,
-      payment_methods: { excluded_payment_methods: excludedMethods(methods, order.payment_method), installments: order.payment_method === "card" ? order.installments : 1 },
-      back_urls: { success: `${RETURN_ORIGIN}/compras`, pending: `${RETURN_ORIGIN}/compras`, failure: `${RETURN_ORIGIN}/compras` },
-      notification_url: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}`,
-      statement_descriptor: "EMPIRIA TESTE",
-    }),
-  }));
-  const checkout = new URL(preference.sandbox_init_point);
-  if (checkout.protocol !== "https:" || checkout.hostname !== "sandbox.mercadopago.com.br") throw new Error("Endereço de teste inválido.");
+  let preference: { id: string; init_point: string; sandbox_init_point?: string | null | undefined };
+  try {
+    const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
+    const excluded = excludedMethods(methods, order.payment_method);
+    console.info("[MercadoPago] creating test preference", { attempt: attempt.id, method: order.payment_method, installments: order.installments, amount: order.total_cents, excluded: excluded.length });
+    preference = z.object({ id: z.string(), init_point: z.string().url(), sandbox_init_point: z.string().url().nullish() }).parse(await mpRequest("/checkout/preferences", {
+      method: "POST", body: JSON.stringify({
+        items: [{ id: order.id, title: "Empiria — teste de matrícula", quantity: 1, currency_id: "BRL", unit_price: order.total_cents / 100 }],
+        external_reference: `empiria-test:${attempt.id}`,
+        payment_methods: { excluded_payment_methods: excluded, installments: order.payment_method === "card" ? order.installments : 1 },
+        back_urls: { success: `${RETURN_ORIGIN}/compras`, pending: `${RETURN_ORIGIN}/compras`, failure: `${RETURN_ORIGIN}/compras` },
+        notification_url: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}`,
+        statement_descriptor: "EMPIRIA TESTE",
+      }),
+    }));
+  } catch (e) {
+    // Remove the unfinished attempt so the user can retry without being blocked.
+    await supabaseAdmin.from("commerce_payment_tests").delete().eq("id", attempt.id).is("checkout_url", null);
+    throw e;
+  }
+  // Test sellers (verified by testSeller) now receive a regular init_point; no real charge is possible.
+  const checkout = new URL(preference.sandbox_init_point || preference.init_point);
+  if (checkout.protocol !== "https:" || !["sandbox.mercadopago.com.br", "www.mercadopago.com.br"].includes(checkout.hostname)) throw new Error("Endereço de teste inválido.");
   const { error: saveError } = await supabaseAdmin.from("commerce_payment_tests").update({ preference_id: preference.id, checkout_url: checkout.href, status: "ready" }).eq("id", attempt.id);
   if (saveError) throw new Error("Teste criado, mas o endereço não pôde ser salvo. Solicite ajuda antes de tentar novamente.");
   return { url: checkout.href };
