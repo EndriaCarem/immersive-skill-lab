@@ -33,6 +33,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
 import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authenticated/admin.webinars'
 import { Route as ApiPublicAcessoRestritoRouteImport } from './routes/api/public/acesso-restrito'
+import { Route as ApiPublicMercadoPagoRouteImport } from './routes/api/public/mercado-pago'
 import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
@@ -160,6 +161,11 @@ const ApiPublicAcessoRestritoRoute = ApiPublicAcessoRestritoRouteImport.update({
   path: '/api/public/acesso-restrito',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMercadoPagoRoute = ApiPublicMercadoPagoRouteImport.update({
+  id: '/api/public/mercado-pago',
+  path: '/api/public/mercado-pago',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminProgramaIdRoute =
   AuthenticatedAdminProgramaIdRouteImport.update({
     id: '/admin/programa/$id',
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
+  '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
+  '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/_authenticated/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
+  '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/admin/comercial'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
+    | '/api/public/mercado-pago'
     | '/admin/'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/admin/comercial'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
+    | '/api/public/mercado-pago'
     | '/admin'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/comercial'
     | '/_authenticated/admin/webinars'
     | '/api/public/acesso-restrito'
+    | '/api/public/mercado-pago'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -393,6 +405,7 @@ export interface RootRouteChildren {
   WebinarsSlugRoute: typeof WebinarsSlugRoute
   WebinarsIndexRoute: typeof WebinarsIndexRoute
   ApiPublicAcessoRestritoRoute: typeof ApiPublicAcessoRestritoRoute
+  ApiPublicMercadoPagoRoute: typeof ApiPublicMercadoPagoRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -569,6 +582,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAcessoRestritoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mercado-pago': {
+      id: '/api/public/mercado-pago'
+      path: '/api/public/mercado-pago'
+      fullPath: '/api/public/mercado-pago'
+      preLoaderRoute: typeof ApiPublicMercadoPagoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/programa/$id': {
       id: '/_authenticated/admin/programa/$id'
       path: '/admin/programa/$id'
@@ -648,6 +668,7 @@ const rootRouteChildren: RootRouteChildren = {
   WebinarsSlugRoute: WebinarsSlugRoute,
   WebinarsIndexRoute: WebinarsIndexRoute,
   ApiPublicAcessoRestritoRoute: ApiPublicAcessoRestritoRoute,
+  ApiPublicMercadoPagoRoute: ApiPublicMercadoPagoRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
