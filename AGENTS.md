@@ -10,6 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Simulation content, submissions and grading remain an isolated browser-local demo; real accounts, commercial products, orders and enrollments use Cloud and must never merge demo learner records.
+- Pre-launch access is enforced by global server request middleware and client navigation checks, using server-only credential verification and an encrypted HttpOnly cookie; this prevents route bypasses without replacing customer auth or admin authorization.
 - Commercial writes use validated authenticated server functions and atomic database operations; prices, coupons, consent and entitlements are server-authoritative.
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.
 - Administrative navigation uses an account-scoped role RPC query and stays hidden until verified; navigation visibility never replaces route or server authorization.

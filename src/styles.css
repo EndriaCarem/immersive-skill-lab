@@ -1256,3 +1256,27 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 /* Header vítreo ao rolar: mesmo estilo no topo, vidro fixo ao rolar */
 .topnav{position:sticky;top:0;transition:background-color .35s ease,box-shadow .35s ease,border-color .35s ease}
 .topnav.scrolled{background:color-mix(in oklab,var(--paper) 58%,transparent);backdrop-filter:blur(18px) saturate(160%);border-bottom-color:color-mix(in oklab,var(--edge) 60%,transparent);box-shadow:0 10px 30px -20px color-mix(in oklab,var(--plum) 45%,transparent)}
+
+/* Shared pre-launch entry, separate from customer account sign-in. */
+.launch-access{min-height:100dvh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);background:var(--canvas);color:var(--ink)}
+.launch-access-intro{padding:48px 64px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+.launch-access-logo{width:160px;height:auto;object-fit:contain;align-self:flex-start}
+.launch-access-label{font-size:12px;font-weight:700;color:var(--plum-mid)}
+.launch-access h1{font-family:var(--font-brand);font-size:44px;line-height:1.12;letter-spacing:0;color:var(--plum);margin:18px 0 24px}
+.launch-access-intro p{max-width:46ch;color:var(--slate);margin:12px 0;font-size:16px}
+.launch-access-intro strong{color:var(--plum)}
+.launch-access-photo{width:100%;height:190px;object-fit:cover;object-position:center 48%;border-radius:8px}
+.launch-access-panel{background:var(--paper);border-left:1px solid var(--rule);padding:48px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative}
+.launch-access-form{width:100%;max-width:380px}
+.launch-access-form>svg{color:var(--plum-mid);margin-bottom:20px}
+.launch-access h2{font-family:var(--font-brand);font-size:30px;line-height:1.2;color:var(--plum);margin-bottom:14px}
+.launch-access-form>p{color:var(--slate);margin-bottom:32px}
+.launch-access-form form{display:grid;gap:20px}
+.launch-access-form .auth-input-wrap{display:flex;align-items:center;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.launch-access-form .auth-input-wrap input{min-width:0;flex:1;border:0;border-radius:0;margin:0}
+.launch-access-form .auth-input-wrap button{flex-shrink:0;margin-right:6px}
+.launch-access-form .btn{width:100%;min-height:48px;gap:12px}
+.launch-access-error{color:var(--low);font-size:14px}
+.launch-access-panel>small{color:var(--slate);margin-top:64px}
+@media(max-width:1000px){.launch-access-intro{padding:40px 32px}.launch-access-panel{padding:40px 32px}.launch-access h1{font-size:36px}}
+@media(max-width:700px){.launch-access{grid-template-columns:minmax(0,1fr)}.launch-access-intro{padding:28px 24px;gap:28px}.launch-access h1{font-size:32px}.launch-access-photo{display:none}.launch-access-panel{padding:32px 24px;border-left:0;border-top:1px solid var(--rule)}.launch-access-panel>small{margin-top:32px}}

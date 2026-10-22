@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AcessoRestritoRouteImport } from './routes/acesso-restrito'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ConfirmarCadastroRouteImport } from './routes/confirmar-cadastro'
@@ -31,6 +32,7 @@ import { Route as WebinarsSlugRouteImport } from './routes/webinars.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
 import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authenticated/admin.webinars'
+import { Route as ApiPublicAcessoRestritoRouteImport } from './routes/api/public/acesso-restrito'
 import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
@@ -44,6 +46,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessoRestritoRoute = AcessoRestritoRouteImport.update({
+  id: '/acesso-restrito',
+  path: '/acesso-restrito',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -148,6 +155,11 @@ const AuthenticatedAdminWebinarsRoute =
     path: '/admin/webinars',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicAcessoRestritoRoute = ApiPublicAcessoRestritoRouteImport.update({
+  id: '/api/public/acesso-restrito',
+  path: '/api/public/acesso-restrito',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminProgramaIdRoute =
   AuthenticatedAdminProgramaIdRouteImport.update({
     id: '/admin/programa/$id',
@@ -177,6 +189,7 @@ const EstagioSlugNGabaritoRoute = EstagioSlugNGabaritoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acesso-restrito': typeof AcessoRestritoRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
@@ -196,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/webinars/': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
+  '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -205,6 +219,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acesso-restrito': typeof AcessoRestritoRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
@@ -224,6 +239,7 @@ export interface FileRoutesByTo {
   '/webinars': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
+  '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -235,6 +251,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/acesso-restrito': typeof AcessoRestritoRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
@@ -254,6 +271,7 @@ export interface FileRoutesById {
   '/webinars/': typeof WebinarsIndexRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
   '/_authenticated/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
+  '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
@@ -265,6 +283,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acesso-restrito'
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
@@ -284,6 +303,7 @@ export interface FileRouteTypes {
     | '/webinars/'
     | '/admin/comercial'
     | '/admin/webinars'
+    | '/api/public/acesso-restrito'
     | '/admin/'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -293,6 +313,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acesso-restrito'
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
@@ -312,6 +333,7 @@ export interface FileRouteTypes {
     | '/webinars'
     | '/admin/comercial'
     | '/admin/webinars'
+    | '/api/public/acesso-restrito'
     | '/admin'
     | '/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -322,6 +344,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/acesso-restrito'
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
@@ -341,6 +364,7 @@ export interface FileRouteTypes {
     | '/webinars/'
     | '/_authenticated/admin/comercial'
     | '/_authenticated/admin/webinars'
+    | '/api/public/acesso-restrito'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/programa/$id'
     | '/estagio/$slug/$n/caso'
@@ -352,6 +376,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AcessoRestritoRoute: typeof AcessoRestritoRoute
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   ConfirmarCadastroRoute: typeof ConfirmarCadastroRoute
@@ -367,6 +392,7 @@ export interface RootRouteChildren {
   ProgramaSlugRoute: typeof ProgramaSlugRoute
   WebinarsSlugRoute: typeof WebinarsSlugRoute
   WebinarsIndexRoute: typeof WebinarsIndexRoute
+  ApiPublicAcessoRestritoRoute: typeof ApiPublicAcessoRestritoRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -387,6 +413,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acesso-restrito': {
+      id: '/acesso-restrito'
+      path: '/acesso-restrito'
+      fullPath: '/acesso-restrito'
+      preLoaderRoute: typeof AcessoRestritoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -529,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminWebinarsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/acesso-restrito': {
+      id: '/api/public/acesso-restrito'
+      path: '/api/public/acesso-restrito'
+      fullPath: '/api/public/acesso-restrito'
+      preLoaderRoute: typeof ApiPublicAcessoRestritoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/programa/$id': {
       id: '/_authenticated/admin/programa/$id'
       path: '/admin/programa/$id'
@@ -591,6 +631,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AcessoRestritoRoute: AcessoRestritoRoute,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   ConfirmarCadastroRoute: ConfirmarCadastroRoute,
@@ -606,6 +647,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProgramaSlugRoute: ProgramaSlugRoute,
   WebinarsSlugRoute: WebinarsSlugRoute,
   WebinarsIndexRoute: WebinarsIndexRoute,
+  ApiPublicAcessoRestritoRoute: ApiPublicAcessoRestritoRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
