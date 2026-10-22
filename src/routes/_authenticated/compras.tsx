@@ -6,6 +6,8 @@ import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { accountOptions } from "./minha-conta";
 import { cancelOrder } from "@/lib/commerce.functions";
+import { refreshPaymentTest, startPaymentTest } from "@/lib/mercado-pago.functions";
+import { testPaymentLabel } from "@/lib/mercado-pago-rules";
 import { commerceHead, statusLabel } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
 export const Route = createFileRoute("/_authenticated/compras")({
@@ -20,11 +22,29 @@ export const Route = createFileRoute("/_authenticated/compras")({
 function Purchases() {
   const { data } = useSuspenseQuery(accountOptions());
   const cancel = useServerFn(cancelOrder);
+  const startTest = useServerFn(startPaymentTest);
+  const refreshTest = useServerFn(refreshPaymentTest);
   const { queryClient } = Route.useRouteContext();
   const [selected, setSelected] = useState<string | null>(null);
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  async function paymentAction(orderId: string, refresh: boolean) {
+    setBusy(true);
+    setMessage("");
+    try {
+      if (refresh) {
+        const result = await refreshTest({ data: { orderId } });
+        setMessage(result.found ? `${testPaymentLabel[result.status] ?? result.status}. Testes não liberam matrículas pagas.` : "Nenhum pagamento encontrado no Mercado Pago para este teste.");
+      } else {
+        const checkout = await startTest({ data: { orderId } });
+        window.location.assign(checkout.url);
+      }
+      await queryClient.invalidateQueries({ queryKey: ["account"] });
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "Não foi possível consultar o pagamento.");
+    } finally { setBusy(false); }
+  }
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!selected) return;
@@ -52,6 +72,7 @@ function Purchases() {
           </Link>
         </nav>
         <p role="status">{message}</p>
+        <div className="integration-notice"><b>Pagamentos em teste</b><p>O resultado do Mercado Pago é exibido separadamente. Testes não representam dinheiro recebido nem ativam matrículas pagas.</p></div>
         {!data.orders.length && <p className="muted">Você ainda não tem pedidos. Encontre seu próximo curso no catálogo.</p>}
         <div className="order-list">
           {data.orders.map((o) => (
@@ -68,8 +89,17 @@ function Purchases() {
               <span className="sig mid">{statusLabel[o.status] ?? o.status}</span>
               {o.status === "awaiting_integration" && (
                 <p className="muted sm">
-                  Nenhuma cobrança realizada. A matrícula paga depende da abertura dos pagamentos.
+                  Nenhuma cobrança real realizada. Pagamentos reais ainda não foram liberados.
                 </p>
+              )}
+              {data.paymentTests.filter((t) => t.order_id === o.id).map((t) => (
+                <p className="muted sm" key={t.order_id}>Mercado Pago: {testPaymentLabel[t.status] ?? t.status}</p>
+              ))}
+              {o.status === "awaiting_integration" && o.total_cents > 0 && (
+                <div className="commerce-actions">
+                  <Button className="btn" disabled={busy} onClick={() => void paymentAction(o.id, false)}>Testar pagamento</Button>
+                  {data.paymentTests.some((t) => t.order_id === o.id) && <Button className="btn ghost" disabled={busy} onClick={() => void paymentAction(o.id, true)}>Atualizar resultado do teste</Button>}
+                </div>
               )}
               <p className="muted sm">
                 Termos aceitos em {new Date(o.terms_accepted_at).toLocaleString("pt-BR")}

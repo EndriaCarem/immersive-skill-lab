@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import { useAccount } from "@/lib/account";
 import { createOrder, previewCoupon } from "@/lib/commerce.functions";
+import { startPaymentTest } from "@/lib/mercado-pago.functions";
 import { commerceHead, discountCents, purchaseSchema } from "@/lib/commerce-schema";
 import { brl } from "@/lib/store";
 export const Route = createFileRoute("/checkout")({
@@ -31,6 +32,7 @@ function Checkout() {
   const [loaded, setLoaded] = useState(false);
   const [requestId, setRequestId] = useState("");
   const create = useServerFn(createOrder);
+  const startTest = useServerFn(startPaymentTest);
   const preview = useServerFn(previewCoupon);
   const [couponInfo, setCouponInfo] = useState<Awaited<ReturnType<typeof previewCoupon>> | null>(null);
   const nav = useNavigate();
@@ -89,8 +91,13 @@ function Checkout() {
         source: tags["utm_source"] ?? "direct",
         tags,
       });
-      await create({ data: input });
-      await nav({ to: isFree ? "/meus-programas" : "/compras" });
+      const order = await create({ data: input });
+      if (isFree) {
+        await nav({ to: "/meus-programas" });
+      } else {
+        const checkout = await startTest({ data: { orderId: order.id } });
+        window.location.assign(checkout.url);
+      }
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Não foi possível registrar seu pedido.");
     } finally {
@@ -103,8 +110,8 @@ function Checkout() {
         <div className="eyebrow">Conta, compra e matrícula</div>
         <h1>Sua matrícula</h1>
         <div className="integration-notice">
-          <b>Pagamentos em preparação</b>
-          <p>Mercado Pago ainda não conectado. Nenhuma cobrança será realizada nesta etapa.</p>
+          <b>Mercado Pago · ambiente de teste</b>
+          <p>Use somente uma conta compradora e cartões de teste do Mercado Pago. Não há cobrança real nem liberação de matrícula paga nesta etapa.</p>
         </div>
         {!loaded ? (
           <p>Carregando cursos…</p>
@@ -163,14 +170,14 @@ function Checkout() {
                   >
                     {[1, 2, 3, 4, 5, 6].map((n) => (
                       <option key={n} value={n}>
-                        {n}x — condições a confirmar no pagamento
+                        Até {n}x — condições no Mercado Pago
                       </option>
                     ))}
                   </select>
                 </label>
               )}
               <p className="muted sm">
-                As condições de pagamento serão confirmadas após a integração.
+                Disponibilidade, juros e condições são confirmados no Mercado Pago.
               </p>
               </>)}
               {terms ? (
@@ -217,7 +224,7 @@ function Checkout() {
                   className="btn wide"
                   disabled={busy || !terms || !consent || !selected.length}
                 >
-                  {busy ? "Registrando…" : isFree ? "Ativar matrícula" : "Registrar pedido"}
+                  {busy ? "Preparando…" : isFree ? "Ativar matrícula" : "Testar pagamento no Mercado Pago"}
                 </Button>
               ) : (
                 <Link to="/auth" className="btn wide">

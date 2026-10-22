@@ -7,6 +7,8 @@ describe("restricted launch access", () => {
     for (const path of ["/", "/cursos", "/admin", "/auth", "/webinars", "/api/public/private", "/acesso-restrito/other"]) expect(isSiteAccessPublicPath(path)).toBe(false);
     expect(isSiteAccessPublicPath("/acesso-restrito")).toBe(true);
     expect(isSiteAccessPublicPath("/api/public/acesso-restrito")).toBe(true);
+    expect(isSiteAccessPublicPath("/api/public/mercado-pago")).toBe(true);
+    expect(isSiteAccessPublicPath("/api/public/mercado-pago/other")).toBe(false);
   });
   it("uses the requested official launch day", () => { expect(SITE_LAUNCH_DATE).toBe("28 de outubro de 2026"); });
   it("requires both server-configured credentials and fails closed", () => {

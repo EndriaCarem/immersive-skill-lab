@@ -7,7 +7,7 @@ import { purchaseSchema, profileSchema, couponSchema } from "./commerce-schema";
 export const accountData = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const [profile, roles, orders, enrollments] = await Promise.all([
+    const [profile, roles, orders, enrollments, paymentTests] = await Promise.all([
       context.supabase.from("profiles").select("*").eq("id", context.userId).single(),
       context.supabase.from("user_roles").select("role").eq("user_id", context.userId),
       context.supabase
@@ -19,8 +19,9 @@ export const accountData = createServerFn({ method: "GET" })
         .from("commerce_enrollments")
         .select("*, commerce_products(*)")
         .eq("user_id", context.userId),
+      context.supabase.from("commerce_payment_tests").select("order_id,status,checkout_url").eq("user_id", context.userId),
     ]);
-    for (const r of [profile, roles, orders, enrollments])
+    for (const r of [profile, roles, orders, enrollments, paymentTests])
       if (r.error) throw new Error("Não foi possível carregar sua conta.");
     return {
       profile: profile.data,
@@ -30,6 +31,7 @@ export const accountData = createServerFn({ method: "GET" })
         terms_ip: typeof o.terms_ip === "string" ? o.terms_ip : null,
       })),
       enrollments: enrollments.data ?? [],
+      paymentTests: paymentTests.data ?? [],
     };
   });
 export const saveProfile = createServerFn({ method: "POST" })

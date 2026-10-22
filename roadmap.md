@@ -14,4 +14,8 @@
 - [ ] Validar conta, pedido gratuito, histórico e cancelamento autenticados — aguardando primeiro cadastro confirmado; não há usuários de acesso para sessão de teste.
 - [ ] Liberar administração comercial — aguardando identificação da conta autorizada de Diego; nenhum cadastro recebe papel administrativo automaticamente.
 - [ ] Habilitar registro de pedidos — aguardando texto dos termos aprovado pela Empiria e publicação por administrador.
-- [ ] Ativar Mercado Pago e confirmação por Resend — aguardando credenciais e autorização de Diego.
+- [x] Preparar Mercado Pago em teste com pagamento externo, resultados separados e conferência segura; credencial validada e 22 testes aprovados.
+- [ ] Validar compra completa no Mercado Pago — aguardando termos publicados e identificação de uma conta Empiria autorizada para teste; a conta de Diego ainda não foi localizada.
+- [ ] Liberar pagamentos reais — aguardando validação em teste e autorização explícita; nenhum teste concede matrícula paga.
+- [ ] Configurar notificações Mercado Pago — aguardando publicação do endereço e chave de assinatura.
+- [ ] Ativar confirmação por Resend — aguardando credenciais e autorização de Diego.

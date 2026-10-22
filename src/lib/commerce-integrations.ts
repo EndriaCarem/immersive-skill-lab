@@ -12,6 +12,6 @@ export interface CommerceEmailProvider {
   sendCancellation(input: { orderId: string; recipient: string; idempotencyKey: string }): Promise<{ sent: boolean }>;
 }
 export const commerceIntegrationState = {
-  payment: { provider: "mercado_pago", enabled: false },
+  payment: { provider: "mercado_pago", enabled: true, mode: "test", liveEnabled: false },
   email: { provider: "resend", enabled: false },
 } as const;

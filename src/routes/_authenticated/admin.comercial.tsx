@@ -61,10 +61,9 @@ function Commercial() {
         <h1>Operação comercial</h1>
         <Link to="/admin">Editor e simulações</Link>
         <div className="integration-notice">
-          <b>Mercado Pago e Resend aguardando integração</b>
+          <b>Mercado Pago em teste · Resend pendente</b>
           <p>
-            Cobranças e confirmações por e-mail não estão ativadas. NFS-e: emissão manual nesta
-            etapa.
+            Testes de pagamento não alteram faturamento ou matrículas. Cobranças reais e confirmações por e-mail continuam desativadas. NFS-e: emissão manual nesta etapa.
           </p>
         </div>
         <div className="kpis">
