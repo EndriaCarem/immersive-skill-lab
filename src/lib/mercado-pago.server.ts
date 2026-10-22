@@ -49,13 +49,14 @@ export async function startTestCheckout(orderId: string, userId: string) {
   let preference: { id: string; init_point: string; sandbox_init_point?: string | null | undefined };
   try {
     const methods = z.array(z.object({ id: z.string(), payment_type_id: z.string(), status: z.string() })).parse(await mpRequest("/v1/payment_methods"));
-    const excluded = excludedMethods(methods, order.payment_method);
+    const excluded = excludedMethods(methods, order.payment_method); // kept for logging only
     console.info("[MercadoPago] creating test preference", { attempt: attempt.id, method: order.payment_method, installments: order.installments, amount: order.total_cents, excluded: excluded.length });
     preference = z.object({ id: z.string(), init_point: z.string().url(), sandbox_init_point: z.string().url().nullish() }).parse(await mpRequest("/checkout/preferences", {
       method: "POST", body: JSON.stringify({
         items: [{ id: order.id, title: "Empiria — teste de matrícula", quantity: 1, currency_id: "BRL", unit_price: order.total_cents / 100 }],
         external_reference: `empiria-test:${attempt.id}`,
-        payment_methods: { excluded_payment_methods: excluded, installments: order.payment_method === "card" ? order.installments : 1 },
+        // Test mode: show every method (Pix often needs a seller key and otherwise only "saldo" remains).
+        payment_methods: { installments: 6 },
         back_urls: { success: `${RETURN_ORIGIN}/compras`, pending: `${RETURN_ORIGIN}/compras`, failure: `${RETURN_ORIGIN}/compras` },
         notification_url: `${RETURN_ORIGIN}${MP_TEST_WEBHOOK_PATH}`,
         statement_descriptor: "EMPIRIA TESTE",
