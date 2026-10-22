@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { buildPaymentBody, matchesTestPayment, paymentIdSchema, paymentSchema, paymentView, paymentViewSchema, MP_TEST_WEBHOOK_PATH, type DirectPayment, type PaymentView } from "./mercado-pago-rules";
+import { buildPaymentBody, matchesTestPayment, paymentIdSchema, paymentView, paymentViewSchema, MP_TEST_WEBHOOK_PATH, type DirectPayment, type PaymentView } from "./mercado-pago-rules";
 
 const MP_API = "https://api.mercadopago.com";
 // Production is intentionally unavailable until test checkout is accepted.
@@ -94,6 +94,7 @@ export async function reconcileTestPayment(paymentId: string, userId?: string) {
 export async function refreshOrderTest(orderId: string, userId: string) {
   const { data: attempt, error } = await supabaseAdmin.from("commerce_payment_tests").select("*").eq("order_id", orderId).eq("user_id", userId).maybeSingle();
   if (error || !attempt) throw new Error("Este pedido ainda não possui um teste de pagamento.");
+  if (attempt.payment_id) return { ...(await reconcileTestPayment(attempt.payment_id, userId)), found: true };
   const results = z.object({ results: z.array(z.object({ id: z.number().int().positive() })) }).parse(await mpRequest(`/v1/payments/search?external_reference=${encodeURIComponent(`empiria-test:${attempt.id}`)}&sort=date_created&criteria=desc&limit=1`));
   const result = results.results[0];
   if (!result) return { status: attempt.status, found: false };
