@@ -46,7 +46,7 @@ export function discountCents(subtotal: number, kind: "percent" | "fixed", value
   return Math.min(subtotal, kind === "percent" ? Math.floor((subtotal * value) / 100) : value);
 }
 export const statusLabel: Record<string, string> = {
-  awaiting_integration: "Aguardando abertura dos pagamentos",
+  awaiting_integration: "Aguardando pagamento",
   pending: "Pagamento pendente",
   paid: "Pago",
   free: "Pedido gratuito",

@@ -15,7 +15,7 @@
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.
 - Administrative navigation uses an account-scoped role RPC query and stays hidden until verified; navigation visibility never replaces route or server authorization.
 - External payment and app-email adapters remain inactive until authorized integration; missing credentials never generate paid orders or sent-email claims.
-- Mercado Pago uses server-only Checkout Transparente test payments (card tokenized in-browser by the MP Brick; amount from the order) and a dedicated commerce_payment_tests table; test results never mark orders paid or grant real enrollments, and signed callbacks reconcile against the provider API.
+- Mercado Pago uses server-only Checkout Transparente payments (card tokenized in-browser by the MP Brick; amount from the order). Production credentials (MERCADO_PAGO_ACCESS_TOKEN) enable live mode; only live attempts update orders and enrollments via the service-only apply_commerce_payment function, while test attempts never do. Signed callbacks reconcile against the provider API.
 - Published terms are immutable versioned records; changes create a new version so existing order acceptance remains auditable.
 - Visual styles are ported from the uploaded mockup as plain CSS classes in src/styles.css; reuse those classes so screens stay faithful to the mockup.
 - Marketing pages use SiteShell (floating nav + footer); app screens use AppShell, which wraps SiteShell in a rounded frame, so navigation stays identical everywhere.

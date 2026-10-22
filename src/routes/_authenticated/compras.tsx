@@ -86,7 +86,7 @@ function Purchases() {
               <span className="sig mid">{statusLabel[o.status] ?? o.status}</span>
               {o.status === "awaiting_integration" && (
                 <p className="muted sm">
-                  Nenhuma cobrança real realizada. Pagamentos reais ainda não foram liberados.
+                  Aguardando pagamento.
                 </p>
               )}
               {data.paymentTests.filter((t) => t.order_id === o.id).map((t) => (
