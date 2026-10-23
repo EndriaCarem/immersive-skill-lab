@@ -13,5 +13,5 @@ export interface CommerceEmailProvider {
 }
 export const commerceIntegrationState = {
   payment: { provider: "mercado_pago", enabled: true, mode: "test", liveEnabled: false },
-  email: { provider: "titan_smtp", enabled: true },
+  email: { provider: "resend", enabled: true },
 } as const;
