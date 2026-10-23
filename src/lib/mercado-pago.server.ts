@@ -112,7 +112,13 @@ export async function refreshOrderTest(orderId: string, userId: string) {
   return { ...updated, found: true };
 }
 async function applyLive(orderId: string, status: string) {
+  const { data: before } = await supabaseAdmin.from("commerce_orders").select("status").eq("id", orderId).maybeSingle();
   const { data, error } = await supabaseAdmin.rpc("apply_commerce_payment", { p_order: orderId, p_status: status });
   if (error) { console.error("[MercadoPago] could not apply payment to order", { orderId, status }); throw new Error("Pagamento recebido, mas o pedido não pôde ser atualizado. A Empiria foi avisada."); }
   console.info("[MercadoPago] order updated", { orderId, status: data });
+  // Email only on the transition to paid, so repeated notifications never resend.
+  if (status === "approved" && before && before.status !== "paid") {
+    const { emailPaymentApproved } = await import("./email.server");
+    await emailPaymentApproved(orderId);
+  }
 }

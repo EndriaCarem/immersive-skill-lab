@@ -17,7 +17,7 @@ export const Route = createFileRoute("/contato")({
   component: Contact,
 });
 
-const EMAIL = "contato@empiria.com.br";
+const EMAIL = "atendimento@empiria-law.com";
 
 function Contact() {
   const blocks = [

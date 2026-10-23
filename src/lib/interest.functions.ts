@@ -17,5 +17,9 @@ export const submitInterest = createServerFn({ method: "POST" })
     });
     // A retry of the same request is already recorded; do not add duplicate rows.
     if (error && error.code !== "23505") return { success: false };
+    if (!error) {
+      const { emailInterestToTeam } = await import("./email.server");
+      await emailInterestToTeam(data);
+    }
     return { success: true };
   });
