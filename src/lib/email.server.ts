@@ -1,6 +1,5 @@
-// App email via the Empiria Titan (GoDaddy) mailbox over SMTP. Failures are logged, never thrown,
+// App email via Resend, sent as the Empiria atendimento address (replies land in the Titan mailbox). Failures are logged, never thrown,
 // so an email problem never blocks an order, payment or form submission.
-import nodemailer from "nodemailer";
 
 export const EMAIL_FROM_ADDRESS = "atendimento@empiria-law.com";
 const SITE = "https://empiria-law.com";
@@ -22,25 +21,27 @@ ${cta ? `<p style="margin:24px 0 0"><a href="${cta.href}" style="background:#3B2
 }
 
 export async function sendEmail(input: { to: string; subject: string; html: string; replyTo?: string }) {
-  const pass = process.env["TITAN_SMTP_PASSWORD"];
-  if (!pass) {
-    console.warn("[Email] envio desativado: senha da caixa não configurada");
+  const key = process.env["RESEND_API_KEY"];
+  if (!key) {
+    console.warn("[Email] envio desativado: chave do Resend não configurada");
     return { sent: false };
   }
   try {
-    const transport = nodemailer.createTransport({
-      host: "smtp.titan.email",
-      port: 465,
-      secure: true,
-      auth: { user: EMAIL_FROM_ADDRESS, pass: pass.trim() },
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key.trim()}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: `Empiria <${EMAIL_FROM_ADDRESS}>`,
+        to: [input.to],
+        reply_to: input.replyTo ?? EMAIL_FROM_ADDRESS,
+        subject: input.subject,
+        html: input.html,
+      }),
     });
-    await transport.sendMail({
-      from: `Empiria <${EMAIL_FROM_ADDRESS}>`,
-      to: input.to,
-      replyTo: input.replyTo ?? EMAIL_FROM_ADDRESS,
-      subject: input.subject,
-      html: input.html,
-    });
+    if (!res.ok) {
+      console.error("[Email] Resend recusou o envio", { status: res.status, body: await res.text(), subject: input.subject });
+      return { sent: false };
+    }
     console.info("[Email] enviado", { subject: input.subject });
     return { sent: true };
   } catch (e) {
