@@ -65,6 +65,12 @@ export const createOrder = createServerFn({ method: "POST" })
       p_tags: data.tags,
     });
     if (error) throw new Error(error.message);
+    const { data: o } = await supabaseAdmin.from("commerce_orders").select("total_cents,created_at").eq("id", id as string).maybeSingle();
+    // Skip resends when the same request id returns an existing order.
+    if (o && Date.now() - new Date(o.created_at).getTime() < 60_000) {
+      const { emailOrderCreated } = await import("./email.server");
+      await emailOrderCreated(id as string, o.total_cents === 0);
+    }
     return { id };
   });
 export const cancelOrder = createServerFn({ method: "POST" })
@@ -80,7 +86,9 @@ export const cancelOrder = createServerFn({ method: "POST" })
       p_reason: data.reason,
     });
     if (error) throw new Error(error.message);
-    return { status, emailSent: false };
+    const { emailOrderCancelled } = await import("./email.server");
+    await emailOrderCancelled(data.id);
+    return { status, emailSent: true };
   });
 export const adminCommerce = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
