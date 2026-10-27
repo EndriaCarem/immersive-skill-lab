@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc, latestSubmission, reviewPending, useStore } from "@/lib/store";
+import { downloadDoc, reviewPending } from "@/lib/store";
+import { useLearning } from "@/lib/learning";
+import { currentSubmission } from "@/lib/learning-rules";
 import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
@@ -22,7 +24,8 @@ export const Route = createFileRoute("/estagio/$slug/$n/gabarito")({
 function AnswerPage() {
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
-  const sub = useStore((s) => (program && activity ? latestSubmission(s, program.id, activity.id) : undefined));
+  const learning = useLearning();
+  const sub = program && activity ? currentSubmission(learning.data?.submissions ?? [], program.id, activity.id) : undefined;
   if (!program || !activity) return <NotFoundBlock />;
   if (!sub || reviewPending(sub))
     return (
@@ -108,7 +111,7 @@ function AnswerPage() {
         <>
           <div className="callout">
             <div className="k">Programa concluído</div>
-            <p>Você entregou todas as atividades. Emita seu certificado no portal do aluno.</p>
+            <p>Você entregou todas as atividades. Acompanhe as correções no portal do aluno.</p>
           </div>
           <Link to="/meus-programas" className="btn">
             Ir para meus programas

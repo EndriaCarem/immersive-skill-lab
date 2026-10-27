@@ -2,7 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { ReviewWindow } from "@/components/ReviewWindow";
-import { actions, fmt, latestSubmission, reviewPending, reviewsLeft, subScore, useStore } from "@/lib/store";
+import { fmt, reviewPending, reviewsLeft, subScore } from "@/lib/store";
+import { useLearning } from "@/lib/learning";
+import { currentSubmission } from "@/lib/learning-rules";
+import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Rich } from "@/components/Rich";
 
@@ -25,8 +31,13 @@ const pipClass = (n: number) => (n >= 8 ? "ok" : n >= 6 ? "mid" : "low");
 function FeedbackPage() {
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
-  const sub = useStore((s) => (program && activity ? latestSubmission(s, program.id, activity.id) : undefined));
-  const left = useStore((s) => (program && activity ? reviewsLeft(s, program.id, s.student, activity.id) : 0));
+  const learning = useLearning();
+  const request = useServerFn(requestLearningReview);
+  const fileUrl = useServerFn(learningFileUrl);
+  const [requesting, setRequesting] = useState(false);
+  const submissions = learning.data?.submissions ?? [];
+  const sub = program && activity ? currentSubmission(submissions, program.id, activity.id) : undefined;
+  const left = program && activity ? reviewsLeft({ submissions }, program.id, learning.user?.id ?? "", activity.id) : 0;
   if (!program || !activity) return <NotFoundBlock />;
   if (!sub)
     return (
@@ -46,6 +57,10 @@ function FeedbackPage() {
         Devolutiva · atividade {idx + 1} · {activity.shortTitle.toLowerCase()}
       </div>
       <h1>Ficha de avaliação</h1>
+      <Button className="btn ghost" onClick={async () => {
+        try { window.location.assign(await fileUrl({ data: { id: sub.id } })); }
+        catch { toast.error("Não foi possível abrir sua entrega."); }
+      }}>Baixar minha entrega</Button>
       <p className="muted sm">Como o sênior marca a peça: trechos riscados, inserções e notas na margem.</p>
       <div style={{ marginBottom: 22 }}><ReviewWindow compact /></div>
       <div className="score-top">
@@ -124,16 +139,18 @@ function FeedbackPage() {
           Discorda de algum critério? Um sênior relê a peça. Você pode pedir correção humana em até duas atividades
           por curso — restam <b>{left}</b>. Enquanto a revisão estiver em andamento, o gabarito fica trancado.
         </p>
-        <button
+        <Button
           className="btn ghost"
-          disabled={left === 0}
-          onClick={() => {
-            actions.requestHumanReview(sub.id);
-            toast.success("Pedido enviado. O sênior relê a peça e a nota é atualizada aqui.");
+          disabled={left === 0 || requesting}
+          onClick={async () => {
+            setRequesting(true);
+            try { await request({ data: { id: sub.id } }); await learning.refresh(); toast.success("Pedido enviado."); }
+            catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível pedir revisão."); }
+            finally { setRequesting(false); }
           }}
         >
           Pedir correção humana
-        </button>
+        </Button>
       </div>
       <div style={{ marginTop: 26 }}>
         {reviewPending(sub) ? (

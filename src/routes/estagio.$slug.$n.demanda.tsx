@@ -2,7 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { actions, downloadDoc } from "@/lib/store";
+import { downloadDoc } from "@/lib/store";
+import { useLearning } from "@/lib/learning";
+import { deliverActivity } from "@/lib/learning.functions";
+import { deliverySchema } from "@/lib/learning-rules";
+import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
@@ -34,13 +40,29 @@ function DemandPage() {
   ]);
   const [ask, setAsk] = useState("");
   const input = useRef<HTMLInputElement>(null);
+  const learning = useLearning();
+  const deliver = useServerFn(deliverActivity);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   if (!program || !activity) return <NotFoundBlock />;
 
-  const send = () => {
-    if (!file) return;
-    actions.enroll(program.id);
-    actions.submit(program.id, activity.id, file.name, file.size, ai.join("; ") || "Não declarado");
-    nav({ to: "/estagio/$slug/$n/devolutiva", params: { slug, n } });
+  const send = async () => {
+    if (!file || !learning.user || sending) return;
+    setSending(true); setError("");
+    const path = `${learning.user.id}/${program.id}/${crypto.randomUUID()}.${file.name.split(".").pop()?.toLowerCase()}`;
+    let uploaded = false;
+    try {
+      const payload = deliverySchema.parse({ programId: program.id, activityId: activity.id, fileName: file.name, fileSize: file.size, filePath: path, aiUse: ai.join("; ") || "Não declarado" });
+      const result = await supabase.storage.from("learner-submissions").upload(path, file, { upsert: false });
+      if (result.error) throw new Error("Não foi possível enviar o arquivo.");
+      uploaded = true;
+      await deliver({ data: payload });
+      await learning.refresh();
+      await nav({ to: "/estagio/$slug/$n/devolutiva", params: { slug, n } });
+    } catch (e) {
+      if (uploaded) await supabase.storage.from("learner-submissions").remove([path]);
+      setError(e instanceof Error ? e.message : "Não foi possível salvar a entrega.");
+    } finally { setSending(false); }
   };
   const askAssistant = (q = ask) => {
     if (!q.trim()) return;
@@ -144,9 +166,10 @@ function DemandPage() {
           </button>
         ))}
       </div>
-      <button className="btn" onClick={send} disabled={!file}>
-        Enviar para correção
-      </button>
+      {error && <p role="alert">{error}</p>}
+      <Button className="btn" onClick={send} disabled={!file || sending}>
+        {sending ? "Enviando…" : "Enviar para correção"}
+      </Button>
       <div className="lockline">O gabarito é liberado somente depois que você enviar.</div>
     </ActivityLayout>
   );
