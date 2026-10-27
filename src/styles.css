@@ -1322,7 +1322,7 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .material-status-dot{width:6px;height:6px;border-radius:50%;background:var(--plum-mid)}
 .material-player-footer{border-top:1px solid var(--edge);border-bottom:0;font-size:11px}
 .material-player-footer>span:last-child{display:flex;align-items:center;gap:6px}
-.material-player video{display:block;width:100%;aspect-ratio:16/9;background:var(--plum-deep)}
+.material-player video{display:block;width:100%;height:auto;aspect-ratio:1152/720;object-fit:cover;background:var(--paper)}
 .material-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;padding:22px 0 0;margin:0;gap:24px}
 .material-steps li{display:flex;align-items:center;gap:12px;color:var(--slate)}
 .material-steps li>span{font-family:var(--font-brand);font-size:22px;color:var(--slate-soft)}
