@@ -1,6 +1,8 @@
+import presentationVideo from "@/assets/empiria-apresentacao.mp4.asset.json";
+
 /** Only activate the campaign with the team's approved, hosted media. */
 export const materialCampaign: { videoUrl: string | null; pdfUrl: string | null } = {
-  videoUrl: null,
+  videoUrl: presentationVideo.url,
   pdfUrl: null,
 };
 
