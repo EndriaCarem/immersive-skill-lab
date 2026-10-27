@@ -166,8 +166,8 @@ function Landing() {
   const featured = programs.filter((p) => p.status === "published").slice(0, 3);
   return (
     <SiteShell>
-      <section className="wrap hero-c hero-split">
-        <div className="hero-copy">
+      <section className="wrap hero-c">
+        <div className="hero-copy" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <span className="pillbadge">Escritório simulado de arbitragem</span>
           <h1 className="display">O que você redige quando o caso chega.</h1>
           <p className="lead">Receba a demanda, entregue a peça e seja revisado por quem supervisiona, critério a critério.</p>
