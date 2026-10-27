@@ -100,9 +100,6 @@ function Catalog() {
             <span className="pillbadge soft">✦ Em breve</span>
             <h2>Mais cursos estão sendo redigidos.</h2>
             <p>Novas áreas e novos níveis chegam ao catálogo nos próximos meses.</p>
-            {soon.length > 0 && (
-              <div className="soon-tags">{soon.map((p) => <span key={p.id}>{p.title}</span>)}</div>
-            )}
             <Link to="/interesse" search={{ curso: "" }} className="btn">Quero ser avisado</Link>
           </div>
         </div>
