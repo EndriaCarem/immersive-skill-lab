@@ -9,8 +9,8 @@ type Row = Database["public"]["Tables"]["learning_submissions"]["Row"];
 function submission(row: Row, name?: string): Submission & { userId: string; filePath: string } {
   return { id: row.id, userId: row.user_id, student: name || row.user_id, programId: row.program_id,
     activityId: row.activity_id, fileName: row.file_name, fileSize: row.file_size, filePath: row.file_path,
-    aiUse: row.ai_use, submittedAt: row.submitted_at, grades: row.grades ? gradingSchema.shape.grades.parse(row.grades) : undefined,
-    teacherComment: row.teacher_comment ?? undefined, humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined };
+    aiUse: row.ai_use, submittedAt: row.submitted_at, ...(row.grades ? { grades: gradingSchema.shape.grades.parse(row.grades) } : {}),
+    ...(row.teacher_comment !== null ? { teacherComment: row.teacher_comment } : {}), humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined };
 }
 export const learnerData = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const [programs, subs, notes, enrollments] = await Promise.all([
@@ -28,6 +28,7 @@ export const deliverActivity = createServerFn({ method: "POST" }).middleware([re
   .inputValidator(x => deliverySchema.parse(x)).handler(async ({ data, context }) => {
     if (!data.filePath.startsWith(`${context.userId}/${data.programId}/`)) throw new Error("Arquivo inválido.");
     const parts = data.filePath.split("/"); const file = parts.pop();
+    if (!file) throw new Error("Arquivo inválido.");
     const { data: files, error: listError } = await context.supabase.storage.from("learner-submissions").list(parts.join("/"), { search: file });
     const stored = files?.find(f => f.name === file);
     if (listError || !stored || Number(stored.metadata?.size) !== data.fileSize) throw new Error("O arquivo não foi recebido. Envie novamente.");
@@ -82,7 +83,7 @@ export const learningFileUrl = createServerFn({ method: "POST" }).middleware([re
     if (!row) throw new Error("Entrega não encontrada.");
     const { data: link, error } = await context.supabase.storage.from("learner-submissions").createSignedUrl(row.file_path, 300);
     if (error || !link) throw new Error("Não foi possível abrir o arquivo.");
-    const url = new URL(link.signedUrl); const browserBase = import.meta.env.VITE_SUPABASE_URL;
+    const url = new URL(link.signedUrl); const browserBase = import.meta.env['VITE_SUPABASE_URL'];
     if (!browserBase) throw new Error("Armazenamento indisponível.");
     return new URL(url.pathname + url.search, browserBase).href;
   });
