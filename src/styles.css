@@ -1366,3 +1366,11 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .sitefoot .mfoot-bottom a{color:var(--lavender)}
 .sitefoot .mfoot-bottom a:hover{color:var(--paper)}
 @media(max-width:760px){.mfoot-top{grid-template-columns:minmax(0,1fr);gap:32px}.mfoot-partners{justify-self:start;text-align:left}.mfoot-logos{justify-content:flex-start}.mfoot-bottom{flex-direction:column;align-items:flex-start}}
+
+/* /conheca scroll motion */
+.material-player.mp-anim{--mp:1;transform:perspective(1400px) rotateX(calc((1 - var(--mp)) * 18deg)) scale(calc(.86 + var(--mp) * .14)) translateY(calc((1 - var(--mp)) * 40px));opacity:calc(.35 + var(--mp) * .65);transform-origin:50% 100%;will-change:transform;box-shadow:0 calc(var(--mp) * 40px) calc(var(--mp) * 80px) -40px color-mix(in oklab,var(--plum) 55%,transparent)}
+.material-intro h1 span{background:linear-gradient(90deg,var(--plum),var(--lavender),var(--plum));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:mshine 6s ease-in-out infinite}
+@keyframes mshine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.material-steps li.active span{animation:mpulse 2.4s ease-in-out infinite}
+@keyframes mpulse{0%,100%{box-shadow:0 0 0 0 color-mix(in oklab,var(--plum) 40%,transparent)}50%{box-shadow:0 0 0 10px transparent}}
+@media (prefers-reduced-motion: reduce){.material-player.mp-anim{transform:none;opacity:1}.material-intro h1 span,.material-steps li.active span{animation:none}}
