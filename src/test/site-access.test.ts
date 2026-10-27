@@ -3,7 +3,12 @@ import { isSiteAccessPublicPath, safeAccessReturn, SITE_LAUNCH_DATE } from "@/li
 import { verifySiteCredentials } from "@/lib/site-access.server";
 
 describe("restricted launch access", () => {
-  it("blocks every platform entry except the exact access endpoints", () => {
+  it("allows the standalone /conheca campaign without restricted access", () => {
+    expect(isSiteAccessPublicPath("/conheca")).toBe(true);
+    expect(isSiteAccessPublicPath("/conheca/")).toBe(true);
+    expect(isSiteAccessPublicPath("/conheca/private")).toBe(false);
+  });
+  it("keeps platform entries restricted outside the campaign and exact access endpoints", () => {
     for (const path of ["/", "/cursos", "/admin", "/auth", "/webinars", "/api/public/private", "/acesso-restrito/other"]) expect(isSiteAccessPublicPath(path)).toBe(false);
     expect(isSiteAccessPublicPath("/acesso-restrito")).toBe(true);
     expect(isSiteAccessPublicPath("/api/public/acesso-restrito")).toBe(true);
