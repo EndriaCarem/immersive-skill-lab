@@ -159,7 +159,7 @@ function MinimalFooter() {
   );
 }
 
-function SiteFooter() {
+function SiteFooter({ campaign = false }: { campaign?: boolean }) {
   const { isAdmin } = useAccount();
   return (
     <footer className="sitefoot">
@@ -170,20 +170,27 @@ function SiteFooter() {
             Não é um curso sobre arbitragem; é o que você redige quando o caso chega.
           </p>
         </div>
-        <div>
+        {!campaign && <div>
           <h5>Plataforma</h5>
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
             <Link to="/cursos">Cursos</Link>
             <Link to="/meus-programas">Portal do Aluno</Link>
             {isAdmin && <Link to="/admin">Administração</Link>}
           </div>
-        </div>
+        </div>}
         <div>
-          <h5>Empiria</h5>
-          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
-            <Link to="/sobre">Sobre e método</Link>
-            <Link to="/contato">Fale conosco</Link>
-          </div>
+          {campaign ? <>
+            <h5>Siga a Empiria</h5>
+            <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+              <a href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">Instagram @empiria.law</a>
+            </div>
+          </> : <>
+            <h5>Empiria</h5>
+            <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+              <Link to="/sobre">Sobre e método</Link>
+              <Link to="/contato">Fale conosco</Link>
+            </div>
+          </>}
           <h5 style={{ marginTop: 18 }}>Legal</h5>
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
             <Link to="/termos">Termos de uso e matrícula</Link>
@@ -211,7 +218,7 @@ export function SiteShell({ children, minimalFooter = false, hideNav = false }: 
     <>
       {!hideNav && <TopNav />}
       {children}
-      {minimalFooter ? <MinimalFooter /> : <SiteFooter />}
+      {minimalFooter ? <MinimalFooter /> : <SiteFooter campaign={hideNav} />}
     </>
   );
 }
