@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Rich, textToHtml } from "@/components/Rich";
-import { actions, avg, fmt, useStore, type Grade, type Submission } from "@/lib/store";
+import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
+import { gradeLearningSubmission, learningFileUrl } from "@/lib/learning.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 
 const CRITERION_SNIPPETS = [
   "Fundamentação sólida e bem articulada.",
@@ -23,18 +27,22 @@ const QUICK = [4, 5, 6, 7, 7.5, 8, 8.5, 9, 9.5, 10];
 const kb = (n: number) => (n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1024 / 1024).toFixed(1).replace(".", ",")} MB`);
 const append = (base: string, s: string) => (base.includes(s) ? base : base ? `${base.trim()} ${s}` : s);
 
-export function GradeWorkbench({ sub, queue, onChange, onClose }: { sub: Submission | null; queue: Submission[]; onChange: (s: Submission) => void; onClose: () => void }) {
+export function GradeWorkbench({ sub, queue, programs, onChange, onClose }: { sub: Submission | null; queue: Submission[]; programs: Program[]; onChange: (s: Submission) => void; onClose: () => void }) {
   return (
     <Sheet open={!!sub} onOpenChange={(o) => !o && onClose()}>
       <SheetContent side="right" className="wb-sheet">
-        {sub && <Body key={sub.id} sub={sub} queue={queue} onChange={onChange} onClose={onClose} />}
+        {sub && <Body key={sub.id} sub={sub} queue={queue} programs={programs} onChange={onChange} onClose={onClose} />}
       </SheetContent>
     </Sheet>
   );
 }
 
-function Body({ sub, queue, onChange, onClose }: { sub: Submission; queue: Submission[]; onChange: (s: Submission) => void; onClose: () => void }) {
-  const program = useStore((s) => s.programs.find((p) => p.id === sub.programId));
+function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; queue: Submission[]; programs: Program[]; onChange: (s: Submission) => void; onClose: () => void }) {
+  const program = programs.find(p => p.id === sub.programId);
+  const grade = useServerFn(gradeLearningSubmission);
+  const fileUrl = useServerFn(learningFileUrl);
+  const client = useQueryClient();
+  const [saving, setSaving] = useState(false);
   const activity = program?.activities.find((a) => a.id === sub.activityId);
   const [grades, setGrades] = useState<Grade[]>(
     () => activity?.rubric.map((r) => sub.grades?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: 7, comment: "" }) ?? [],
@@ -48,11 +56,17 @@ function Body({ sub, queue, onChange, onClose }: { sub: Submission; queue: Submi
   const prev = idx > 0 ? queue[idx - 1] : undefined;
 
   const set = (i: number, patch: Partial<Grade>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
-  const save = (goNext: boolean) => {
-    actions.grade(sub.id, grades, comment);
-    toast.success("Correção salva", { description: `${sub.student} · nota ${fmt(mean)}` });
-    if (goNext && next) onChange(next);
-    else onClose();
+  const save = async (goNext: boolean) => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await grade({ data: { id: sub.id, grades, teacherComment: comment } });
+      await client.invalidateQueries({ queryKey: ["admin-learning"] });
+      await client.invalidateQueries({ queryKey: ["learner-progress"] });
+      toast.success("Correção salva", { description: `${sub.student} · nota ${fmt(mean)}` });
+      if (goNext && next) onChange(next); else onClose();
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível salvar a correção."); }
+    finally { setSaving(false); }
   };
 
   // Keyboard: 0-9 sets focused criterion score (0 = 10), ↑/↓ move criterion, Ctrl+Enter saves & next.
@@ -109,6 +123,10 @@ function Body({ sub, queue, onChange, onClose }: { sub: Submission; queue: Submi
                 <dt>Status</dt><dd>{sub.grades ? `Corrigida · nota ${fmt(avg(sub.grades.map((g) => g.score)))}` : "Aguardando correção"}</dd>
                 <dt>Critérios da rubrica</dt><dd>{activity.rubric.length}</dd>
               </dl>
+              <Button className="btn ghost" onClick={async () => {
+                try { window.location.assign(await fileUrl({ data: { id: sub.id } })); }
+                catch { toast.error("Não foi possível abrir o arquivo."); }
+              }}>Baixar peça entregue</Button>
             </div>
           ) : (
             <div className="wb-doc"><Rich html={docHtml || "<p>Sem conteúdo cadastrado.</p>"} /></div>
@@ -159,8 +177,8 @@ function Body({ sub, queue, onChange, onClose }: { sub: Submission; queue: Submi
         <button className="btn ghost sm" disabled={!prev} onClick={() => prev && onChange(prev)}>← Anterior</button>
         <button className="btn ghost sm" disabled={!next} onClick={() => next && onChange(next)}>Pular →</button>
         <span style={{ flex: 1 }} />
-        <button className="btn ghost" onClick={() => save(false)}>Salvar</button>
-        <button className="btn" onClick={() => save(true)}>{next ? "Salvar e próxima" : "Salvar e fechar"}</button>
+        <Button className="btn ghost" disabled={saving} onClick={() => save(false)}>Salvar</Button>
+        <Button className="btn" disabled={saving} onClick={() => save(true)}>{saving ? "Salvando…" : next ? "Salvar e próxima" : "Salvar e fechar"}</Button>
       </div>
     </div>
   );

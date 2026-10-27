@@ -4,6 +4,10 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { GradeWorkbench } from "@/components/GradeWorkbench";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useAccount } from "@/lib/account";
+import { adminLearningData } from "@/lib/learning.functions";
 import {
   actions,
   brl,
@@ -39,14 +43,18 @@ const TAB_LABEL: Record<Tab, string> = {
 const STATUS_LABEL = { published: "Publicado", soon: "Em breve", draft: "Rascunho" } as const;
 
 function Admin() {
-  const state = useStore((s) => s);
+  const local = useStore((s) => s);
+  const { user } = useAccount();
+  const fetchLearning = useServerFn(adminLearningData);
+  const learning = useQuery({ queryKey: ["admin-learning", user?.id], queryFn: () => fetchLearning(), enabled: Boolean(user) });
+  const state = { ...local, submissions: learning.data?.submissions ?? [], enrollments: learning.data?.enrollments ?? [] };
   const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("programas");
   const [q, setQ] = useState("");
   const [statusF, setStatusF] = useState<"all" | "published" | "soon" | "draft">("all");
   const [subF, setSubF] = useState<"pending" | "graded" | "all">("pending");
   const [grading, setGrading] = useState<Submission | null>(null);
-  const prog = (id: string) => state.programs.find((p) => p.id === id);
+  const prog = (id: string) => learning.data?.programs.find(p => p.id === id) ?? state.programs.find((p) => p.id === id);
   const term = q.trim().toLowerCase();
   const has = (...xs: (string | undefined)[]) =>
     !term || xs.some((x) => x?.toLowerCase().includes(term));
@@ -103,9 +111,10 @@ function Admin() {
           Webinars
         </Link>
         <p className="muted sm">
-          Conteúdo e correções abaixo são demonstrativos, salvos neste navegador. Pedidos e
-          matrículas reais estão na operação comercial.
+          Entregas, matrículas e correções vinculadas às contas dos alunos. O editor de conteúdo permanece demonstrativo.
         </p>
+        {learning.isLoading && <p>Carregando alunos e entregas…</p>}
+        {learning.error && <p role="alert">Não foi possível carregar alunos e entregas.</p>}
 
         <div className="kpis">
           <div className="kpi">
@@ -376,6 +385,7 @@ function Admin() {
         <GradeWorkbench
           sub={grading}
           queue={subs}
+          programs={learning.data?.programs ?? []}
           onChange={setGrading}
           onClose={() => setGrading(null)}
         />
