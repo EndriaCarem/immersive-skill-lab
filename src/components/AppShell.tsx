@@ -127,6 +127,38 @@ function TopNav() {
   );
 }
 
+function MinimalFooter() {
+  return (
+    <footer className="sitefoot">
+      <div className="wrap footer-grid">
+        <div>
+          <img src={logoLight.url} alt="Empiria" style={{ height: 30, marginBottom: 16 }} />
+        </div>
+        <div>
+          <h5>Parceiros</h5>
+          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+            <span>Arbipédia</span>
+            <span>CJA/CBMA</span>
+          </div>
+        </div>
+        <div>
+          <h5>Legal</h5>
+          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+            <Link to="/termos">Termos de uso e matrícula</Link>
+            <Link to="/privacidade">Privacidade e LGPD</Link>
+          </div>
+        </div>
+        <div>
+          <h5>Siga a Empiria</h5>
+          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+            <a href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">Instagram @empiria.law</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 function SiteFooter() {
   const { isAdmin } = useAccount();
   return (
@@ -174,12 +206,12 @@ function SiteFooter() {
 }
 
 /** Marketing pages: floating nav + full-width content + footer. */
-export function SiteShell({ children }: { children: ReactNode }) {
+export function SiteShell({ children, minimalFooter = false }: { children: ReactNode; minimalFooter?: boolean }) {
   return (
     <>
       <TopNav />
       {children}
-      <SiteFooter />
+      {minimalFooter ? <MinimalFooter /> : <SiteFooter />}
     </>
   );
 }
