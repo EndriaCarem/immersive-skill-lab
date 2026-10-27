@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Menu, X, UserRound, Moon, Sun, LogOut } from "lucide-react";
+import { Menu, X, UserRound, Moon, Sun, LogOut, Instagram, ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
+import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
+import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
 
 /** Theme preference is an account-area feature: visitors always see the default light theme. */
 function useAccountTheme(signedIn: boolean) {
@@ -129,31 +131,29 @@ function TopNav() {
 
 function MinimalFooter() {
   return (
-    <footer className="sitefoot">
-      <div className="wrap footer-grid">
-        <div>
-          <img src={logoLight.url} alt="Empiria" style={{ height: 30, marginBottom: 16 }} />
+    <footer className="sitefoot mfoot">
+      <div className="wrap mfoot-top">
+        <div className="mfoot-brand">
+          <img src={logoLight.url} alt="Empiria" />
+          <p>Viva a rotina de um escritório simulado: receba demandas, construa suas entregas e desenvolva segurança para atuar.</p>
+          <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
+            <Instagram size={18} /> <span>Siga @empiria.law</span> <ArrowUpRight size={16} />
+          </a>
         </div>
-        <div>
-          <h5>Parceiros</h5>
-          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
-            <span>Arbipédia</span>
-            <span>CJA/CBMA</span>
+        <div className="mfoot-partners">
+          <h5>Parceiros institucionais</h5>
+          <div className="mfoot-logos">
+            <img src={arbipediaLogo.url} alt="Arbipédia" />
+            <img src={cjaLogo.url} alt="CJA/CBMA" />
           </div>
         </div>
-        <div>
-          <h5>Legal</h5>
-          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
-            <Link to="/termos">Termos de uso e matrícula</Link>
-            <Link to="/privacidade">Privacidade e LGPD</Link>
-          </div>
-        </div>
-        <div>
-          <h5>Siga a Empiria</h5>
-          <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
-            <a href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">Instagram @empiria.law</a>
-          </div>
-        </div>
+      </div>
+      <div className="wrap mfoot-bottom">
+        <span>© {new Date().getFullYear()} Empiria · Formação jurídica prática</span>
+        <nav aria-label="Documentos legais">
+          <Link to="/termos">Termos de uso</Link>
+          <Link to="/privacidade">Privacidade e LGPD</Link>
+        </nav>
       </div>
     </footer>
   );
