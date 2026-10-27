@@ -47,7 +47,6 @@ function TopNav() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { dark, toggle } = useAccountTheme(Boolean(user));
-  const isHome = pathname === "/";
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
