@@ -50,7 +50,7 @@ function Purchases() {
       await cancel({ data: { id: selected, reason } });
       await queryClient.invalidateQueries({ queryKey: ["account"] });
       setSelected(null);
-      setMessage("Cancelamento registrado. A confirmação por e-mail ainda não está disponível.");
+      setMessage("Cancelamento registrado.");
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Não foi possível cancelar.");
     } finally {
