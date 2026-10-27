@@ -38,7 +38,6 @@ function Catalog() {
   const [kind, setKind] = useState("Todos");
   const [q, setQ] = useState("");
   const visible = programs.filter((p) => p.status === "published").slice(0, 2);
-  const soon = programs.filter((p) => p.status === "soon");
   const kinds = useMemo(() => ["Todos", ...Array.from(new Set(visible.map((p) => p.kind)))], [visible]);
   const list = visible.filter(
     (p) => (kind === "Todos" || p.kind === kind) && (p.title + p.tagline + p.kind + p.skills.join(" ")).toLowerCase().includes(q.toLowerCase()),
@@ -100,9 +99,6 @@ function Catalog() {
             <span className="pillbadge soft">✦ Em breve</span>
             <h2>Mais cursos estão sendo redigidos.</h2>
             <p>Novas áreas e novos níveis chegam ao catálogo nos próximos meses.</p>
-            {soon.length > 0 && (
-              <div className="soon-tags">{soon.map((p) => <span key={p.id}>{p.title}</span>)}</div>
-            )}
             <Link to="/interesse" search={{ curso: "" }} className="btn">Quero ser avisado</Link>
           </div>
         </div>
