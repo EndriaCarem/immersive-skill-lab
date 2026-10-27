@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDown, ArrowUpRight, FileText, Play, Mail } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { ReviewWindow } from "@/components/ReviewWindow";
@@ -19,7 +19,43 @@ export const Route = createFileRoute("/conheca")({
   component: CampaignPage,
 });
 
+function useCampaignMotion() {
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const groups: [string, string][] = [
+      [".material-intro > *", "up"],
+      [".material-steps > li", "pop"],
+      [".material-resource-copy > *", "left"],
+      [".material-access", "zoom"],
+      [".material-closing > *", "up"],
+      [".mfoot-brand > *, .mfoot-logos > img, .mfoot-partners > h5", "up"],
+    ];
+    const els: HTMLElement[] = [];
+    groups.forEach(([q, v]) => document.querySelectorAll<HTMLElement>(q).forEach((el) => { if (!els.includes(el)) { el.dataset["sr"] = v; els.push(el); } }));
+    els.forEach((el) => {
+      const i = el.parentElement ? Array.from(el.parentElement.children).indexOf(el) : 0;
+      el.style.setProperty("--sr-d", `${Math.min(i, 6) * 120}ms`);
+      el.classList.add("sr");
+    });
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("sr-in"); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    els.forEach((el) => io.observe(el));
+    // Video grows from a tilted card into full view as it scrolls in.
+    const player = document.querySelector<HTMLElement>(".material-player");
+    let raf = 0;
+    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+      if (!player) return;
+      const r = player.getBoundingClientRect(); const vh = window.innerHeight;
+      const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * 0.75)));
+      player.style.setProperty("--mp", p.toFixed(3));
+    }); };
+    player?.classList.add("mp-anim");
+    onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { io.disconnect(); window.removeEventListener("scroll", onScroll); cancelAnimationFrame(raf); };
+  }, []);
+}
+
 function CampaignPage() {
+  useCampaignMotion();
   const [completed, setCompleted] = useState(false);
   const available = canCaptureMaterial(materialCampaign.videoUrl, materialCampaign.pdfUrl, completed);
   return <SiteShell minimalFooter><main className="material-page">
