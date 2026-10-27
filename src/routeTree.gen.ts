@@ -15,6 +15,7 @@ import { Route as AcessoRestritoRouteImport } from './routes/acesso-restrito'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ConfirmarCadastroRouteImport } from './routes/confirmar-cadastro'
+import { Route as ConhecaRouteImport } from './routes/conheca'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as CursosRouteImport } from './routes/cursos'
 import { Route as InteresseRouteImport } from './routes/interesse'
@@ -67,6 +68,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const ConfirmarCadastroRoute = ConfirmarCadastroRouteImport.update({
   id: '/confirmar-cadastro',
   path: '/confirmar-cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConhecaRoute = ConhecaRouteImport.update({
+  id: '/conheca',
+  path: '/conheca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatoRoute = ContatoRouteImport.update({
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
+  '/conheca': typeof ConhecaRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
+  '/conheca': typeof ConhecaRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/confirmar-cadastro': typeof ConfirmarCadastroRoute
+  '/conheca': typeof ConhecaRoute
   '/contato': typeof ContatoRoute
   '/cursos': typeof CursosRoute
   '/interesse': typeof InteresseRoute
@@ -296,6 +305,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
+    | '/conheca'
     | '/contato'
     | '/cursos'
     | '/interesse'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
+    | '/conheca'
     | '/contato'
     | '/cursos'
     | '/interesse'
@@ -359,6 +370,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/checkout'
     | '/confirmar-cadastro'
+    | '/conheca'
     | '/contato'
     | '/cursos'
     | '/interesse'
@@ -392,6 +404,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   ConfirmarCadastroRoute: typeof ConfirmarCadastroRoute
+  ConhecaRoute: typeof ConhecaRoute
   ContatoRoute: typeof ContatoRoute
   CursosRoute: typeof CursosRoute
   InteresseRoute: typeof InteresseRoute
@@ -454,6 +467,13 @@ declare module '@tanstack/react-router' {
       path: '/confirmar-cadastro'
       fullPath: '/confirmar-cadastro'
       preLoaderRoute: typeof ConfirmarCadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conheca': {
+      id: '/conheca'
+      path: '/conheca'
+      fullPath: '/conheca'
+      preLoaderRoute: typeof ConhecaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contato': {
@@ -655,6 +675,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   ConfirmarCadastroRoute: ConfirmarCadastroRoute,
+  ConhecaRoute: ConhecaRoute,
   ContatoRoute: ContatoRoute,
   CursosRoute: CursosRoute,
   InteresseRoute: InteresseRoute,
