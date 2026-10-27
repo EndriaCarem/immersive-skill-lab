@@ -74,19 +74,6 @@ function About() {
           ))}
         </div>
 
-        <h4>Parceiros institucionais</h4>
-        <div className="cards founders-grid">
-          <div className="card">
-            <div className="kind">Parceiro</div>
-            <span className="partner-logo"><img src={arbipediaLogo.url} alt="" /></span>
-            <h3>Arbipédia</h3>
-          </div>
-          <div className="card">
-            <div className="kind">Parceiro</div>
-            <span className="partner-logo"><img src={cjaLogo.url} alt="" /></span>
-            <h3>CJA/CBMA</h3>
-          </div>
-        </div>
 
         <div style={{ marginTop: 28 }}>
           <Link to="/" className="btn">
