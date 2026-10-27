@@ -368,6 +368,126 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_notes: {
+        Row: {
+          activity_id: string
+          created_at: string
+          id: string
+          program_id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          id?: string
+          program_id: string
+          text: string
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          id?: string
+          program_id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_notes_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "learning_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_programs: {
+        Row: {
+          content: Json
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          content: Json
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_programs_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "commerce_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_submissions: {
+        Row: {
+          activity_id: string
+          ai_use: string
+          file_name: string
+          file_path: string
+          file_size: number
+          grades: Json | null
+          human_reviews: Json
+          id: string
+          program_id: string
+          reviewed_at: string | null
+          reviewer_id: string | null
+          submitted_at: string
+          teacher_comment: string | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          ai_use?: string
+          file_name: string
+          file_path: string
+          file_size: number
+          grades?: Json | null
+          human_reviews?: Json
+          id?: string
+          program_id: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          submitted_at?: string
+          teacher_comment?: string | null
+          user_id?: string
+        }
+        Update: {
+          activity_id?: string
+          ai_use?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          grades?: Json | null
+          human_reviews?: Json
+          id?: string
+          program_id?: string
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          submitted_at?: string
+          teacher_comment?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_submissions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "learning_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           full_name: string
@@ -530,6 +650,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      request_learning_review: {
+        Args: { p_submission: string }
+        Returns: undefined
       }
     }
     Enums: {
