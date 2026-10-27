@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowDown, ArrowUpRight, FileText, Play, Check, Mail } from "lucide-react";
+import { ArrowDown, ArrowUpRight, FileText, Play, Mail } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { ReviewWindow } from "@/components/ReviewWindow";
 import { MaterialCapture } from "@/components/MaterialCapture";
@@ -32,13 +32,11 @@ function CampaignPage() {
 
     <section id="apresentacao" className="wrap material-experience" aria-label="Apresentação da Empiria">
       <div className="material-player">
-        <div className="material-player-bar"><span>EMPIRIA / POR DENTRO DA PLATAFORMA</span><span>APRESENTAÇÃO</span></div>
-        {materialCampaign.videoUrl ? <video controls playsInline preload="metadata" onEnded={() => setCompleted(true)} aria-label="Vídeo de apresentação da Empiria"><source src={materialCampaign.videoUrl} /></video> : <div className="material-preview">
+        {materialCampaign.videoUrl ? <video controls autoPlay muted playsInline preload="auto" onEnded={() => setCompleted(true)} aria-label="Vídeo de apresentação da Empiria"><source src={materialCampaign.videoUrl} /></video> : <div className="material-preview">
           <div className="material-preview-heading"><span className="material-play-mark"><Play size={22} /></span><div><h2>Da demanda à entrega.</h2><p>Um primeiro olhar para a experiência Empiria.</p></div></div>
           <div className="material-document"><ReviewWindow compact /></div>
           <div className="material-pending"><span className="material-status-dot" />Vídeo de apresentação em preparação</div>
         </div>}
-        <div className="material-player-footer"><span>Escritório simulado de arbitragem</span><span>{completed ? <><Check size={14} /> Apresentação concluída</> : "Conheça. Pratique. Evolua."}</span></div>
       </div>
       <ol className="material-steps" aria-label="Etapas para acessar o material">
         <li className="active"><span>01</span><div><b>Conheça a Empiria</b><small>Assista à apresentação</small></div></li>
