@@ -1,5 +1,3 @@
-import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
-import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { founders } from "@/lib/founders";
