@@ -29,3 +29,4 @@
 - Signup without a session navigates to the public /confirmar-cadastro route; only a confirmed authenticated session grants access to protected account pages.
 - Post-login routing uses a shared pure destination resolver with authenticated Cloud commerce reads, never the browser-local simulation store, so purchases determine the entry screen without changing access checks.
 - Webinars live in Cloud (webinars, webinar_visits); public pages read published rows via server functions, visits are recorded by a public write-only server action, and admins manage/read through admin RLS — so tracking data is never exposed to visitors.
+- The /conheca campaign is separate from the homepage; approved video and PDF URLs activate its gated capture flow using the existing private interest action, so missing assets never produce fake downloads or submissions.
