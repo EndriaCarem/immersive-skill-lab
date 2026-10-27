@@ -206,10 +206,10 @@ function SiteFooter() {
 }
 
 /** Marketing pages: floating nav + full-width content + footer. */
-export function SiteShell({ children, minimalFooter = false }: { children: ReactNode; minimalFooter?: boolean }) {
+export function SiteShell({ children, minimalFooter = false, hideNav = false }: { children: ReactNode; minimalFooter?: boolean; hideNav?: boolean }) {
   return (
     <>
-      <TopNav />
+      {!hideNav && <TopNav />}
       {children}
       {minimalFooter ? <MinimalFooter /> : <SiteFooter />}
     </>

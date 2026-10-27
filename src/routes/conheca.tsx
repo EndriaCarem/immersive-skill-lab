@@ -58,7 +58,7 @@ function CampaignPage() {
   useCampaignMotion();
   const [completed, setCompleted] = useState(false);
   const available = canCaptureMaterial(materialCampaign.videoUrl, materialCampaign.pdfUrl, completed);
-  return <SiteShell minimalFooter><main className="material-page">
+  return <SiteShell minimalFooter hideNav><main className="material-page">
     <section className="material-intro wrap">
       <span className="material-eyebrow">UM NOVO PONTO DE PARTIDA</span>
       <h1>Empiria.<br /><span>A prática começa aqui.</span></h1>
