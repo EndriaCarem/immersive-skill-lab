@@ -9,7 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Simulation content, submissions and grading remain an isolated browser-local demo; real accounts, commercial products, orders and enrollments use Cloud and must never merge demo learner records.
+- Real learner activities use versioned Cloud learning_programs content, account-owned submissions/notes and private Storage files; authenticated RLS checks active commerce enrollment and admin grading. The local content editor and demo learner store remain isolated and must never populate real learner records.
 - Pre-launch access is enforced by global server request middleware and client navigation checks, using server-only credential verification and an encrypted HttpOnly cookie; this prevents route bypasses without replacing customer auth or admin authorization.
 - Commercial writes use validated authenticated server functions and atomic database operations; prices, coupons, consent and entitlements are server-authoritative.
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.

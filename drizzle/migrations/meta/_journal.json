@@ -43,6 +43,13 @@
       "when": 1792697289999,
       "tag": "0005_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793145010094,
+      "tag": "0006_account_learning_progress",
+      "breakpoints": true
     }
   ]
 }

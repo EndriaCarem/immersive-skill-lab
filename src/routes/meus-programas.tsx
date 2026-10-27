@@ -5,11 +5,15 @@ import { AppShell } from "@/components/AppShell";
 import { useAccount } from "@/lib/account";
 import { accountData } from "@/lib/commerce.functions";
 import { commerceHead } from "@/lib/commerce-schema";
+import { useLearning } from "@/lib/learning";
+import { learningProgress, currentSubmission } from "@/lib/learning-rules";
+import { fmt, subScore } from "@/lib/store";
 export const Route = createFileRoute("/meus-programas")({
   head: () => commerceHead("Meus programas", "Acompanhe suas matrículas da Empiria."),
   component: Portal,
 });
 function Portal() {
+  const learning = useLearning();
   const { user, ready } = useAccount();
   const fetch = useServerFn(accountData);
   const [data, setData] = useState<Awaited<ReturnType<typeof accountData>> | null>(null);
@@ -72,9 +76,21 @@ function Portal() {
                       <p className="muted sm">
                         Matriculado em {new Date(e.enrolled_at).toLocaleDateString("pt-BR")}
                       </p>
-                      <p>
-                        O início e as condições de acesso ao conteúdo serão informados pela Empiria.
-                      </p>
+                      {(() => {
+                        const program = learning.data?.programs.find(p => p.id === e.product_id);
+                        if (!program) return <p>{learning.isLoading ? "Carregando atividades…" : learning.error ? "Não foi possível carregar suas atividades." : "Conteúdo indisponível para esta matrícula."}</p>;
+                        const progress = learningProgress(program, learning.data?.submissions ?? []);
+                        return <>
+                          <p>{progress.done} de {progress.total} atividades entregues</p>
+                          <Link className="btn" to="/estagio/$slug/$n/caso" params={{ slug: program.slug, n: String(progress.next + 1) }}>{progress.done ? "Continuar programa" : "Iniciar programa"}</Link>
+                          <ul className="clean">{program.activities.map((a, i) => {
+                            const sub = currentSubmission(learning.data?.submissions ?? [], program.id, a.id);
+                            return <li key={a.id}>{a.shortTitle} — {sub ? sub.grades ? `Nota ${fmt(subScore(sub))}` : "Aguardando correção" : "Não entregue"}
+                              {sub && <> · <Link to="/estagio/$slug/$n/devolutiva" params={{ slug: program.slug, n: String(i + 1) }}>Ver devolutiva</Link></>}
+                            </li>;
+                          })}</ul>
+                        </>;
+                      })()}
                     </article>
                   ))}
               </>
