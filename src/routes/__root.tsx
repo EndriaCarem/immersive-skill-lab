@@ -17,7 +17,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { hydrateStore } from "../lib/store";
 import { AccountProvider } from "@/lib/account";
 import { Toaster } from "@/components/ui/sonner";
-import { safeAccessReturn } from "@/lib/site-access";
+import { isSiteAccessPublicPath, safeAccessReturn } from "@/lib/site-access";
 
 function NotFoundComponent() {
   return (
@@ -82,7 +82,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   beforeLoad: async ({ location }) => {
     // SSR requests are gated before any router work by request middleware.
-    if (typeof window === "undefined" || location.pathname === "/acesso-restrito") return;
+    if (typeof window === "undefined" || isSiteAccessPublicPath(location.pathname)) return;
     const response = await fetch("/api/public/acesso-restrito", { cache: "no-store" });
     const access = response.ok ? await response.json() : null;
     if (access?.unlocked !== true) throw redirect({ to: "/acesso-restrito", search: { returnTo: safeAccessReturn(location.href) } });
