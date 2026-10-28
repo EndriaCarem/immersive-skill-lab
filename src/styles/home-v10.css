@@ -962,7 +962,8 @@
 .v10 .logos-group > *{ flex-shrink:0; white-space:nowrap; margin-left:0 !important; }
 @keyframes v10-marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 .v10 .logos img[alt="Ibrawork"]{ height:18px !important; filter:grayscale(1) contrast(1.1); opacity:.7 !important; }
-.v10 .cmp > div{ display:flex !important; flex-direction:column; }
+.v10 .cmp{ grid-template-rows:auto repeat(5,auto) auto; }
+.v10 .cmp > div{ display:grid !important; grid-row:span 7; grid-template-rows:subgrid; }
 .v10 .cmp .cbuy{ margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-top:22px; }
 .v10 .cmp .cbuy .btn{ margin-left:auto; }
 .v10 .feat, .v10 .feat .copy{ overflow:visible !important; }
@@ -990,3 +991,42 @@ html.dark .v10 .hero .fade{ background: linear-gradient(180deg,rgba(21,16,27,0),
 .v10 .people.two .pc .media{ width:240px; aspect-ratio:4/5; }
 .v10 .people.two .pc .media img.ph{ object-fit:cover; object-position:center; }
 @media (max-width:720px){ .v10 .people.two .pc .media{ width:200px; } }
+/* Corresponding comparison rows share the same content-driven height. */
+.v10 .cmp .hd,.v10 .cmp .row{ min-width:0; }
+.v10 .cmp .cbuy{ margin-top:0; }
+.v10 #como-funciona .feat{ gap:36px; padding:38px 0 !important; }
+.v10 #como-funciona .feat .copy{ max-width:none; min-width:0; }
+.v10 #como-funciona .step-visual-right .copy{ grid-column:1; grid-row:1; }
+.v10 #como-funciona .step-visual-right .panel{ grid-column:2; grid-row:1; }
+.v10 #como-funciona .step-visual-left .panel{ grid-column:1; grid-row:1; }
+.v10 #como-funciona .step-visual-left .copy{ grid-column:2; grid-row:1; }
+.v10 #como-funciona .feat .panel{ aspect-ratio:4/5; }
+.v10 #como-funciona .feat .panel .ph{ flex:1; min-height:0; overflow:hidden; }
+.v10 #como-funciona .feat .pimg{ width:100%; height:100%; object-fit:contain; }
+.v10 #como-funciona .step-feedback .pimg{ object-fit:cover; object-position:top; }
+.v10 .ai-one{ max-width:none; width:100%; }
+.v10 .ai-one .glass{ width:100%; text-align:left; }
+.v10 .theory-preview{ width:100%; position:relative; padding-bottom:18%; }
+.v10 .theory-preview-screen{ width:90%; aspect-ratio:1.5; overflow:hidden; border-radius:8px; }
+.v10 .theory-preview-screen img{ width:100%; height:100%; object-fit:cover; object-position:top left; }
+.v10 .theory-model{ position:absolute; width:42%; right:0; bottom:0; background:var(--paper); color:var(--ink); padding:14px; border:1px solid var(--edge); border-radius:8px; box-shadow:var(--shadow); }
+.v10 .theory-model-label{ display:block; font-size:11px; font-weight:700; color:var(--accent-soft); margin-bottom:12px; }
+.v10 .theory-model-paper{ padding:20px; border:1px solid var(--edge); font-family:var(--doc); font-size:12px; line-height:1.5; background:var(--paper); }
+.v10 .theory-model-paper p{ margin-bottom:10px; color:var(--ink-soft); }
+.v10 .theory-model-paper h4{ font-size:14px; text-align:center; margin:18px 0; letter-spacing:0; }
+.v10 .theory-model-paper h5{ font-size:12px; margin:12px 0 5px; }
+.v10 .model-address{ font-weight:700; }
+.v10 .theory-model-paper .model-note{ border-top:1px solid var(--edge); padding-top:10px; font-size:10px; margin-bottom:0; }
+@media(max-width:620px){
+ .v10 .cmp{ grid-template-rows:none; }
+ .v10 .cmp > div{ grid-row:auto; grid-template-rows:none; }
+ .v10 #como-funciona .feat{ grid-template-columns:1fr; gap:24px; }
+ .v10 #como-funciona .feat .copy{ grid-column:1; grid-row:1; gap:14px; }
+ .v10 #como-funciona .feat .panel{ grid-column:1; grid-row:2; }
+ .v10 #como-funciona .copy h3{ font-size:26px; }
+ .v10 #como-funciona .copy p{ font-size:15px; }
+ .v10 #como-funciona .copy .ey{ font-size:12px; }
+ .v10 .theory-preview{ padding-bottom:0; display:grid; gap:18px; }
+ .v10 .theory-preview-screen{ width:100%; }
+ .v10 .theory-model{ position:relative; width:100%; }
+}

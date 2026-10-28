@@ -9,10 +9,10 @@ const opts = () => queryOptions({ queryKey: ["webinars"], queryFn: () => listPub
 export const Route = createFileRoute("/webinars/")({
   head: () => ({
     meta: [
-      { title: "Webinars — Empiria" },
-      { name: "description", content: "Conversas e aulas abertas da Empiria sobre arbitragem e prática jurídica." },
-      { property: "og:title", content: "Webinars — Empiria" },
-      { property: "og:description", content: "Conversas e aulas abertas da Empiria sobre arbitragem e prática jurídica." },
+      { title: "Guia prático do advogado — Blog Empiria" },
+      { name: "description", content: "Textos, webinars e outras trocas de suporte no dia a dia." },
+      { property: "og:title", content: "Guia prático do advogado — Blog Empiria" },
+      { property: "og:description", content: "Textos, webinars e outras trocas de suporte no dia a dia." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -26,13 +26,13 @@ function WebinarList() {
   return (
     <SiteShell>
       <section className="wrap public-intro">
-        <span className="pillbadge soft">✦ Webinars</span>
-        <h1 className="display">Conversas sobre <em>o caso real.</em></h1>
-        <p className="lead" style={{ margin: "0 auto" }}>Aulas abertas e bate-papos com quem atua em arbitragem e contencioso.</p>
+        <span className="pillbadge soft">Blog</span>
+        <h1 className="display">Guia prático <em>do advogado.</em></h1>
+        <p className="lead" style={{ margin: "0 auto" }}>Textos, webinars e outras trocas de suporte no dia a dia.</p>
       </section>
       <section className="wrap">
         {data.length === 0 ? (
-          <p className="muted" style={{ textAlign: "center", padding: "40px 0" }}>Nenhum webinar publicado ainda. Volte em breve.</p>
+          <p className="muted" style={{ textAlign: "center", padding: "40px 0" }}>Novos conteúdos em breve.</p>
         ) : (
           <div className="wb-grid">
             {data.map((w, i) => (
@@ -42,7 +42,7 @@ function WebinarList() {
                   <div className="wb-meta">{dateBR(w.starts_at)}{w.speaker && ` · ${w.speaker}`}</div>
                   <h2>{w.title}</h2>
                   <p>{w.summary}</p>
-                  <span className="wb-more">Assistir →</span>
+                  <span className="wb-more">{w.video_url ? "Assistir" : "Ler conteúdo"} →</span>
                 </div>
               </Link>
             ))}

@@ -4,7 +4,6 @@ import coverPratico from "@/assets/cover-pratico.jpg";
 import coverTeorico from "@/assets/cover-teorico.jpg";
 import art from "@/assets/art-hero.jpg";
 import { useFileUrl } from "@/lib/files";
-import { founders } from "@/lib/founders";
 
 export const coverFor = (p: Program) => (p.cover === "pratico" ? coverPratico : p.cover === "teorico" ? coverTeorico : art);
 
@@ -17,7 +16,7 @@ export function CourseCard({ p }: { p: Program }) {
         <img src={custom ?? coverFor(p)} alt="" loading="lazy" width={1024} height={640} style={soon ? { filter: "grayscale(.6) opacity(.6)" } : undefined} />
         {p.fullPrice ? (
           <span className="promo-badge">
-            <b>★ Promoção válida até 30/11</b>
+            <b>★ Promoção válida até 14/12</b>
             <small>Preço sujeito a alteração</small>
           </span>
         ) : null}
@@ -34,13 +33,8 @@ export function CourseCard({ p }: { p: Program }) {
           </div>
         )}
         <div className="cfoot">
-          <div className="avs">
-            {founders.map((founder) => <img key={founder.name} src={founder.photo} alt={founder.name} title={founder.name} width={32} height={32} loading="lazy" />)}
-          </div>
           <span>
             <b style={{ color: "var(--ink)" }}>Rebeca Franzoni · Tainá Malta Rodrigues</b>
-            <br />
-            PUC-SP · CJA/CBMA
           </span>
         </div>
       </div>

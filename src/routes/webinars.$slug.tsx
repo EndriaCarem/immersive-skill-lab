@@ -16,8 +16,8 @@ export const Route = createFileRoute("/webinars/$slug")({
     return w;
   },
   head: ({ loaderData }) => {
-    const title = loaderData ? `${loaderData.title} — Webinar Empiria` : "Webinar — Empiria";
-    const desc = loaderData?.summary || "Webinar da Empiria.";
+    const title = loaderData ? `${loaderData.title} — Blog Empiria` : "Blog — Empiria";
+    const desc = loaderData?.summary || "Textos, webinars e outras trocas de suporte no dia a dia.";
     const img = loaderData?.cover_url?.startsWith("https://") ? loaderData.cover_url : null;
     return {
       meta: [
@@ -34,8 +34,8 @@ export const Route = createFileRoute("/webinars/$slug")({
   notFoundComponent: () => (
     <SiteShell>
       <section className="wrap public-intro">
-        <h1 className="display">Webinar não encontrado</h1>
-        <Link to="/webinars" className="btn">Ver todos os webinars</Link>
+        <h1 className="display">Conteúdo não encontrado</h1>
+        <Link to="/webinars" className="btn">Voltar ao Blog</Link>
       </section>
     </SiteShell>
   ),
@@ -66,15 +66,16 @@ function WebinarPage() {
   if (!w) return null;
   const embed = w.video_url ? embedUrl(w.video_url) : null;
   async function share() {
+    if (!w) return;
     const url = window.location.href;
-    if (navigator.share) { try { await navigator.share({ title: w!.title, url }); return; } catch { /* cancelado */ } }
+    if (navigator.share) { try { await navigator.share({ title: w.title, url }); return; } catch { /* cancelado */ } }
     await navigator.clipboard.writeText(url);
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   }
   return (
     <SiteShell>
       <article className="wrap wb-article">
-        <Link to="/webinars" className="wb-back">← Webinars</Link>
+        <Link to="/webinars" className="wb-back">← Blog</Link>
         <div className="wb-meta">{dateBR(w.starts_at)}{w.speaker && ` · ${w.speaker}`}</div>
         <h1 className="display" style={{ textAlign: "left" }}>{w.title}</h1>
         {w.summary && <p className="lead" style={{ textAlign: "left", margin: "0 0 24px" }}>{w.summary}</p>}

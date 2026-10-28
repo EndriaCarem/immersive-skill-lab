@@ -15,7 +15,7 @@ export const Route = createFileRoute("/programa/$slug")({
       { title: "Curso — Empiria" },
       { name: "description", content: "Método, o que você vai dominar e a grade curricular do curso." },
       { property: "og:title", content: "Curso — Empiria" },
-      { property: "og:description", content: "Preço de lançamento até 30/11." },
+      { property: "og:description", content: "Preço de lançamento até 14/12." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

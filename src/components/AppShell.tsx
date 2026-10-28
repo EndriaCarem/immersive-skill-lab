@@ -73,7 +73,7 @@ function TopNav() {
       <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>
       {user && <Link to="/meus-programas" {...item}>Meus programas</Link>}
       <Link to="/cursos" {...item}>Cursos</Link>
-      <Link to="/webinars" {...item}>Webinars</Link>
+      <Link to="/webinars" {...item}>Blog</Link>
       <Link to="/sobre" {...item}>Quem somos</Link>
       {!user && <Link to="/contato" {...item}>Contato</Link>}
     </>
@@ -200,11 +200,13 @@ function SiteFooter({ campaign = false }: { campaign?: boolean }) {
             <Link to="/privacidade">Privacidade e LGPD</Link>
           </div>
         </div>
+        {/* Parceiros em stand by: Arbipédia · CJA/CBMA. */}
         <div>
-          <h5>Parceiros</h5>
+          <h5>Contato e redes sociais</h5>
           <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
-            <span>Arbipédia</span>
-            <span>CJA/CBMA</span>
+            <a href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">Instagram @empiria.law</a>
+            <a href="mailto:atendimento@empiria-law.com">atendimento@empiria-law.com</a>
+            <a href="https://empiria-law.com">empiria-law.com</a>
           </div>
         </div>
       </div>
