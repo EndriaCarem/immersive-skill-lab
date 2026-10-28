@@ -938,7 +938,7 @@
 .v10-anim .btn{position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s!important}
 .v10-anim .btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);background-size:250% 100%;animation:v-shine 3.2s linear infinite;pointer-events:none}
 .v10-anim .btn:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(42,22,54,.25)}
-.v10-anim .row .panel,.v10-anim .row .pimg{translate:0 calc(var(--vp,0)*-40px)}
+.v10-anim .feat .panel{translate:0 calc(var(--vp,0)*-40px)}
 .v10-anim .sym{animation:v-float 5s ease-in-out infinite!important}
 .v10-anim .feat,.v10-anim .cmp>*,.v10-anim .ai-grid>*{position:relative;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s,opacity 1s!important}
 .v10-anim .feat:hover,.v10-anim .cmp>*:hover,.v10-anim .ai-grid>*:hover{transform:translateY(-6px)!important;box-shadow:0 24px 50px rgba(42,22,54,.18)}

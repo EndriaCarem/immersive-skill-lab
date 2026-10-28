@@ -24,9 +24,9 @@ const REVEALS: [string, string][] = [
   [".sec-head, .eyebrow", "v-up"],
   [".logos", "v-fade"],
   [".cmp > *", "v-flip"],
-  [".row .copy", "v-right"],
-  [".row .panel, .row .pimg", "v-left"],
-  [".feat", "v-zoom"],
+  [".feat .copy", "v-right"],
+  [".feat .panel", "v-left"],
+  [".matrow > *, .ai-grid .big", "v-zoom"],
   [".ai-grid > *, .ai-one", "v-tilt"],
   ["details", "v-up"],
   [".final", "v-zoom"],
@@ -50,7 +50,7 @@ function Landing() {
       raf = requestAnimationFrame(() => {
         raf = 0;
         node.style.setProperty("--vy", String(window.scrollY));
-        node.querySelectorAll<HTMLElement>(".row .panel, .row .pimg, .browser").forEach((el) => {
+        node.querySelectorAll<HTMLElement>(".feat .panel").forEach((el) => {
           const r = el.getBoundingClientRect();
           const p = (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight;
           el.style.setProperty("--vp", String(Math.max(-1, Math.min(1, p))));
