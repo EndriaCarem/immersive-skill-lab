@@ -5,7 +5,7 @@ export const EMAIL_FROM_ADDRESS = "atendimento@empiria-law.com";
 const SITE = "https://empiria-law.com";
 
 const esc = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+  s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c] ?? c);
 
 function layout(title: string, body: string, cta?: { label: string; href: string }) {
   return `<!doctype html><html><body style="margin:0;background:#F4F2F7;font-family:Arial,Helvetica,sans-serif;color:#3B2249">
@@ -20,7 +20,7 @@ ${cta ? `<p style="margin:24px 0 0"><a href="${cta.href}" style="background:#3B2
 </div></body></html>`;
 }
 
-export async function sendEmail(input: { to: string; subject: string; html: string; replyTo?: string }) {
+export async function sendEmail(input: { to: string; subject: string; html: string; replyTo?: string; idempotencyKey?: string }) {
   const key = process.env["RESEND_API_KEY"];
   if (!key) {
     console.warn("[Email] envio desativado: chave do Resend não configurada");
@@ -29,7 +29,7 @@ export async function sendEmail(input: { to: string; subject: string; html: stri
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { Authorization: `Bearer ${key.trim()}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${key.trim()}`, "Content-Type": "application/json", ...(input.idempotencyKey ? { "Idempotency-Key": input.idempotencyKey } : {}) },
       body: JSON.stringify({
         from: `Empiria <${EMAIL_FROM_ADDRESS}>`,
         to: [input.to],
@@ -91,11 +91,12 @@ export async function emailOrderCancelled(orderId: string) {
   await sendEmail({ to: c.email, subject: "Seu pedido foi cancelado — Empiria", html: layout("Pedido cancelado", `<p>O cancelamento do seu pedido foi registrado:</p><ul>${c.items}</ul><p>Se houve pagamento, o estorno segue as regras do meio de pagamento utilizado.</p>`, { label: "Ver minhas compras", href: `${SITE}/compras` }) });
 }
 
-export async function emailInterestToTeam(lead: { name: string; email: string; interest?: string | null; message?: string | null; source?: string | null }) {
+export async function emailInterestToTeam(lead: { name: string; email: string; interest?: string | null; message?: string | null; source?: string | null; phone?: string; marketingOptIn?: boolean; campaignPath?: string | undefined }, requestId?: string) {
   await sendEmail({
     to: EMAIL_FROM_ADDRESS,
     replyTo: lead.email,
+    ...(requestId ? { idempotencyKey: `interest-${requestId}` } : {}),
     subject: `Novo interessado: ${lead.name}`,
-    html: layout("Novo interessado no site", `<p><b>Nome:</b> ${esc(lead.name)}<br><b>E-mail:</b> ${esc(lead.email)}<br><b>Interesse:</b> ${esc(lead.interest ?? "-")}<br><b>Origem:</b> ${esc(lead.source ?? "-")}</p><p>${esc(lead.message ?? "")}</p><p>Responda este e-mail para falar direto com a pessoa.</p>`),
+    html: layout("Novo interessado no site", `<p><b>Nome:</b> ${esc(lead.name)}<br><b>E-mail:</b> ${esc(lead.email)}<br><b>WhatsApp:</b> ${esc(lead.phone ?? "-")}<br><b>Interesse:</b> ${esc(lead.interest ?? "-")}<br><b>Origem:</b> ${esc(lead.campaignPath ?? lead.source ?? "-")}<br><b>Aceitou novidades:</b> ${lead.marketingOptIn ? "Sim" : "Não"}</p><p>${esc(lead.message ?? "")}</p><p>Responda este e-mail para falar direto com a pessoa.</p>`),
   });
 }

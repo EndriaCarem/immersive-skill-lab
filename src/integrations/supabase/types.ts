@@ -331,38 +331,47 @@ export type Database = {
       }
       interest_submissions: {
         Row: {
+          campaign_path: string | null
           consent: boolean
           consent_version: string
           created_at: string
           email: string
           id: string
           interest: string
+          marketing_opt_in: boolean
           message: string
           name: string
+          phone: string
           request_id: string
           source: string
         }
         Insert: {
+          campaign_path?: string | null
           consent: boolean
           consent_version?: string
           created_at?: string
           email: string
           id?: string
           interest: string
+          marketing_opt_in?: boolean
           message?: string
           name: string
+          phone?: string
           request_id: string
           source: string
         }
         Update: {
+          campaign_path?: string | null
           consent?: boolean
           consent_version?: string
           created_at?: string
           email?: string
           id?: string
           interest?: string
+          marketing_opt_in?: boolean
           message?: string
           name?: string
+          phone?: string
           request_id?: string
           source?: string
         }

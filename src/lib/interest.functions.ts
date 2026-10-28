@@ -14,12 +14,15 @@ export const submitInterest = createServerFn({ method: "POST" })
       source: data.source,
       consent: data.consent,
       request_id: data.requestId,
+      phone: data.phone,
+      marketing_opt_in: data.marketingOptIn,
+      campaign_path: data.campaignPath ?? null,
     });
     // A retry of the same request is already recorded; do not add duplicate rows.
     if (error && error.code !== "23505") return { success: false };
     if (!error) {
       const { emailInterestToTeam } = await import("./email.server");
-      await emailInterestToTeam(data);
+      await emailInterestToTeam(data, data.requestId);
     }
     return { success: true };
   });
