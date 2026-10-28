@@ -137,8 +137,8 @@ function MinimalFooter() {
           <p className="doc-voice">Empiria: o conhecimento que vem da experiência.</p>
         </div>
         <nav className="mfoot-contact" aria-label="Contatos da Empiria">
-          <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
-            <Instagram size={18} /> <span>Instagram @empiria.law</span> <ArrowUpRight size={16} />
+          <a href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
+            Instagram @empiria.law
           </a>
           <a href="mailto:atendimento@empiria-law.com">atendimento@empiria-law.com</a>
           <a href="https://empiria-law.com">empiria-law.com</a>
