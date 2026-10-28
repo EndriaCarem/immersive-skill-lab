@@ -961,3 +961,4 @@
 .v10 .logos-group{ display:flex; align-items:center; gap:44px; padding-right:44px; flex-shrink:0; }
 .v10 .logos-group > *{ flex-shrink:0; white-space:nowrap; margin-left:0 !important; }
 @keyframes v10-marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+.v10 .logos img[alt="Ibrawork"]{ height:18px !important; filter:grayscale(1) contrast(1.1); opacity:.7 !important; }
