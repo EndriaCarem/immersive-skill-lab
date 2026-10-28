@@ -134,9 +134,6 @@ function CampaignPage() {
           </div>
         </div>
       </section> : <section className="cq-unlocked cq-v2-hero">
-        <img className="cq-backdrop" src={workspace} alt="" aria-hidden="true" />
-        <div className="cq-entry-wash" aria-hidden="true" />
-        <div className="cq-orbs" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
         <div className="cq-wrap">
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
