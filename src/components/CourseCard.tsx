@@ -4,6 +4,8 @@ import coverPratico from "@/assets/cover-pratico.jpg";
 import coverTeorico from "@/assets/cover-teorico.jpg";
 import art from "@/assets/art-hero.jpg";
 import { useFileUrl } from "@/lib/files";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export const coverFor = (p: Program) => (p.cover === "pratico" ? coverPratico : p.cover === "teorico" ? coverTeorico : art);
 
@@ -33,9 +35,7 @@ export function CourseCard({ p }: { p: Program }) {
           </div>
         )}
         <div className="cfoot">
-          <span>
-            <b style={{ color: "var(--ink)" }}>Rebeca Franzoni · Tainá Malta Rodrigues</b>
-          </span>
+          {!soon && <Button asChild className="btn primary w-full"><Link to="/programa/$slug" params={{ slug: p.slug }}>Ver curso<ArrowRight aria-hidden="true" /></Link></Button>}
         </div>
       </div>
     </>
@@ -43,8 +43,8 @@ export function CourseCard({ p }: { p: Program }) {
   return soon ? (
     <div className="ccard soon">{inner}</div>
   ) : (
-    <Link to="/programa/$slug" params={{ slug: p.slug }} className="ccard">
+    <div className="ccard">
       {inner}
-    </Link>
+    </div>
   );
 }
