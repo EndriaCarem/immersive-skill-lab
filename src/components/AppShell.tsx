@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Menu, X, UserRound, Moon, Sun, LogOut, Instagram, ArrowUpRight } from "lucide-react";
+import { Menu, X, UserRound, Moon, Sun, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
