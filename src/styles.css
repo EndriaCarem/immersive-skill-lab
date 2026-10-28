@@ -1351,21 +1351,23 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 @media(max-width:400px){.material-intro h1{font-size:36px}.material-steps{grid-template-columns:minmax(0,1fr);gap:16px}.material-preview-heading{gap:10px}.material-preview-heading h2{font-size:20px}.material-play-mark{width:38px;height:38px}}
 
 /* Clean campaign footer (/conheca) */
-.mfoot{padding:56px 0 28px}
-.mfoot-top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:48px;align-items:start;padding-bottom:36px;border-bottom:1px solid color-mix(in oklab,var(--lavender) 30%,transparent)}
-.mfoot-brand img{height:32px;width:auto;display:block;margin-bottom:18px}
-.mfoot-brand p{max-width:420px;font-size:15px;line-height:1.6;margin:0 0 22px;color:var(--on-plum)}
+.mfoot{padding:28px 0 20px}
+.mfoot-top{padding-bottom:22px;border-bottom:1px solid color-mix(in oklab,var(--lavender) 30%,transparent)}
+.mfoot-brand{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:32px;align-items:center}
+.mfoot-brand img{height:32px;width:auto;display:block;margin:0}
+.mfoot-brand p{max-width:520px;font-size:14px;line-height:1.6;margin:0;color:var(--on-plum)}
 .sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border:1px solid color-mix(in oklab,var(--lavender) 55%,transparent);border-radius:999px;font-weight:600;font-size:14px;transition:background-color .25s ease,border-color .25s ease}
 .sitefoot a.mfoot-insta:hover{background:color-mix(in oklab,var(--lavender) 18%,transparent);border-color:var(--lavender)}
 .mfoot-partners{justify-self:end;text-align:right}
 .mfoot-logos{display:flex;gap:32px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 .mfoot-logos img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.8;transition:opacity .25s ease}
 .mfoot-logos img:hover{opacity:1}
-.mfoot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-top:22px;font-size:12.5px;color:var(--lavender)}
+.mfoot-bottom{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-top:16px;font-size:12.5px;color:var(--lavender)}
 .mfoot-bottom nav{display:flex;gap:22px}
 .sitefoot .mfoot-bottom a{color:var(--lavender)}
 .sitefoot .mfoot-bottom a:hover{color:var(--paper)}
-@media(max-width:760px){.mfoot-top{grid-template-columns:minmax(0,1fr);gap:32px}.mfoot-partners{justify-self:start;text-align:left}.mfoot-logos{justify-content:flex-start}.mfoot-bottom{flex-direction:column;align-items:flex-start}}
+@media(max-width:1020px){.mfoot-brand{grid-template-columns:minmax(0,1fr) auto;gap:18px 24px}.mfoot-brand p{grid-column:1;grid-row:2}.mfoot-brand .mfoot-insta{grid-column:2;grid-row:1 / 3}}
+@media(max-width:760px){.mfoot-brand{grid-template-columns:minmax(0,1fr);gap:16px}.mfoot-brand p,.mfoot-brand .mfoot-insta{grid-column:auto;grid-row:auto}.mfoot-brand .mfoot-insta{justify-self:start}.mfoot-bottom{flex-direction:column;align-items:flex-start}}
 
 /* /conheca scroll motion */
 .material-player.mp-anim{--mp:1;transform:perspective(1400px) rotateX(calc((1 - var(--mp)) * 18deg)) scale(calc(.86 + var(--mp) * .14)) translateY(calc((1 - var(--mp)) * 40px));opacity:calc(.35 + var(--mp) * .65);transform-origin:50% 100%;will-change:transform;box-shadow:0 calc(var(--mp) * 40px) calc(var(--mp) * 80px) -40px color-mix(in oklab,var(--plum) 55%,transparent)}
