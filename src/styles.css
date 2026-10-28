@@ -1356,7 +1356,7 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .mfoot-brand{display:flex;gap:32px;align-items:center;flex-wrap:wrap}
 .mfoot-brand img{height:32px;width:auto;display:block;margin:0}
 .mfoot-brand p{max-width:520px;font-size:18px;font-style:italic;line-height:1.6;margin:0;color:var(--on-plum)}
-.mfoot-contact{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px}
+.mfoot-contact{display:flex;align-items:center;justify-content:flex-end;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px;text-align:right}
 .mfoot-contact a{overflow-wrap:anywhere}
 .sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;font-weight:400;font-size:14px;transition:color .25s ease}
 .sitefoot a.mfoot-insta:hover{background:none;color:var(--paper)}
