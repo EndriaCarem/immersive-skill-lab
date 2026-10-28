@@ -124,7 +124,7 @@ function CampaignPage() {
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-video-intro">
             <div className="cq-eyebrow cq-v2-eyebrow"><i />OBRIGADA, {viewer.name.split(" ")[0]?.toLocaleUpperCase("pt-BR")}. O VÍDEO ESTÁ LIBERADO.</div>
-            <h1 className="cq-letters" aria-label="A plataforma, por dentro."><span aria-hidden="true"><AnimatedWords text="A plataforma," start={0} /> <em><AnimatedWords text="por dentro." start={12} /></em></span></h1>
+            <h1 className="cq-letters cq-nowave" aria-label="A plataforma, por dentro."><span aria-hidden="true"><AnimatedWords text="A plataforma," start={0} /> <em><AnimatedWords text="por dentro." start={12} /></em></span></h1>
             <p>Da demanda à devolutiva, do documento de referência à aula do Teórico: um minuto e meio dentro da plataforma.</p>
           </div>
           <div className="cq-video-stage cq-v2-video">
