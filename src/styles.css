@@ -1480,7 +1480,7 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 }
 /* /conheca: animated headline letters and paragraph words */
 .cq-entry h1.cq-letters>span{animation:none}
-.cq-wordbox{display:inline-block;white-space:nowrap}
+.cq-wordbox{display:inline-block;white-space:nowrap;margin-right:.24em}.cq-wordbox:last-child{margin-right:0}
 .cq-letter{display:inline-block;opacity:0;transform:translateY(.6em) rotate(8deg);filter:blur(6px);animation:cq-letter-in .7s cubic-bezier(.2,.8,.2,1) forwards,cq-letter-wave 5s ease-in-out infinite;animation-delay:calc(var(--i)*35ms + .15s),calc(var(--i)*90ms + 1.6s)}
 .cq-letters em .cq-letter{background:linear-gradient(90deg,var(--cq-accent),var(--cq-ink),var(--cq-accent));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:cq-letter-in .7s cubic-bezier(.2,.8,.2,1) forwards,cq-letter-wave 5s ease-in-out infinite,cq-letter-shine 4s linear infinite;animation-delay:calc(var(--i)*35ms + .15s),calc(var(--i)*90ms + 1.6s),calc(var(--i)*-120ms)}
 .cq-entry-copy>p.cq-words{animation:none}
