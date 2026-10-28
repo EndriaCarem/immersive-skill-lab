@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
 import { materialCampaign } from "@/lib/material-campaign";
+import { campaignViewerKey, parseCampaignViewer } from "@/lib/campaign-viewer";
 import logo from "@/assets/empiria-logo-light.png.asset.json";
 import workspace from "@/assets/auth-workspace.jpg";
 import compatibleVideo from "@/assets/empiria-apresentacao-atualizada.webm.asset.json";
@@ -57,6 +58,14 @@ function CampaignPage() {
   const root = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
+    try {
+      const remembered = parseCampaignViewer(window.localStorage.getItem(campaignViewerKey));
+      if (remembered) setViewer(remembered);
+    } catch {
+      // Storage can be unavailable in private or restricted browsers.
+    }
+  }, []);
+  useEffect(() => {
     const node = root.current;
     if (!node) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
@@ -80,6 +89,11 @@ function CampaignPage() {
   }, [viewer]);
   const saved = (name: string, interest: string) => {
     setViewer({ name, interest });
+    try {
+      window.localStorage.setItem(campaignViewerKey, JSON.stringify({ name, interest }));
+    } catch {
+      // Successful Cloud capture still unlocks the video without local storage.
+    }
     window.scrollTo({ top: 0, behavior: "instant" });
   };
   return <div className="cq-shell"><SiteShell hideNav minimalFooter><div className="cq-page" ref={root}>
