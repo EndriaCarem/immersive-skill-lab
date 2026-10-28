@@ -1754,4 +1754,4 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 
 /* ===== /conheca: cores fixas, sem tema claro/escuro e sem escurecimento automático do navegador ===== */
 html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !important;forced-color-adjust:none}
-.cq-shell .cq-v2-hero{background:#2A1B33!important;background-image:none!important}.cq-shell .cq-v2-hero::before{display:none!important}
+.cq-shell .cq-v2-hero{background:radial-gradient(ellipse 80% 60% at 75% 10%,#8A5A96 0%,transparent 60%),linear-gradient(160deg,#693E74 0%,#4A2C5A 55%,#3B2249 100%)!important}.cq-shell .cq-v2-hero::before{display:none!important}
