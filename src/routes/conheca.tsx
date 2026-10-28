@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/conheca")({
 
 function AnimatedWords({ text, start }: { text: string; start: number }) {
   let n = start;
-  return <>{text.split(" ").map((word, wi) => <span key={wi} className="cq-wordbox">{[...word].map((ch, ci) => <span key={ci} className="cq-letter" style={{ "--i": n++ } as React.CSSProperties}>{ch}</span>)}{wi < text.split(" ").length - 1 ? " " : null}</span>)}</>;
+  return <>{text.split(" ").map((word, wi) => <Fragment key={wi}>{wi > 0 ? " " : null}<span className="cq-wordbox">{[...word].map((ch, ci) => <span key={ci} className="cq-letter" style={{ "--i": n++ } as React.CSSProperties}>{ch}</span>)}</span></Fragment>)}</>;
 }
 
 function CampaignPage() {
