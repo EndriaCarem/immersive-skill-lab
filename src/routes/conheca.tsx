@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, ArrowRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
@@ -64,17 +64,9 @@ function CampaignPage() {
         <div className="cq-entry-wash" aria-hidden="true" />
         <div className="cq-wrap cq-entry-content">
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span><i /> FORMAÇÃO JURÍDICA PRÁTICA</span></div>
-          <div className="cq-entry-grid">
-            <div className="cq-entry-copy">
-              <div className="cq-eyebrow"><span /> O SEU PRÓXIMO PASSO, POR DENTRO</div>
-              <h1><span>Empiria.</span><span>O ofício antes</span><span>da <em>oportunidade.</em></span></h1>
-              <p>Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.</p>
-              <div className="cq-invitation"><span className="cq-play-symbol"><ArrowRight size={22} /></span><div><b>Veja a plataforma por dentro.</b><span>Deixe seu interesse e libere o vídeo.</span></div></div>
-              <div className="cq-live-flow" aria-label="Da demanda à devolutiva"><span><BriefcaseBusiness size={15} /> Demanda</span><ArrowRight size={14} /><span><FileCheck2 size={15} /> Entrega</span><ArrowRight size={14} /><span><MessageSquareText size={15} /> Devolutiva</span></div>
-            </div>
+          <div className="cq-capture-only">
             <CampaignCapture onSaved={saved} />
           </div>
-          <div className="cq-entry-bottom"><span>O conhecimento que vem da experiência.</span><span>SEU PRIMEIRO OLHAR <ArrowDown size={16} /></span></div>
         </div>
       </section> : <section className="cq-unlocked cq-wrap">
         <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span><Check size={14} /> INTERESSE REGISTRADO</span></div>
@@ -86,14 +78,14 @@ function CampaignPage() {
         </div>
         <div className="cq-video-bottom"><span>{completed ? <><Check size={16} /> Apresentação concluída</> : "Um olhar para a sua próxima experiência."}</span><Button variant="ghost" onClick={() => document.getElementById("cq-cursos")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>Conhecer os cursos <ArrowDown size={16} /></Button></div>
       </section>}
-      <section className="cq-method" aria-label="O método Empiria">
+      {viewer && <section className="cq-method" aria-label="O método Empiria">
         <div className="cq-wrap">
           <div className="cq-section-heading" data-cq-reveal><span className="cq-eyebrow">DA TEORIA À SUA MESA</span><h2>Não é só aprender.<br />É <em>ter o que entregar.</em></h2><p>A experiência de um escritório, com espaço para construir sua prática e aprender com a devolutiva.</p></div>
           <div className="cq-method-grid">
             {[{ n: "01", Icon: BriefcaseBusiness, title: "A demanda chega.", text: "Você recebe o contexto do caso, os documentos e uma tarefa concreta." }, { n: "02", Icon: FileCheck2, title: "A entrega é sua.", text: "Analise, decida e redija. Transforme o que você sabe em trabalho jurídico." }, { n: "03", Icon: MessageSquareText, title: "A devolutiva faz avançar.", text: "Critérios de avaliação e referências para entender sua entrega e desenvolver sua prática." }].map(({ n, Icon, title, text }) => <article className="cq-method-item" data-cq-reveal key={n}><div className="cq-method-top"><span>{n}</span><Icon size={28} /></div><h3>{title}</h3><p>{text}</p><div className="cq-method-rule" /></article>)}
           </div>
         </div>
-      </section>
+      </section>}
       {viewer && <section className="cq-courses cq-wrap" id="cq-cursos">
         <div className="cq-section-heading" data-cq-reveal><span className="cq-eyebrow">DOIS FORMATOS. UM NOVO COMEÇO.</span><h2>Encontre o seu<br /><em>ponto de partida.</em></h2><p>Construa suas entregas no Simulado ou organize seus fundamentos no Teórico.</p></div>
         <div className="cq-course-grid">
@@ -103,7 +95,7 @@ function CampaignPage() {
           </article>)}
         </div>
       </section>}
-      <section className="cq-last cq-wrap" data-cq-reveal><span className="cq-eyebrow">EMPIRIA</span><h2>O conhecimento ganha vida<br />quando <em>vira experiência.</em></h2>{!viewer && <Button className="cq-last-cta" onClick={() => { document.querySelector<HTMLInputElement>('.cq-form input[name="name"]')?.focus(); window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); }}>Quero conhecer por dentro <ArrowRight size={18} /></Button>}</section>
+      {viewer && <section className="cq-last cq-wrap" data-cq-reveal><span className="cq-eyebrow">EMPIRIA</span><h2>O conhecimento ganha vida<br />quando <em>vira experiência.</em></h2></section>}
     </main>
   </div></SiteShell></div>;
 }
