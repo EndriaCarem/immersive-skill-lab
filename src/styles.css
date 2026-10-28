@@ -367,7 +367,7 @@ ul.clean li{margin-bottom:7px}
   .score-top{flex-direction:column;align-items:flex-start;gap:14px}
   .score-top .side{margin-left:0;text-align:left}
 }
-@media (prefers-reduced-motion:reduce){*:not(.cq-page *){transition:none!important}}
+@media (prefers-reduced-motion:reduce){*:not(.cq-page *):not(.v10-anim *){transition:none!important}}
 
 }
 
