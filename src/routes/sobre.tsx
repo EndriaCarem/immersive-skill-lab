@@ -53,7 +53,7 @@ const THEORY_TEACHERS: Teacher[] = [
   { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
 ];
 
-function TeacherCard({ label, title, teacher }: { label: string; title: string; teacher?: Teacher | undefined }) {
+function TeacherCard({ teacher }: { teacher?: Teacher | undefined }) {
   return (
     <article className="ab-teacher">
       {teacher ? (
@@ -61,7 +61,6 @@ function TeacherCard({ label, title, teacher }: { label: string; title: string; 
       ) : (
         <div className="ab-teacher-photo" aria-label="Foto do professor (em breve)"><span>Foto</span></div>
       )}
-      <span className="ab-kicker">{label} · {title}</span>
       <h4>{teacher?.name ?? "Nome do professor"}</h4>
       <p>{teacher?.bio ?? "Sócio(a) · [escritório]"}</p>
     </article>
@@ -154,11 +153,11 @@ function About() {
           </div>
           <h3 className="ab-sub" data-rv>Curso prático</h3>
           <div className="ab-grid3">
-            {PRACTICAL.map((t, i) => <div key={t} data-rv><TeacherCard label={`Demanda ${i + 1}`} title={t} teacher={PRACTICAL_TEACHERS[i]} /></div>)}
+            {PRACTICAL.map((t, i) => <div key={t} data-rv><TeacherCard teacher={PRACTICAL_TEACHERS[i]} /></div>)}
           </div>
           <h3 className="ab-sub" data-rv>Curso teórico</h3>
           <div className="ab-grid4">
-            {THEORY.map((t, i) => <div key={t} data-rv><TeacherCard label={`Aula ${i + 1}`} title={t} teacher={THEORY_TEACHERS[i]} /></div>)}
+            {THEORY.map((t, i) => <div key={t} data-rv><TeacherCard teacher={THEORY_TEACHERS[i]} /></div>)}
           </div>
         </section>
 

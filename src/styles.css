@@ -1730,3 +1730,4 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .cq-v2-course{display:flex!important;flex-direction:column;height:100%}
 .cq-v2-cbody{display:flex;flex-direction:column;flex:1}
 .cq-v2-cbody>p{flex:1}
+.ab-teacher .ab-teacher-photo,.ab-grid3 .ab-teacher-photo{width:110px!important;aspect-ratio:4/5!important;object-position:top}
