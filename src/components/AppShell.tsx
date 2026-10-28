@@ -14,16 +14,22 @@ import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
 import footerLogoWhite from "@/assets/empiria-footer-white.png";
 
-/** Theme preference is an account-area feature: visitors always see the default light theme. */
-function useAccountTheme(signedIn: boolean) {
+/** Theme follows the device (prefers-color-scheme) until the visitor picks one with the toggle. */
+function useAccountTheme(_signedIn?: boolean) {
   const [dark, setDark] = useState(false);
   useEffect(() => {
-    let stored = false;
-    try { stored = localStorage.getItem("empiria-theme") === "dark"; } catch { /* ignore */ }
-    const next = signedIn && stored;
-    document.documentElement.classList.toggle("dark", next);
-    setDark(next);
-  }, [signedIn]);
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      let stored: string | null = null;
+      try { stored = localStorage.getItem("empiria-theme"); } catch { /* ignore */ }
+      const next = stored ? stored === "dark" : mq.matches;
+      document.documentElement.classList.toggle("dark", next);
+      setDark(next);
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
   const toggle = () => {
     const next = !dark;
     setDark(next);
@@ -80,6 +86,7 @@ function TopNav() {
         </Link>
         <nav className="desktop-nav" aria-label="Navegação principal">{links}</nav>
         <div className="right">
+          <button type="button" className="theme-btn" onClick={toggle} aria-label={dark ? "Ativar modo claro" : "Ativar modo escuro"} title={dark ? "Modo claro" : "Modo escuro"}>{dark ? <Sun size={17} /> : <Moon size={17} />}</button>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
