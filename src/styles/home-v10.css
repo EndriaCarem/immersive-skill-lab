@@ -955,7 +955,8 @@
 .v10-anim .v-tilt{transform:perspective(1000px) rotateX(16deg) translateY(60px)}
 .v10-anim .v-rv.v-in{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0 round 0)}
 .v10 .logos .in.logos-marquee{ display:block; overflow:hidden; max-width:100%; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); }
-.v10 .logos-track{ display:flex; width:max-content; animation:v10-marquee 40s linear infinite; }
+.v10 .logos-track{ display:flex; width:max-content; animation:v10-marquee 40s linear infinite !important; }
+.v10 .logos-track:hover{ animation-play-state:paused !important; }
 .v10 .logos-track:hover{ animation-play-state:paused; }
 .v10 .logos-group{ display:flex; align-items:center; gap:44px; padding-right:44px; flex-shrink:0; }
 .v10 .logos-group > *{ flex-shrink:0; white-space:nowrap; margin-left:0 !important; }
