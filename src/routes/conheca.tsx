@@ -53,6 +53,13 @@ function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
   const [muted, setMuted] = useState(true);
   const root = useRef<HTMLDivElement>(null);
+  // The campaign page always keeps its own light look, regardless of the site theme.
+  useEffect(() => {
+    const html = document.documentElement;
+    const wasDark = html.classList.contains("dark");
+    html.classList.remove("dark");
+    return () => { if (wasDark) html.classList.add("dark"); };
+  }, []);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     try {
