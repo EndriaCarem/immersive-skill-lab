@@ -1385,11 +1385,11 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .cq-page p{color:var(--cq-muted)}
 .cq-wrap{width:min(1160px,calc(100% - 80px));margin-inline:auto}
 .cq-scroll-progress{position:fixed;left:0;top:0;right:0;height:3px;transform:scaleX(var(--cq-page-progress));transform-origin:left;background:var(--cq-accent);z-index:70;pointer-events:none}
-:root{--cq-light-ribbon:linear-gradient(115deg,transparent 25%,color-mix(in oklab,var(--cq-accent) 20%,transparent) 40%,color-mix(in oklab,var(--cq-accent) 38%,transparent) 48%,transparent 65%);--cq-light-lines:repeating-linear-gradient(115deg,transparent 0 110px,color-mix(in oklab,var(--cq-accent) 20%,transparent) 111px 112px,transparent 113px 220px)}
+:root{--cq-light-ribbon:linear-gradient(115deg,transparent 25%,color-mix(in oklab,var(--cq-accent) 6%,transparent) 40%,color-mix(in oklab,var(--cq-accent) 12%,transparent) 48%,transparent 65%);--cq-light-lines:repeating-linear-gradient(115deg,transparent 0 110px,color-mix(in oklab,var(--cq-accent) 8%,transparent) 111px 112px,transparent 113px 220px)}
 .cq-entry{position:relative;isolation:isolate;min-height:100svh;padding-bottom:48px;overflow:hidden}
 .cq-entry::before,.cq-entry::after{content:"";position:absolute;inset:-35%;z-index:-1;pointer-events:none}
 .cq-entry::before{background:var(--cq-light-ribbon);animation:cq-ribbon-travel 8s ease-in-out infinite alternate;will-change:transform}
-.cq-entry::after{background:var(--cq-light-lines);animation:cq-lines-travel 12s linear infinite;opacity:.65}
+.cq-entry::after{background:var(--cq-light-lines);animation:cq-lines-travel 12s linear infinite;opacity:.3}
 .cq-capture-only{width:min(100%,480px);margin-inline:auto}
 .cq-backdrop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;transform:scale(1.12);animation:cq-photo-drift 7s ease-in-out infinite alternate;will-change:transform;pointer-events:none}
 .cq-entry-wash{position:absolute;inset:0;background:var(--cq-wash);background-size:180% 100%;z-index:-2;animation:cq-wash-drift 14s ease-in-out infinite alternate;pointer-events:none}
