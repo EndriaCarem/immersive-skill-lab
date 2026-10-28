@@ -20,6 +20,8 @@ export const Route = createFileRoute("/conheca")({
     { property: "og:description", content: "Da primeira demanda à devolutiva: um olhar por dentro da formação jurídica prática da Empiria." },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
+    { name: "color-scheme", content: "only light" },
+    { name: "darkreader-lock" },
   ] }),
   component: CampaignPage,
 });
@@ -57,8 +59,17 @@ function CampaignPage() {
   useEffect(() => {
     const html = document.documentElement;
     const wasDark = html.classList.contains("dark");
+    const prevScheme = html.style.colorScheme;
     html.classList.remove("dark");
-    return () => { if (wasDark) html.classList.add("dark"); };
+    // Opt out of the phone browser's automatic "night mode" darkening.
+    html.style.colorScheme = "only light";
+    const keepLight = new MutationObserver(() => { if (html.classList.contains("dark")) html.classList.remove("dark"); });
+    keepLight.observe(html, { attributes: true, attributeFilter: ["class"] });
+    return () => {
+      keepLight.disconnect();
+      html.style.colorScheme = prevScheme;
+      if (wasDark) html.classList.add("dark");
+    };
   }, []);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
