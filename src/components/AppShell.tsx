@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
-import arbipediaLogo from "@/assets/arbipedia-logo.png.asset.json";
-import cjaLogo from "@/assets/cja-cbma-logo.png.asset.json";
 
 /** Theme preference is an account-area feature: visitors always see the default light theme. */
 function useAccountTheme(signedIn: boolean) {
@@ -139,13 +137,6 @@ function MinimalFooter() {
           <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
             <Instagram size={18} /> <span>Siga @empiria.law</span> <ArrowUpRight size={16} />
           </a>
-        </div>
-        <div className="mfoot-partners">
-          <h5>Parceiros institucionais</h5>
-          <div className="mfoot-logos">
-            <img src={arbipediaLogo.url} alt="Arbipédia" />
-            <img src={cjaLogo.url} alt="CJA/CBMA" />
-          </div>
         </div>
       </div>
       <div className="wrap mfoot-bottom">
