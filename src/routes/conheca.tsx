@@ -53,6 +53,13 @@ function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
   const [muted, setMuted] = useState(true);
   const root = useRef<HTMLDivElement>(null);
+  // The campaign page always keeps its own light look, regardless of the site theme.
+  useEffect(() => {
+    const html = document.documentElement;
+    const wasDark = html.classList.contains("dark");
+    html.classList.remove("dark");
+    return () => { if (wasDark) html.classList.add("dark"); };
+  }, []);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     try {
@@ -109,7 +116,7 @@ function CampaignPage() {
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-entry-grid">
             <div className="cq-entry-copy">
-              <h1 className="cq-letters" aria-label="O ofício antes da oportunidade."><span aria-hidden="true"><AnimatedWords text="O ofício antes" start={0} /></span><span aria-hidden="true"><AnimatedWords text="da" start={13} /> <em><AnimatedWords text="oportunidade." start={16} /></em></span></h1>
+              <h1 className="cq-static-title"><span>O ofício antes</span> <span>da <em>oportunidade.</em></span></h1>
               <p className="cq-words" aria-label="Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática."><span aria-hidden="true">{"Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.".split(" ").map((w, i) => <span key={i} className="cq-word" style={{ "--i": i } as React.CSSProperties}>{w}{" "}</span>)}</span></p>
             </div>
             <CampaignCapture onSaved={saved} />
