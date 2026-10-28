@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Award, BookOpen, CalendarClock, Check, FileCheck2 } from "lucide-react";
+import { Award, BookOpen, CalendarClock, FileCheck2 } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { NotFoundBlock } from "@/components/ActivityLayout";
 import { coverFor } from "@/components/CourseCard";
