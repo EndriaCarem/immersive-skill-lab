@@ -10,6 +10,7 @@ export function CampaignCapture({ onSaved }: { onSaved: (name: string, interest:
   const save = useServerFn(submitInterest);
   const requestId = useRef<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const [interest, setInterest] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -31,7 +32,15 @@ export function CampaignCapture({ onSaved }: { onSaved: (name: string, interest:
   };
   const error = (name: string) => errors[name] ? <small className="cq-error" id={`cq-error-${name}`}>{errors[name]}</small> : null;
   const options = [{ value: "Curso Simulado", Icon: BriefcaseBusiness }, { value: "Curso Teórico", Icon: BookOpen }, { value: "Os dois", Icon: Layers }];
-  return <form className="cq-form" noValidate onSubmit={submit} aria-busy={busy}>
+  return <form className="cq-form" noValidate onSubmit={submit} aria-busy={busy} onChange={(event) => {
+    const form = new FormData(event.currentTarget);
+    requestId.current ??= crypto.randomUUID();
+    setIsComplete(interestSchema.safeParse({
+      name: form.get("name"), email: form.get("email"), phone: form.get("phone"), interest: form.get("interest") ?? "",
+      consent: form.get("consent") === "on", marketingOptIn: form.get("marketing") === "on", website: form.get("website") ?? "",
+      source: "interest", campaignPath: "/conheca", message: "", requestId: requestId.current,
+    }).success);
+  }}>
     <div className="cq-form-heading"><span>SEU PRIMEIRO PASSO</span><span>01 / 02</span></div>
     <h2>Entre. A casa é sua.</h2>
     <p>Conheça a Empiria por dentro.</p>
@@ -48,7 +57,7 @@ export function CampaignCapture({ onSaved }: { onSaved: (name: string, interest:
     <label className="cq-consent"><input type="checkbox" name="consent" required aria-invalid={Boolean(errors["consent"])} /><span>Autorizo o tratamento dos meus dados para contato sobre os cursos, conforme a <Link to="/privacidade" target="_blank">Política de Privacidade e LGPD</Link>.</span></label>{error("consent")}
     <label className="cq-consent"><input type="checkbox" name="marketing" /><span>Quero receber novidades da Empiria por e-mail e WhatsApp. <small>Opcional.</small></span></label>
     {errors["form"] && <p role="alert" className="cq-error">{errors["form"]}</p>}
-    <Button className="cq-submit" type="submit" disabled={busy}>{busy ? <LoaderCircle size={18} className="animate-spin" /> : null}{busy ? "Salvando seus dados…" : "Liberar o vídeo"}{!busy && <ArrowRight size={20} />}</Button>
+    <Button className="cq-submit" type="submit" disabled={busy || !isComplete}>{busy ? <LoaderCircle size={18} className="animate-spin" /> : null}{busy ? "Salvando seus dados…" : "Liberar o vídeo"}{!busy && <ArrowRight size={20} />}</Button>
     <div className="cq-safe"><ShieldCheck size={14} /> Seus dados protegidos. Sem criar uma conta.</div>
   </form>;
 }
