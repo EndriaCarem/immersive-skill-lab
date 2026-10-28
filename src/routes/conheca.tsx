@@ -1,3 +1,4 @@
+import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUpRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
@@ -22,6 +23,11 @@ export const Route = createFileRoute("/conheca")({
   ] }),
   component: CampaignPage,
 });
+
+function AnimatedWords({ text, start }: { text: string; start: number }) {
+  let n = start;
+  return <>{text.split(" ").map((word, wi) => <span key={wi} className="cq-wordbox">{[...word].map((ch, ci) => <span key={ci} className="cq-letter" style={{ "--i": n++ } as React.CSSProperties}>{ch}</span>)}{wi < text.split(" ").length - 1 ? " " : null}</span>)}</>;
+}
 
 function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
@@ -67,8 +73,8 @@ function CampaignPage() {
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-entry-grid">
             <div className="cq-entry-copy">
-              <h1><span>O ofício antes</span><span>da <em>oportunidade.</em></span></h1>
-              <p>Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.</p>
+              <h1 className="cq-letters" aria-label="O ofício antes da oportunidade."><span aria-hidden="true"><AnimatedWords text="O ofício antes" start={0} /></span><span aria-hidden="true"><AnimatedWords text="da" start={13} /> <em><AnimatedWords text="oportunidade." start={16} /></em></span></h1>
+              <p className="cq-words" aria-label="Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática."><span aria-hidden="true">{"Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.".split(" ").map((w, i) => <span key={i} className="cq-word" style={{ "--i": i } as React.CSSProperties}>{w}{" "}</span>)}</span></p>
             </div>
             <CampaignCapture onSaved={saved} />
           </div>

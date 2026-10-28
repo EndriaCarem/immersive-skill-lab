@@ -1478,3 +1478,15 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
   .cq-page .cq-entry.cq-entry::before{animation:cq-ribbon-travel 10s ease-in-out infinite alternate!important}
   .cq-page .cq-entry.cq-entry::after{animation:cq-lines-travel 14s linear infinite!important}
 }
+/* /conheca: animated headline letters and paragraph words */
+.cq-entry h1.cq-letters>span{animation:none}
+.cq-wordbox{display:inline-block;white-space:nowrap}
+.cq-letter{display:inline-block;opacity:0;transform:translateY(.6em) rotate(8deg);filter:blur(6px);animation:cq-letter-in .7s cubic-bezier(.2,.8,.2,1) forwards,cq-letter-wave 5s ease-in-out infinite;animation-delay:calc(var(--i)*35ms + .15s),calc(var(--i)*90ms + 1.6s)}
+.cq-letters em .cq-letter{background:linear-gradient(90deg,var(--cq-accent),var(--cq-ink),var(--cq-accent));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:cq-letter-in .7s cubic-bezier(.2,.8,.2,1) forwards,cq-letter-wave 5s ease-in-out infinite,cq-letter-shine 4s linear infinite;animation-delay:calc(var(--i)*35ms + .15s),calc(var(--i)*90ms + 1.6s),calc(var(--i)*-120ms)}
+.cq-entry-copy>p.cq-words{animation:none}
+.cq-word{display:inline-block;white-space:pre;opacity:0;transform:translateY(10px);animation:cq-word-in .6s ease-out forwards;animation-delay:calc(var(--i)*55ms + .9s)}
+@keyframes cq-letter-in{to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes cq-letter-wave{0%,85%,100%{translate:0 0}92%{translate:0 -.12em}}
+@keyframes cq-letter-shine{from{background-position:0% 50%}to{background-position:300% 50%}}
+@keyframes cq-word-in{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.cq-page .cq-letter,.cq-page .cq-word{opacity:1!important;transform:none!important;filter:none!important}}
