@@ -21,7 +21,11 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
   ]);
   for (const r of [programs, subs, notes, enrollments]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
-  return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)),
+  return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
+    const latest = (subs.data ?? []).filter(s => s.program_id === p.id && s.activity_id === a.id).at(-1);
+    const pending = latest && Array.isArray(latest.human_reviews) && latest.human_reviews.length > 0 && !latest.reviewed_at;
+    return latest && !pending ? a : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
+  }) })),
     submissions: (subs.data ?? []).map(s => submission(s)), notes: notes.data ?? [], enrollments: active };
 });
 export const deliverActivity = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
