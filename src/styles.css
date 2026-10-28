@@ -1556,3 +1556,11 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 @keyframes cq-arc-drift{from{transform:translate(-35px,-25px) rotate(-12deg)}to{transform:translate(65px,45px) rotate(28deg)}}
 @media(prefers-reduced-motion:reduce){.cq-v2-hero::before,.cq-v2-sec::before,.cq-shell .sitefoot::before,.cq-arcs i{animation:none!important}}
 .cq-v2-words span{margin-right:.24em}
+:root{--cq-moving-surface:linear-gradient(115deg,var(--cq-bg) 0%,var(--cq-surface) 24%,var(--plum) 48%,var(--cq-surface) 72%,var(--cq-bg) 100%)}
+.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.cq-shell .sitefoot{background-image:var(--cq-moving-surface);background-size:350% 250%;animation:cq-surface-flow 12s ease-in-out infinite alternate}
+.cq-v2-courses{animation-delay:-4s;animation-duration:14s}
+.cq-v2-ai{animation-delay:-8s;animation-direction:alternate-reverse}
+.cq-shell .sitefoot{animation-delay:-6s;animation-duration:16s}
+.cq-v2-hero .cq-entry-wash{background-image:var(--cq-moving-surface);background-size:350% 250%;animation:cq-surface-flow 12s ease-in-out infinite alternate;opacity:.94}
+@keyframes cq-surface-flow{0%{background-position:0% 20%}50%{background-position:60% 80%}100%{background-position:100% 30%}}
+@media(prefers-reduced-motion:reduce){.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.cq-shell .sitefoot,.cq-v2-hero .cq-entry-wash{animation:none!important}}
