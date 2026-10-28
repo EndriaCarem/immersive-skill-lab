@@ -76,7 +76,7 @@ function TopNav() {
     <header className={`topnav${scrolled ? " scrolled" : ""}`}>
       <div className="in">
         <Link to="/" className="logo" aria-label="Empiria — Ir para o início">
-          <img src={logoDark.url} alt="Empiria" />
+          <img src={footerLogoWhite} alt="Empiria" />
         </Link>
         <nav className="desktop-nav" aria-label="Navegação principal">{links}</nav>
         <div className="right">

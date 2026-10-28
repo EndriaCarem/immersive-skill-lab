@@ -1594,3 +1594,15 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 /* /conheca: static title on video hero and non-rotating course icon (by request) */
 .cq-nowave .cq-letter,.cq-nowave em .cq-letter{animation:cq-letter-in .7s cubic-bezier(.2,.8,.2,1) forwards!important;animation-delay:calc(var(--i)*35ms + .15s)!important}
 .cq-page .cq-v2-tree{animation:none!important;rotate:none}
+/* Top navigation — dark pill design (Site v10) */
+.topnav .in{ background:#1E1726 !important; border:1px solid rgba(244,242,247,.08) !important; border-radius:999px !important; box-shadow:0 18px 40px -20px rgba(21,16,27,.6) !important; backdrop-filter:blur(16px); }
+.topnav.scrolled .in{ background:rgba(30,23,38,.92) !important; }
+.topnav .logo img{ height:30px; width:auto; }
+.topnav .desktop-nav a{ color:rgba(244,242,247,.82) !important; border-bottom:2px solid transparent; padding:6px 4px; }
+.topnav .desktop-nav a:hover{ color:#F4F2F7 !important; }
+.topnav .desktop-nav a.on{ color:#D6C2DD !important; border-bottom-color:#B28CBD !important; background:none !important; }
+.topnav .desktop-nav a.on::after{ display:none !important; }
+.topnav .nav-login{ color:#F4F2F7 !important; font-weight:700; }
+.topnav .nav-cta{ background:#B28CBD !important; color:#1E1726 !important; border:0 !important; border-radius:999px !important; font-weight:700; }
+.topnav .nav-cta:hover{ background:#C4A3CD !important; }
+.topnav .profile-btn,.topnav .mobile-toggle{ color:#F4F2F7 !important; background:rgba(244,242,247,.08) !important; border-color:rgba(244,242,247,.15) !important; }
