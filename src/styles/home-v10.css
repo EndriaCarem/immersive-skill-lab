@@ -976,3 +976,12 @@
 html.dark .v10{ --page:#15101B; --paper:#1F1727; --lilac:#2B2035; --lilac2:#261C30; --edge:#3A2C47; --rule:rgba(244,242,247,.13); --ink:#F4F2F7; --ink2:#F4F2F7; --ink-soft:#DED3E6; --muted:#B4A3BF; --accent:#B28CBD; --on-accent:#1A1221; --accent-soft:#C9A8D4; --lav:#B28CBD; --lav2:#5A3568; --ok:#7FD1A3; --ok-bg:#173627; --mid:#E6B85C; --mid-bg:#3A2E12; --low:#F09A9A; --low-bg:#3F1C1C; --nidia:#C9A8D4; --nidia-bg:#2B2035; --nidia-ink:#F4F2F7; --grad-soft:linear-gradient(180deg,#15101B 0%,#1C1424 100%); --shadow:0 18px 48px rgba(0,0,0,.45); --shadow-sm:0 2px 10px rgba(0,0,0,.35); --lp:none; --ln:block; color-scheme:dark; background:var(--page); color:var(--ink); }
 html.dark .v10{ --gradlight: radial-gradient(70% 60% at 85% 0%, rgba(178,140,189,.22) 0%, transparent 60%), radial-gradient(60% 50% at 0% 90%, rgba(122,74,134,.28) 0%, transparent 60%), linear-gradient(180deg,#15101B 0%,#1C1424 100%); }
 html.dark .v10 .hero .fade{ background: linear-gradient(180deg,rgba(21,16,27,0),var(--page)); }
+/* Smaller portraits on Quem somos */
+.v10 .people.two .pc .media{ aspect-ratio: 4 / 3; }
+.v10 .people.two .pc .media img.ph{ object-position: center 25%; }
+.v10 .people.two .pc .media{ aspect-ratio:auto; height:260px; }
+.v10 .people.two .pc .media img.ph{ object-position:center 30%; }
+@media (max-width:720px){ .v10 .people.two .pc .media{ height:220px; } }
+.v10 .people.two .pc .media{ height:auto; width:168px; aspect-ratio:1/1; margin:28px 0 0 30px; border-radius:20px; border:1px solid var(--edge); }
+.v10 .people.two .pc .media img.ph{ object-position:center 20%; }
+@media (max-width:720px){ .v10 .people.two .pc .media{ height:auto; width:132px; margin:22px 0 0 22px; } }

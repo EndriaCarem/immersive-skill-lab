@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { SiteShell } from "@/components/AppShell";
 import { SOBRE_V10_HTML } from "@/lib/sobre-v10";
-import { founders } from "@/lib/founders";
+import rebeca from "@/assets/sobre-rebeca.jpg.asset.json";
+import taina from "@/assets/sobre-taina.jpg.asset.json";
 import ibrawork from "@/assets/sobre-ibrawork.png.asset.json";
 import nidia from "@/assets/sobre-nidia.png.asset.json";
 import thomas from "@/assets/sobre-thomas.jpg.asset.json";
@@ -24,8 +25,8 @@ export const Route = createFileRoute("/sobre")({
 });
 
 const HTML = SOBRE_V10_HTML
-  .replaceAll("%%REBECA%%", founders[0].photo)
-  .replaceAll("%%TAINA%%", founders[1].photo)
+  .replaceAll("%%REBECA%%", rebeca.url)
+  .replaceAll("%%TAINA%%", taina.url)
   .replaceAll("%%IBRAWORK%%", ibrawork.url)
   .replaceAll("%%NIDIA%%", nidia.url)
   .replaceAll("%%THOMAS%%", thomas.url);
