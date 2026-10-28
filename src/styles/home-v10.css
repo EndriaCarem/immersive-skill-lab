@@ -985,3 +985,5 @@ html.dark .v10 .hero .fade{ background: linear-gradient(180deg,rgba(21,16,27,0),
 .v10 .people.two .pc .media{ height:auto; width:168px; aspect-ratio:1/1; margin:28px 0 0 30px; border-radius:20px; border:1px solid var(--edge); }
 .v10 .people.two .pc .media img.ph{ object-position:center 20%; }
 @media (max-width:720px){ .v10 .people.two .pc .media{ height:auto; width:132px; margin:22px 0 0 22px; } }
+.v10 .people.two .pc .media{ width:min(350px, calc(100% - 60px)); aspect-ratio:350/263; }
+@media (max-width:720px){ .v10 .people.two .pc .media{ width:calc(100% - 44px); } }
