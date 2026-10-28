@@ -4,9 +4,9 @@
 - [x] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
 
 # Institucional e catálogo
-- [ ] Remodelar /conheca com formulário inicial, vídeo liberado após registro e animações; verificar gravação e telas.
+- [x] Remodelar /conheca com formulário inicial, vídeo liberado após registro e animações; verificar gravação, reprodução automática e telas.
 - [x] Criar página separada de captação em /conheca, mantendo a inicial.
-- [ ] Ativar vídeo → cadastro → PDF na campanha — aguardando vídeo e PDF aprovados da equipe Empiria; testar envio real quando os arquivos chegarem.
+- [ ] Disponibilizar PDF na campanha — aguardando PDF aprovado da equipe Empiria; formulário → vídeo já ativo e testado.
 - [x] Retirar a barreira de pré-lançamento e redirecionar links antigos, preservando login de alunos e autorização administrativa.
 - [x] Registrar interesse e mensagens no Lovable Cloud com validação e confirmação real.
 - [x] Disponibilizar captura de interesse no catálogo e nos cursos futuros.
