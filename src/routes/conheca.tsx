@@ -67,7 +67,7 @@ function CampaignPage() {
     if (!node) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
       entry.target.classList.toggle("cq-visible", entry.isIntersecting);
-    }), { threshold: .05 });
+    }), { threshold: .15, rootMargin: "0px 0px -12% 0px" });
     node.querySelectorAll("[data-cq-reveal]").forEach((el) => { el.classList.add("cq-reveal"); observer.observe(el); });
     const onMove = (ev: PointerEvent) => { const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-cq-glow]"); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty("--mx", `${ev.clientX - r.left}px`); el.style.setProperty("--my", `${ev.clientY - r.top}px`); };
     node.addEventListener("pointermove", onMove);
