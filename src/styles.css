@@ -1715,12 +1715,8 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .ab-who h3{font-size:21px;margin-bottom:8px}
 .ab-who p{font-size:14px}
 @media(max-width:900px){.ab-who{grid-template-columns:1fr}}
-/* /conheca unlocked: one continuous animated background for the whole page */
-.cq-shell:has(.cq-v2-hero){background:#1E1726}
-.cq-v2-hero{overflow:visible!important;isolation:auto!important}
-.cq-v2-hero>.cq-backdrop,.cq-v2-hero>.cq-entry-wash,.cq-v2-hero>.cq-orbs,.cq-v2-hero>.cq-arcs{position:fixed!important;inset:0!important;height:100vh!important;z-index:0!important}
-.cq-shell:has(.cq-v2-hero) main>*,.cq-shell:has(.cq-v2-hero) .sitefoot{position:relative;z-index:1}
-.cq-v2-hero>.cq-wrap{position:relative;z-index:1}
-.cq-shell:has(.cq-v2-hero) :is(.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.cq-v2-sec,.sitefoot){background:transparent!important;background-image:none!important;animation:none!important}
-.cq-shell:has(.cq-v2-hero) :is(.cq-v2-hero,.cq-v2-sec,.sitefoot)::before{display:none!important}
-.cq-shell:has(.cq-v2-hero) .sitefoot{background:#1E1726!important}
+/* /conheca: static backgrounds (form and post-form) */
+.cq-page .cq-backdrop,.cq-v2-hero .cq-backdrop,.cq-page .cq-entry .cq-backdrop{animation:none!important;transform:scale(1.04)!important}
+.cq-page .cq-orbs,.cq-page .cq-orbs i,.cq-page .cq-arcs,.cq-page .cq-arcs i,.cq-page .cq-entry-wash{animation:none!important}
+.cq-shell :is(.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.sitefoot){animation:none!important;background-position:0 50%!important}
+.cq-shell :is(.cq-v2-hero,.cq-v2-sec,.sitefoot)::before{animation:none!important}
