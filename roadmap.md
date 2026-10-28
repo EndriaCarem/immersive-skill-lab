@@ -4,9 +4,9 @@
 - [x] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
 
 # Institucional e catálogo
-- [ ] Ocultar parceiros temporariamente, alinhar comparação dos cursos, alternar imagens de Como funciona e ampliar caixa da Nidia.
-- [ ] Atualizar contatos do rodapé, cartões de Cursos e apresentação do Blog.
-- [ ] Corrigir a prévia do modelo de impugnação do árbitro, sem alterar registros reais de alunos.
+- [x] Ocultar parceiros temporariamente, alinhar comparação dos cursos, alternar imagens de Como funciona e ampliar caixa da Nidia.
+- [x] Atualizar contatos do rodapé, cartões de Cursos e apresentação do Blog.
+- [x] Corrigir a prévia do modelo de impugnação do árbitro, sem alterar registros reais de alunos.
 - [x] Remodelar /conheca com formulário inicial, vídeo liberado após registro e animações; verificar gravação, reprodução automática e telas.
 - [x] Criar página separada de captação em /conheca, mantendo a inicial.
 - [ ] Disponibilizar PDF na campanha — aguardando PDF aprovado da equipe Empiria; formulário → vídeo já ativo e testado.
