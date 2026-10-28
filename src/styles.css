@@ -1608,3 +1608,6 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .topnav .profile-btn,.topnav .mobile-toggle{ color:#F4F2F7 !important; background:rgba(244,242,247,.08) !important; border-color:rgba(244,242,247,.15) !important; }
 /* Floating dark nav: no white strip behind it */
 .topnav,.topnav.scrolled{ background:transparent !important; border-bottom:0 !important; box-shadow:none !important; backdrop-filter:none !important; padding:12px 16px 0 !important; }
+.topnav .nav-login:hover,.topnav .nav-login:focus-visible,.topnav .nav-login.on{ background:rgba(244,242,247,.1) !important; color:#F4F2F7 !important; }
+.topnav .theme-btn{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid rgba(244,242,247,.15); background:rgba(244,242,247,.08); color:#F4F2F7; cursor:pointer; transition:background .2s; }
+.topnav .theme-btn:hover{ background:rgba(244,242,247,.16); }
