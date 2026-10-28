@@ -13,7 +13,7 @@ export const Route = createFileRoute("/programa/$slug")({
   head: () => ({
     meta: [
       { title: "Curso — Empiria" },
-      { name: "description", content: "Método, o que você vai dominar e a grade curricular do curso." },
+      { name: "description", content: "Método e grade curricular do curso." },
       { property: "og:title", content: "Curso — Empiria" },
       { property: "og:description", content: "Preço de lançamento até 14/12." },
       { property: "og:type", content: "website" },
@@ -61,21 +61,6 @@ function ProgramPage() {
             </p>
           )}
 
-          {program.learn?.length ? (
-            <div className="learn" style={{ marginTop: 30 }}>
-              <h3 style={{ fontSize: 22 }}>O que você vai dominar</h3>
-              <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0" }}>
-                {program.learn.map((l) => (
-                  <li key={l}>
-                    <span className="check">
-                      <Check size={13} strokeWidth={3} />
-                    </span>
-                    {l}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
 
           {program.files?.length ? (
             <>
