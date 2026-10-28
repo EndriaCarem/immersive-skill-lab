@@ -1706,6 +1706,8 @@ html.dark .ab-hero-text{border-color:#693E74}
 .ab-teacher-photo{aspect-ratio:4/5;border-radius:14px;margin-bottom:12px;display:grid;place-items:center;background:color-mix(in oklab,#B28CBD 18%,transparent);border:1px dashed color-mix(in oklab,#B28CBD 60%,transparent)}
 .ab-teacher-photo span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a6a96}
 .ab-grid3 .ab-teacher-photo{aspect-ratio:4/4.2}
+.ab-teacher-img{display:block;width:100%;object-fit:cover;object-position:center 20%;border:0}
+.ab-teacher p{line-height:1.5}
 .ab-who{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
 .ab-who article{border:1px solid var(--edge);border-radius:20px;padding:24px;display:flex;flex-direction:column}
 .ab-who-media{height:96px;display:flex;align-items:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--edge);box-sizing:content-box}
