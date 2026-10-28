@@ -4,6 +4,7 @@
 - [x] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
 
 # Institucional e catálogo
+- [ ] Remodelar /conheca com formulário inicial, vídeo liberado após registro e animações; verificar gravação e telas.
 - [x] Criar página separada de captação em /conheca, mantendo a inicial.
 - [ ] Ativar vídeo → cadastro → PDF na campanha — aguardando vídeo e PDF aprovados da equipe Empiria; testar envio real quando os arquivos chegarem.
 - [x] Retirar a barreira de pré-lançamento e redirecionar links antigos, preservando login de alunos e autorização administrativa.

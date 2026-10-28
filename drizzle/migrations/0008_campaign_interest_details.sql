@@ -1,0 +1,3 @@
+ALTER TABLE public.interest_submissions ADD COLUMN phone text NOT NULL DEFAULT '', ADD COLUMN marketing_opt_in boolean NOT NULL DEFAULT false, ADD COLUMN campaign_path text;
+ALTER TABLE public.interest_submissions ADD CONSTRAINT interest_phone_length CHECK (phone = '' OR phone ~ '^[0-9]{10,13}$'), ADD CONSTRAINT interest_campaign_path CHECK (campaign_path IS NULL OR campaign_path = '/conheca');
+COMMENT ON COLUMN public.interest_submissions.marketing_opt_in IS 'Separate optional consent for email and WhatsApp news. Never inferred from contact consent.';
