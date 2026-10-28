@@ -969,3 +969,6 @@
 .v10 .feat .copy{ padding-inline:4px; }
 .v10 .feat .copy, .v10 .feat .copy *{ clip-path:none !important; }
 .v10-anim .feat::before,.v10-anim .cmp>*::before{ z-index:-1; }
+.v10 .feat{ padding:48px clamp(20px,4vw,56px) !important; border-radius:32px; }
+.v10 .faqw{ margin-inline:auto; }
+#perguntas .wrap > .eyebrow{ display:block; text-align:center; }
