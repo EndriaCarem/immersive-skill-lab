@@ -1706,3 +1706,12 @@ html.dark .ab-hero-text{border-color:#693E74}
 .ab-teacher-photo{aspect-ratio:4/5;border-radius:14px;margin-bottom:12px;display:grid;place-items:center;background:color-mix(in oklab,#B28CBD 18%,transparent);border:1px dashed color-mix(in oklab,#B28CBD 60%,transparent)}
 .ab-teacher-photo span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a6a96}
 .ab-grid3 .ab-teacher-photo{aspect-ratio:4/4.2}
+.ab-who{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.ab-who article{border:1px solid var(--edge);border-radius:20px;padding:24px;display:flex;flex-direction:column}
+.ab-who-media{height:96px;display:flex;align-items:center;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--edge);box-sizing:content-box}
+.ab-who-logo{max-height:40px;max-width:170px;object-fit:contain}
+html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
+.ab-who-photo{width:96px;height:96px;border-radius:999px;object-fit:cover;object-position:50% 18%}
+.ab-who h3{font-size:21px;margin-bottom:8px}
+.ab-who p{font-size:14px}
+@media(max-width:900px){.ab-who{grid-template-columns:1fr}}
