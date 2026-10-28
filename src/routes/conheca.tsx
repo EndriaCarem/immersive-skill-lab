@@ -30,22 +30,43 @@ function AnimatedWords({ text, start }: { text: string; start: number }) {
   return <>{text.split(" ").map((word, wi) => <Fragment key={wi}>{wi > 0 ? " " : null}<span className="cq-wordbox">{[...word].map((ch, ci) => <span key={ci} className="cq-letter" style={{ "--i": n++ } as React.CSSProperties}>{ch}</span>)}</span></Fragment>)}</>;
 }
 
+function CountUp({ to }: { to: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e?.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const tick = (t: number) => { const p = Math.min((t - t0) / 1400, 1); setValue(Math.round(to * (1 - Math.pow(1 - p, 3)))); if (p < 1) raf = requestAnimationFrame(tick); };
+      raf = requestAnimationFrame(tick);
+    }, { threshold: .4 });
+    io.observe(el);
+    return () => { io.disconnect(); cancelAnimationFrame(raf); };
+  }, [to]);
+  return <span ref={ref}>{value}</span>;
+}
+
 function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
   const [muted, setMuted] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const node = root.current;
     if (!node) return;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
       if (entry.isIntersecting) { entry.target.classList.add("cq-visible"); observer.unobserve(entry.target); }
     }), { threshold: .12 });
     node.querySelectorAll("[data-cq-reveal]").forEach((el) => { el.classList.add("cq-reveal"); observer.observe(el); });
+    const onMove = (ev: PointerEvent) => { const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-cq-glow]"); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty("--mx", `${ev.clientX - r.left}px`); el.style.setProperty("--my", `${ev.clientY - r.top}px`); };
+    node.addEventListener("pointermove", onMove);
     let frame = 0;
     const onScroll = () => {
       if (frame) return;
