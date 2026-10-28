@@ -62,6 +62,7 @@ function CampaignPage() {
       {!viewer ? <section className="cq-entry">
         <img className="cq-backdrop" src={workspace} alt="" aria-hidden="true" />
         <div className="cq-entry-wash" aria-hidden="true" />
+        <div className="cq-orbs" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="cq-wrap cq-entry-content">
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-entry-grid">
