@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { SiteShell } from "@/components/AppShell";
 import rebeca from "@/assets/sobre-rebeca.jpg.asset.json";
@@ -119,16 +119,6 @@ function About() {
           </div>
         </section>
 
-        <section className="wrap">
-          <div className="ab-final" data-rv>
-            <h2>A oportunidade deve encontrar você pronto.</h2>
-            <p>Curso Teórico por R$ 590 e Curso Simulado por R$ 890 até a liberação dos cursos em 14 de dezembro, com acesso por seis meses.</p>
-            <div className="ab-acts">
-              <Link to="/cursos" className="ab-btn">Garantir o preço de lançamento</Link>
-              <Link to="/contato" className="ab-btn ghost">Fale com a gente</Link>
-            </div>
-          </div>
-        </section>
       </div>
     </SiteShell>
   );
