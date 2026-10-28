@@ -1725,3 +1725,6 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .cq-shell .cq-v2-ai{background:#4E2D5A!important;background-image:none!important}
 .cq-shell .sitefoot{background:#1E1726!important;background-image:none!important}
 .cq-shell :is(.cq-v2-sec,.sitefoot)::before{display:none!important}
+.cq-v2-course{display:flex!important;flex-direction:column;height:100%}
+.cq-v2-cbody{display:flex;flex-direction:column;flex:1}
+.cq-v2-cbody>p{flex:1}
