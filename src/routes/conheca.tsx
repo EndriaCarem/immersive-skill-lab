@@ -2,15 +2,13 @@ import { Fragment } from "react";
 import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
+import { ArrowDown, Volume2, VolumeX, Check } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
 import { materialCampaign } from "@/lib/material-campaign";
 import logo from "@/assets/empiria-logo-light.png.asset.json";
 import workspace from "@/assets/auth-workspace.jpg";
-import practicalCover from "@/assets/cover-pratico.jpg";
-import theoryCover from "@/assets/cover-teorico.jpg";
 import compatibleVideo from "@/assets/empiria-apresentacao.webm.asset.json";
 
 export const Route = createFileRoute("/conheca")({
@@ -78,7 +76,7 @@ function CampaignPage() {
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
-    return () => { observer.disconnect(); window.removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
+    return () => { observer.disconnect(); node.removeEventListener("pointermove", onMove); window.removeEventListener("scroll", onScroll); cancelAnimationFrame(frame); };
   }, [viewer]);
   const saved = (name: string, interest: string) => {
     setViewer({ name, interest });
