@@ -42,16 +42,21 @@ const FOUNDERS = [
   },
 ];
 
-const PRACTICAL = ["Revisão de cláusula compromissória", "Redação de requerimento de arbitragem", "Indicação de coárbitro", "Pesquisa sobre jurisdição", "Desenvolvimento de written statement", "Análise de sentença arbitral"];
-const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Constituição do tribunal", "Fase postulatória", "Fase instrutória", "Fase decisória", "Fase executória"];
+const PRACTICAL = ["Revisão de cláusula compromissória", "Redação de requerimento de arbitragem", "Indicação de árbitro", "Pesquisa sobre jurisdição", "Desenvolvimento de written statement", "Análise de sentença arbitral"];
+const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Fase administrativa", "Fase instrutória", "Provas", "Audiências", "Fase executória"];
 
 type Teacher = { name: string; photo: string; bio: string };
-const PRACTICAL_TEACHERS: Teacher[] = [
+// Positions follow the teachers letter: index = demand/lesson number - 1.
+const PRACTICAL_TEACHERS: (Teacher | undefined)[] = [
+  undefined,
   { name: "Thaís Freire de Vasconcellos", photo: profThais.url, bio: "Advogada e Professora Substituta na Faculdade Nacional de Direito da UFRJ, com atuação acadêmica e pesquisa nas áreas de Direito Processual, Direito Civil e Direito Empresarial. Doutoranda e Mestre em Direito pela Universidade Federal Fluminense (UFF). Pós-Graduada em Direito Processual pela UFF e em Direito Civil e Empresarial pelo IBMEC/SP, é graduada em Direito pela UFF. É pesquisadora do Grupo de Estudos Jurisdição, Constituição e Processo." },
-  { name: "Maria Isabel Gori Montes", photo: profMaria.url, bio: "Sócia de Finkelstein Advogados, com atuação consultiva, contenciosa e em arbitragem. Possui experiência como árbitra única e coárbitra, além de atuar como secretária de tribunais arbitrais. É LL.M. e especialista em Direito Empresarial pela University of California, Berkeley, e possui formação avançada em arbitragem internacional pela Leiden University, em cooperação com a Corte Permanente de Arbitragem (PCA). É bacharel em Direito pela Universidade de São Paulo (USP). Atua como professora assistente do Curso de Extensão em Arbitragem da PUC-SP e professora convidada do Curso de Extensão em Direito Societário da mesma instituição." },
+  undefined,
   { name: "Juliana Vieira", photo: profJuliana.url, bio: "Associada plena da área de Arbitragem do escritório Tauil & Chequer Advogados, associado a Mayer Brown LLP, em São Paulo. Atua em Arbitragem Internacional, com experiência em disputas comerciais complexas, especialmente nos setores de construção, petróleo e gás e fusões e aquisições (M&A). É pós-graduada em Direito Contratual pela Fundação Getulio Vargas (FGV/SP) e bacharel em Direito pela Universidade Presbiteriana Mackenzie. Possui experiência como secretária administrativa de tribunais arbitrais em procedimentos domésticos e atuação em casos pro bono." },
+  undefined,
+  { name: "Maria Isabel Gori Montes", photo: profMaria.url, bio: "Sócia de Finkelstein Advogados, com atuação consultiva, contenciosa e em arbitragem. Possui experiência como árbitra única e coárbitra, além de atuar como secretária de tribunais arbitrais. É LL.M. e especialista em Direito Empresarial pela University of California, Berkeley, e possui formação avançada em arbitragem internacional pela Leiden University, em cooperação com a Corte Permanente de Arbitragem (PCA). É bacharel em Direito pela Universidade de São Paulo (USP). Atua como professora assistente do Curso de Extensão em Arbitragem da PUC-SP e professora convidada do Curso de Extensão em Direito Societário da mesma instituição." },
 ];
-const THEORY_TEACHERS: Teacher[] = [
+const THEORY_TEACHERS: (Teacher | undefined)[] = [
+  undefined, undefined, undefined, undefined, undefined, undefined, undefined,
   { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
 ];
 
