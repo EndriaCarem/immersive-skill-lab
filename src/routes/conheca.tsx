@@ -80,34 +80,55 @@ function CampaignPage() {
             <CampaignCapture onSaved={saved} />
           </div>
         </div>
-      </section> : <section className="cq-unlocked cq-wrap">
-        <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span><Check size={14} /> INTERESSE REGISTRADO</span></div>
-        <div className="cq-video-intro"><div className="cq-eyebrow">BOAS-VINDAS, {viewer.name.toLocaleUpperCase("pt-BR")}.</div><h1>A plataforma,<br /><em>por dentro.</em></h1><p>Da demanda à devolutiva. Conheça o seu lugar no escritório simulado.</p></div>
-        <div className="cq-video-stage">
-          {materialCampaign.videoUrl ? <video ref={video} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)} onTimeUpdate={() => { const player = video.current; if (player && Number.isFinite(player.duration) && player.duration > 0) setProgress(player.currentTime / player.duration); }} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
-          <div className="cq-video-line"><span ref={(el) => { el?.style.setProperty("--video-progress", String(progress)); }} /></div>
-          <Button variant="ghost" size="icon" className="cq-sound" title={muted ? "Ativar som" : "Silenciar"} aria-label={muted ? "Ativar som" : "Silenciar"} onClick={() => { if (video.current) video.current.muted = !muted; setMuted(!muted); }}>{muted ? <VolumeX size={20} /> : <Volume2 size={20} />}</Button>
-        </div>
-        <div className="cq-video-bottom"><span>{completed ? <><Check size={16} /> Apresentação concluída</> : "Um olhar para a sua próxima experiência."}</span><Button variant="ghost" onClick={() => document.getElementById("cq-cursos")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" })}>Conhecer os cursos <ArrowDown size={16} /></Button></div>
-      </section>}
-      {viewer && <section className="cq-method" aria-label="O método Empiria">
+      </section> : <section className="cq-unlocked cq-v2-hero">
+        <img className="cq-backdrop" src={workspace} alt="" aria-hidden="true" />
+        <div className="cq-entry-wash" aria-hidden="true" />
+        <div className="cq-orbs" aria-hidden="true"><i /><i /><i /><i /></div>
+        <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
         <div className="cq-wrap">
-          <div className="cq-section-heading" data-cq-reveal><span className="cq-eyebrow">DA TEORIA À SUA MESA</span><h2>Não é só aprender.<br />É <em>ter o que entregar.</em></h2><p>A experiência de um escritório, com espaço para construir sua prática e aprender com a devolutiva.</p></div>
-          <div className="cq-method-grid">
-            {[{ n: "01", Icon: BriefcaseBusiness, title: "A demanda chega.", text: "Você recebe o contexto do caso, os documentos e uma tarefa concreta." }, { n: "02", Icon: FileCheck2, title: "A entrega é sua.", text: "Analise, decida e redija. Transforme o que você sabe em trabalho jurídico." }, { n: "03", Icon: MessageSquareText, title: "A devolutiva faz avançar.", text: "Critérios de avaliação e referências para entender sua entrega e desenvolver sua prática." }].map(({ n, Icon, title, text }) => <article className="cq-method-item" data-cq-reveal key={n}><div className="cq-method-top"><span>{n}</span><Icon size={28} /></div><h3>{title}</h3><p>{text}</p><div className="cq-method-rule" /></article>)}
+          <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span className="cq-v2-pill">PRÉ-VENDA</span></div>
+          <div className="cq-video-intro">
+            <div className="cq-eyebrow cq-v2-eyebrow"><i />OBRIGADA, {viewer.name.split(" ")[0]?.toLocaleUpperCase("pt-BR")}. O VÍDEO ESTÁ LIBERADO.</div>
+            <h1 className="cq-letters" aria-label="A plataforma, por dentro."><span aria-hidden="true"><AnimatedWords text="A plataforma," start={0} /> <em><AnimatedWords text="por dentro." start={12} /></em></span></h1>
+            <p>Da demanda à devolutiva, do documento de referência à aula do Teórico: um minuto e meio dentro da plataforma.</p>
+          </div>
+          <div className="cq-video-stage cq-v2-video">
+            {materialCampaign.videoUrl ? <video ref={video} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onLoadedMetadata={() => { const d = video.current?.duration; if (d && Number.isFinite(d)) setDuration(d); }} onVolumeChange={() => setMuted(video.current?.muted ?? true)} onTimeUpdate={() => { const player = video.current; if (player && Number.isFinite(player.duration) && player.duration > 0) setProgress(player.currentTime / player.duration); }} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
+            <Button variant="ghost" size="icon" className="cq-sound" title={muted ? "Ativar som" : "Silenciar"} aria-label={muted ? "Ativar som" : "Silenciar"} onClick={() => { if (video.current) video.current.muted = !muted; setMuted(!muted); }}>{muted ? <VolumeX size={20} /> : <Volume2 size={20} />}</Button>
+            <div className="cq-v2-videobar"><span>{completed ? <><Check size={14} /> Apresentação concluída</> : "Área do aluno"}</span><span>{duration ? `${Math.floor(duration / 60)} min ${Math.round(duration % 60)} s` : ""}</span><div className="cq-video-line"><span ref={(el) => { el?.style.setProperty("--video-progress", String(progress)); }} /></div></div>
+          </div>
+          <div className="cq-v2-scroll"><Button variant="ghost" onClick={() => document.getElementById("cq-sobre")?.scrollIntoView({ behavior: "smooth" })}>Continuar <ArrowDown size={16} /></Button></div>
+        </div>
+      </section>}
+      {viewer && <section className="cq-v2-sec cq-v2-about" id="cq-sobre">
+        <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
+        <div className="cq-wrap">
+          <div className="cq-v2-head" data-cq-reveal><span className="cq-eyebrow cq-v2-eyebrow"><i />O QUE É A EMPIRIA</span><h2>Aprenda o ofício <em>antes da oportunidade.</em></h2><p>A Empiria é uma plataforma de formação jurídica prática: um escritório simulado em que a demanda chega como chegaria na banca, você faz a entrega e ela volta corrigida, critério por critério, no padrão das grandes bancas.</p></div>
+          <div className="cq-v2-steps">
+            {[{ title: "A demanda chega", text: "Um vídeo e um e-mail do sócio, com a pasta do caso. Sem roteiro de resolução." }, { title: "Você entrega; o sênior corrige", text: "Nota em cada critério e devolutiva escrita, no padrão de um sócio. Abaixo de 5,0, você refaz uma vez." }, { title: "Só então, o documento de referência", text: "O modelo do professor e o vídeo dele comentando a demanda: o essencial, a organização, a estratégia." }].map((s, i) => <article className="cq-v2-step" data-cq-reveal data-cq-glow key={s.title} style={{ "--d": i } as React.CSSProperties}><span className="cq-v2-num">{i + 1}</span><div><h3>{s.title}</h3><p>{s.text}</p></div></article>)}
           </div>
         </div>
       </section>}
-      {viewer && <section className="cq-courses cq-wrap" id="cq-cursos">
-        <div className="cq-section-heading" data-cq-reveal><span className="cq-eyebrow">DOIS FORMATOS. UM NOVO COMEÇO.</span><h2>Encontre o seu<br /><em>ponto de partida.</em></h2><p>Construa suas entregas no Simulado ou organize seus fundamentos no Teórico.</p></div>
-        <div className="cq-course-grid">
-          {[{ interest: "Curso Simulado", slug: "arbitragem-nivel-1", title: "Arbitragem — Nível 1", type: "CURSO SIMULADO", cover: practicalCover, Icon: BriefcaseBusiness, description: "Seis atividades encadeadas em um escritório fictício. Do caso à entrega, com avaliação por critérios e devolutiva.", details: "6 atividades · Prática jurídica", price: "890", full: "1.190" }, { interest: "Curso Teórico", slug: "introducao-a-arbitragem", title: "Introdução à Arbitragem", type: "CURSO TEÓRICO", cover: theoryCover, Icon: BookOpen, description: "Um percurso pela arbitragem, fase por fase. Aulas e modelos comentados para levar o conhecimento à sua prática.", details: "8 aulas · 32 modelos", price: "590", full: "890" }].map((course) => <article className="cq-course" key={course.slug} data-cq-reveal>
-            <div className="cq-course-image"><img src={course.cover} alt="" /><span>{course.type}</span>{(viewer.interest === course.interest || viewer.interest === "Os dois") && <b><Check size={12} /> SEU INTERESSE</b>}</div>
-            <div className="cq-course-body"><course.Icon size={23} /><h3>{course.title}</h3><p>{course.description}</p><span className="cq-course-details">{course.details}</span><div className="cq-course-price"><span><small>R$</small> {course.price}</span><del>R$ {course.full}</del><b>PRÉ-VENDA</b></div><Button asChild className="cq-course-cta"><Link to="/programa/$slug" params={{ slug: course.slug }}>Conhecer o curso <ArrowUpRight size={18} /></Link></Button></div>
-          </article>)}
+      {viewer && <section className="cq-v2-sec cq-v2-courses" id="cq-cursos">
+        <div className="cq-orbs" aria-hidden="true"><i /><i /><i /><i /></div>
+        <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
+        <div className="cq-wrap">
+          <div className="cq-v2-head" data-cq-reveal><span className="cq-eyebrow cq-v2-eyebrow"><i />OS DOIS CURSOS</span><h2>Cursos em <em>dois formatos.</em></h2><p>Os dois sobre o trabalho que chega à mesa, não sobre a doutrina. No Simulado você produz e é corrigido; no Teórico você assiste e sai com o material para usar.</p></div>
+          <div className="cq-v2-grid">
+            {[{ interest: "Curso Simulado", slug: "arbitragem-nivel-1", title: ["Curso Simulado", "de Arbitragem"], description: "Seis demandas encadeadas sobre o mesmo caso. Você é o júnior de uma banca fictícia e conduz um procedimento do início ao fim, com nota em cada entrega. Certificado com nota.", price: 890, full: "1.190", light: true }, { interest: "Curso Teórico", slug: "introducao-a-arbitragem", title: ["Curso Teórico", "de Arbitragem"], description: "Oito aulas, uma por fase do procedimento, com quatro tópicos essenciais por aula e um material por tópico: modelos comentados, checklists, mapas mentais. 32 materiais ao todo.", price: 590, full: "890", light: false }].map((c, i) => <article className={`cq-v2-course ${c.light ? "is-light" : "is-plum"}`} data-cq-reveal data-cq-glow key={c.slug} style={{ "--d": i } as React.CSSProperties}>
+              <header>{(viewer.interest === c.interest || viewer.interest === "Os dois") && <b className="cq-v2-badge">SEU INTERESSE</b>}<h3>{c.title[0]}<br />{c.title[1]}</h3><img className="cq-v2-tree" src="/favicon.png" alt="" /></header>
+              <div className="cq-v2-cbody"><p>{c.description}</p><div className="cq-v2-price"><strong>R$ <CountUp to={c.price} /></strong><del>R$ {c.full}</del></div><small>Preço de lançamento · até 3x sem juros · acesso por seis meses</small><Button asChild className="cq-v2-cta"><Link to="/programa/$slug" params={{ slug: c.slug }}>Garantir o preço de lançamento</Link></Button></div>
+            </article>)}
+          </div>
         </div>
       </section>}
-      {viewer && <section className="cq-last cq-wrap" data-cq-reveal><span className="cq-eyebrow">EMPIRIA</span><h2>O conhecimento ganha vida<br />quando <em>vira experiência.</em></h2></section>}
+      {viewer && <section className="cq-v2-sec cq-v2-ai">
+        <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
+        <div className="cq-wrap cq-v2-ai-grid">
+          <div className="cq-v2-head" data-cq-reveal><span className="cq-eyebrow cq-v2-eyebrow"><i />A INTELIGÊNCIA ARTIFICIAL NO CURSO</span><h2 className="cq-v2-words">{"Quem corrige é a Nidia.".split(" ").map((w, i) => <span key={i} style={{ "--i": i } as React.CSSProperties}>{w} </span>)}<em>{"O critério é dos professores.".split(" ").map((w, i) => <span key={i} style={{ "--i": i + 4 } as React.CSSProperties}>{w} </span>)}</em></h2></div>
+          <aside className="cq-v2-quote" data-cq-reveal><p>Os professores da Empiria são advogados das principais bancas de arbitragem do país. Não têm agenda para corrigir cada entrega na unha; têm critério. Esse critério vira rubrica, e a Nidia o aplica em cada entrega, critério por critério, na hora.</p><p className="cq-v2-type">IA para formar, não para substituir.</p></aside>
+        </div>
+      </section>}
     </main>
   </div></SiteShell></div>;
 }
