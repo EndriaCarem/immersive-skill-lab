@@ -6,6 +6,9 @@ import nidia from "@/assets/sobre-nidia.png.asset.json";
 import thomas from "@/assets/sobre-thomas-v2.jpg.asset.json";
 import rebeca from "@/assets/sobre-rebeca.jpg.asset.json";
 import taina from "@/assets/sobre-taina.jpg.asset.json";
+import profThais from "@/assets/prof-thais.jpg.asset.json";
+import profMaria from "@/assets/prof-maria.jpg.asset.json";
+import profGustavo from "@/assets/prof-gustavo.jpg.asset.json";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -41,13 +44,26 @@ const FOUNDERS = [
 const PRACTICAL = ["Revisão de cláusula compromissória", "Redação de requerimento de arbitragem", "Indicação de coárbitro", "Pesquisa sobre jurisdição", "Desenvolvimento de written statement", "Análise de sentença arbitral"];
 const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Constituição do tribunal", "Fase postulatória", "Fase instrutória", "Fase decisória", "Fase executória"];
 
-function TeacherCard({ label, title }: { label: string; title: string }) {
+type Teacher = { name: string; photo: string; bio: string };
+const PRACTICAL_TEACHERS: Teacher[] = [
+  { name: "Thaís Freire de Vasconcellos", photo: profThais.url, bio: "Advogada e Professora Substituta na Faculdade Nacional de Direito da UFRJ, com atuação acadêmica e pesquisa nas áreas de Direito Processual, Direito Civil e Direito Empresarial. Doutoranda e Mestre em Direito pela Universidade Federal Fluminense (UFF). Pós-Graduada em Direito Processual pela UFF e em Direito Civil e Empresarial pelo IBMEC/SP, é graduada em Direito pela UFF. É pesquisadora do Grupo de Estudos Jurisdição, Constituição e Processo." },
+  { name: "Maria Isabel Gori Montes", photo: profMaria.url, bio: "Sócia de Finkelstein Advogados, com atuação consultiva, contenciosa e em arbitragem. Possui experiência como árbitra única e coárbitra, além de atuar como secretária de tribunais arbitrais. É LL.M. e especialista em Direito Empresarial pela University of California, Berkeley, e possui formação avançada em arbitragem internacional pela Leiden University, em cooperação com a Corte Permanente de Arbitragem (PCA). É bacharel em Direito pela Universidade de São Paulo (USP). Atua como professora assistente do Curso de Extensão em Arbitragem da PUC-SP e professora convidada do Curso de Extensão em Direito Societário da mesma instituição." },
+];
+const THEORY_TEACHERS: Teacher[] = [
+  { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
+];
+
+function TeacherCard({ label, title, teacher }: { label: string; title: string; teacher?: Teacher | undefined }) {
   return (
     <article className="ab-teacher">
-      <div className="ab-teacher-photo" aria-label="Foto do professor (em breve)"><span>Foto</span></div>
+      {teacher ? (
+        <img className="ab-teacher-photo ab-teacher-img" src={teacher.photo} alt={teacher.name} loading="lazy" />
+      ) : (
+        <div className="ab-teacher-photo" aria-label="Foto do professor (em breve)"><span>Foto</span></div>
+      )}
       <span className="ab-kicker">{label} · {title}</span>
-      <h4>Nome do professor</h4>
-      <p>Sócio(a) · [escritório]</p>
+      <h4>{teacher?.name ?? "Nome do professor"}</h4>
+      <p>{teacher?.bio ?? "Sócio(a) · [escritório]"}</p>
     </article>
   );
 }
@@ -138,11 +154,11 @@ function About() {
           </div>
           <h3 className="ab-sub" data-rv>Curso prático</h3>
           <div className="ab-grid3">
-            {PRACTICAL.map((t, i) => <div key={t} data-rv><TeacherCard label={`Demanda ${i + 1}`} title={t} /></div>)}
+            {PRACTICAL.map((t, i) => <div key={t} data-rv><TeacherCard label={`Demanda ${i + 1}`} title={t} teacher={PRACTICAL_TEACHERS[i]} /></div>)}
           </div>
           <h3 className="ab-sub" data-rv>Curso teórico</h3>
           <div className="ab-grid4">
-            {THEORY.map((t, i) => <div key={t} data-rv><TeacherCard label={`Aula ${i + 1}`} title={t} /></div>)}
+            {THEORY.map((t, i) => <div key={t} data-rv><TeacherCard label={`Aula ${i + 1}`} title={t} teacher={THEORY_TEACHERS[i]} /></div>)}
           </div>
         </section>
 
