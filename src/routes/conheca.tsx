@@ -9,6 +9,7 @@ import logo from "@/assets/empiria-logo-light.png.asset.json";
 import workspace from "@/assets/auth-workspace.jpg";
 import practicalCover from "@/assets/cover-pratico.jpg";
 import theoryCover from "@/assets/cover-teorico.jpg";
+import compatibleVideo from "@/assets/empiria-apresentacao.webm.asset.json";
 
 export const Route = createFileRoute("/conheca")({
   head: () => ({ meta: [
@@ -79,7 +80,7 @@ function CampaignPage() {
         <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span><Check size={14} /> INTERESSE REGISTRADO</span></div>
         <div className="cq-video-intro"><div className="cq-eyebrow">BOAS-VINDAS, {viewer.name.toLocaleUpperCase("pt-BR")}.</div><h1>A plataforma,<br /><em>por dentro.</em></h1><p>Da demanda à devolutiva. Conheça o seu lugar no escritório simulado.</p></div>
         <div className="cq-video-stage">
-          {materialCampaign.videoUrl ? <video ref={video} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)} onTimeUpdate={() => { const player = video.current; if (player && Number.isFinite(player.duration) && player.duration > 0) setProgress(player.currentTime / player.duration); }} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} /></video> : <p>O vídeo está em preparação.</p>}
+          {materialCampaign.videoUrl ? <video ref={video} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)} onTimeUpdate={() => { const player = video.current; if (player && Number.isFinite(player.duration) && player.duration > 0) setProgress(player.currentTime / player.duration); }} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
           <div className="cq-video-line"><span ref={(el) => { el?.style.setProperty("--video-progress", String(progress)); }} /></div>
           <Button variant="ghost" size="icon" className="cq-sound" title={muted ? "Ativar som" : "Silenciar"} aria-label={muted ? "Ativar som" : "Silenciar"} onClick={() => { if (video.current) video.current.muted = !muted; setMuted(!muted); }}>{muted ? <VolumeX size={20} /> : <Volume2 size={20} />}</Button>
         </div>
