@@ -54,7 +54,7 @@ function Catalog() {
         </p>
         <label className="searchpill">
           <Search size={18} color="var(--slate)" />
-          <input placeholder="Buscar curso ou habilidade…" value={q} maxLength={160} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
+          <input placeholder="Buscar cursos ou habilidades…" value={q} maxLength={160} onChange={(e) => setQ(e.target.value)} aria-label="Buscar" />
         </label>
         <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 20 }}>
           {kinds.map((k) => (
