@@ -150,7 +150,7 @@ const seed: State = {
       slug: "arbitragem-nivel-1",
       area: "Direito",
       kind: "Curso prático",
-      title: "Arbitragem — Nível 1",
+      title: "Curso Simulado de Arbitragem",
       tagline: "Seis atividades encadeadas em uma banca fictícia. Correção individual por rubrica com nota, devolutiva e gabarito comentado.",
       description:
         "Você assume a posição de estagiário em uma banca de arbitragem e conduz um procedimento do início ao fim — com um sócio te passando as demandas.",
@@ -193,7 +193,7 @@ const seed: State = {
       slug: "introducao-arbitragem",
       area: "Direito",
       kind: "Curso teórico",
-      title: "Introdução à Arbitragem",
+      title: "Curso Teórico de Arbitragem",
       tagline: "8 aulas cobrindo o procedimento fase a fase, com 32 modelos comentados em português na praxe das câmaras brasileiras.",
       description: "O procedimento arbitral fase a fase, da convenção à sentença, acompanhado de 32 modelos comentados em português, na praxe das câmaras brasileiras.",
       price: 590,

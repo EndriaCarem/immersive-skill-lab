@@ -17,7 +17,7 @@ export const Route = createFileRoute("/cursos")({
       { title: "Cursos — Empiria" },
       { name: "description", content: "Cursos práticos e teóricos de arbitragem com correção individual e certificado com nota." },
       { property: "og:title", content: "Cursos — Empiria" },
-      { property: "og:description", content: "Arbitragem — Nível 1, Introdução à Arbitragem e os próximos lançamentos." },
+      { property: "og:description", content: "Curso Simulado de Arbitragem, Curso Teórico de Arbitragem e os próximos lançamentos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -68,7 +68,7 @@ function Catalog() {
         <div className="catalog-theory">
           <div className="catalog-theory-visual">
             <img src={coverTeorico} alt="Material de estudo de arbitragem" width={1024} height={640} />
-            <span>Introdução à Arbitragem</span>
+            <span>Curso Teórico de Arbitragem</span>
           </div>
           <div className="catalog-theory-copy">
             <span className="h-eyebrow">{starting ? "Por onde você quer começar?" : "Seu ponto de partida"}</span>
