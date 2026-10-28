@@ -83,6 +83,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Empiria" },
+      // The site ships its own night mode; keep phone browsers from auto-darkening pages on top of it.
+      { name: "color-scheme", content: "only light" },
       { name: "description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
