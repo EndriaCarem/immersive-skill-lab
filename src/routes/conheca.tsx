@@ -66,8 +66,8 @@ function CampaignPage() {
     const node = root.current;
     if (!node) return;
     const observer = new IntersectionObserver((entries) => entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add("cq-visible"); observer.unobserve(entry.target); }
-    }), { threshold: .12 });
+      entry.target.classList.toggle("cq-visible", entry.isIntersecting);
+    }), { threshold: .05 });
     node.querySelectorAll("[data-cq-reveal]").forEach((el) => { el.classList.add("cq-reveal"); observer.observe(el); });
     const onMove = (ev: PointerEvent) => { const el = (ev.target as HTMLElement).closest<HTMLElement>("[data-cq-glow]"); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty("--mx", `${ev.clientX - r.left}px`); el.style.setProperty("--my", `${ev.clientY - r.top}px`); };
     node.addEventListener("pointermove", onMove);
@@ -78,6 +78,11 @@ function CampaignPage() {
         node.style.setProperty("--cq-scroll", String(Math.min(window.scrollY * .12, 100)));
         const height = document.documentElement.scrollHeight - window.innerHeight;
         node.style.setProperty("--cq-page-progress", String(height > 0 ? window.scrollY / height : 0));
+        node.querySelectorAll<HTMLElement>(".cq-v2-sec").forEach((section) => {
+          const top = section.getBoundingClientRect().top;
+          const remaining = Math.max(0, Math.min(1, (top - window.innerHeight * .12) / (window.innerHeight * .78)));
+          section.style.setProperty("--cq-motion", String(remaining));
+        });
         frame = 0;
       });
     };
