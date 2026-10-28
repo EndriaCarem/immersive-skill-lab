@@ -1611,3 +1611,6 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .topnav .nav-login:hover,.topnav .nav-login:focus-visible,.topnav .nav-login.on{ background:rgba(244,242,247,.1) !important; color:#F4F2F7 !important; }
 .topnav .theme-btn{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:999px; border:1px solid rgba(244,242,247,.15); background:rgba(244,242,247,.08); color:#F4F2F7; cursor:pointer; transition:background .2s; }
 .topnav .theme-btn:hover{ background:rgba(244,242,247,.16); }
+/* Dark tokens aligned with the Site v10 prototype palette */
+html.dark{ --canvas:#15101B; --paper:#1F1727; --plum-tint:#2B2035; --edge:#3A2C47; --plum-edge:#3A2C47; --rule:rgba(244,242,247,.13); --ink:#F4F2F7; --slate:#B4A3BF; --plum:#B28CBD; --plum-mid:#C9A8D4; --plum-deep:#F4F2F7; --lavender:#B28CBD; --on-plum:#1A1221; }
+html.dark body,html.dark .sitefoot{ background:#15101B; }
