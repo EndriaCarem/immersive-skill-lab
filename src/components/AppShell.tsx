@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logoDark from "@/assets/empiria-logo.png.asset.json";
 import logoLight from "@/assets/empiria-logo-light.png.asset.json";
+import footerLogoWhite from "@/assets/empiria-footer-white.png";
 
 /** Theme preference is an account-area feature: visitors always see the default light theme. */
 function useAccountTheme(signedIn: boolean) {
@@ -132,7 +133,7 @@ function MinimalFooter() {
     <footer className="sitefoot mfoot">
       <div className="wrap mfoot-top">
         <div className="mfoot-brand">
-          <img src={logoLight.url} alt="Empiria" />
+          <img src={footerLogoWhite} alt="Empiria" />
           <p>Viva a rotina de um escritório simulado: receba demandas, construa suas entregas e desenvolva segurança para atuar.</p>
           <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
             <Instagram size={18} /> <span>Siga @empiria.law</span> <ArrowUpRight size={16} />
