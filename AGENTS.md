@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Real learner activities use versioned Cloud learning_programs content, account-owned submissions/notes and private Storage files; authenticated RLS checks active commerce enrollment and admin grading. The local content editor and demo learner store remain isolated and must never populate real learner records.
-- Pre-launch access is enforced by global server request middleware and client navigation checks, using server-only credential verification and an encrypted HttpOnly cookie; this prevents route bypasses without replacing customer auth or admin authorization.
+- Public browsing has no pre-launch request or navigation gate; legacy restricted-access links redirect to a sanitized same-site destination, while customer authentication and administrator authorization remain independent and enforced.
 - Commercial writes use validated authenticated server functions and atomic database operations; prices, coupons, consent and entitlements are server-authoritative.
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.
 - Administrative navigation uses an account-scoped role RPC query and stays hidden until verified; navigation visibility never replaces route or server authorization.

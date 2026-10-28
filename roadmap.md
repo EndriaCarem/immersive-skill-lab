@@ -4,9 +4,9 @@
 - [x] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
 
 # Institucional e catálogo
-- [x] Criar página separada de captação em /conheca, mantendo a inicial e o acesso restrito.
+- [x] Criar página separada de captação em /conheca, mantendo a inicial.
 - [ ] Ativar vídeo → cadastro → PDF na campanha — aguardando vídeo e PDF aprovados da equipe Empiria; testar envio real quando os arquivos chegarem.
-- [x] Adicionar aviso de lançamento em 28/10 e acesso restrito em todas as rotas com sessão segura persistente.
+- [x] Retirar a barreira de pré-lançamento e redirecionar links antigos, preservando login de alunos e autorização administrativa.
 - [x] Registrar interesse e mensagens no Lovable Cloud com validação e confirmação real.
 - [x] Disponibilizar captura de interesse no catálogo e nos cursos futuros.
 - [x] Adaptar navegação, rodapé e páginas públicas para celular, tablet e computador.
