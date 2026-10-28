@@ -53,7 +53,7 @@ const THEORY_TEACHERS: Teacher[] = [
   { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
 ];
 
-function TeacherCard({ label, title, teacher }: { label: string; title: string; teacher?: Teacher }) {
+function TeacherCard({ label, title, teacher }: { label: string; title: string; teacher?: Teacher | undefined }) {
   return (
     <article className="ab-teacher">
       {teacher ? (
