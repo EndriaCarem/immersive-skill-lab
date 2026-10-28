@@ -1701,3 +1701,8 @@ html.dark .ab-hero-text{border-color:#693E74}
 .ab>section:first-child{margin-top:0}
 .ab-teacher h4{text-transform:none!important;letter-spacing:0!important;font-size:15px!important;font-weight:600}
 .ab-belief p{font-family:Urbanist,sans-serif}
+.ab-teacher{display:block!important;border:0!important;padding:0!important}
+.ab-grid3,.ab-grid4{gap:28px 22px!important}
+.ab-teacher-photo{aspect-ratio:4/5;border-radius:14px;margin-bottom:12px;display:grid;place-items:center;background:color-mix(in oklab,#B28CBD 18%,transparent);border:1px dashed color-mix(in oklab,#B28CBD 60%,transparent)}
+.ab-teacher-photo span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8a6a96}
+.ab-grid3 .ab-teacher-photo{aspect-ratio:4/4.2}
