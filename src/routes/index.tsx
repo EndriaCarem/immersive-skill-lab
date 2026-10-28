@@ -37,6 +37,12 @@ function Landing() {
   useEffect(() => {
     const node = root.current;
     if (!node) return;
+    const strip = node.querySelector<HTMLElement>(".logos .in");
+    if (strip && !strip.querySelector(".logos-track")) {
+      const group = strip.innerHTML;
+      strip.innerHTML = `<div class="logos-track"><div class="logos-group">${group}</div><div class="logos-group" aria-hidden="true">${group}</div></div>`;
+      strip.classList.add("logos-marquee");
+    }
     const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("v-in", e.isIntersecting)), { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
     REVEALS.forEach(([sel, cls]) => node.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
       if (el.closest(".hero")) return;
