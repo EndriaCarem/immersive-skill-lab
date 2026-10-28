@@ -2,7 +2,7 @@ import { Fragment } from "react";
 import type React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, Volume2, VolumeX, Check } from "lucide-react";
+import { ArrowDown, Volume2, VolumeX } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,6 @@ function CountUp({ to }: { to: number }) {
 function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
   const [muted, setMuted] = useState(true);
-  const [completed, setCompleted] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -124,7 +123,7 @@ function CampaignPage() {
             <p>Da demanda à devolutiva, do documento de referência à aula do Teórico: um minuto e meio dentro da plataforma.</p>
           </div>
           <div className="cq-video-stage cq-v2-video">
-            {materialCampaign.videoUrl ? <video ref={video} width={848} height={480} style={{ aspectRatio: "848 / 480" }} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
+            {materialCampaign.videoUrl ? <video ref={video} width={848} height={480} style={{ aspectRatio: "848 / 480" }} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
             <Button variant="ghost" size="icon" className="cq-sound" title={muted ? "Ativar som" : "Silenciar"} aria-label={muted ? "Ativar som" : "Silenciar"} onClick={() => { if (video.current) video.current.muted = !muted; setMuted(!muted); }}>{muted ? <VolumeX size={20} /> : <Volume2 size={20} />}</Button>
           </div>
           <div className="cq-v2-scroll"><Button variant="ghost" onClick={() => document.getElementById("cq-sobre")?.scrollIntoView({ behavior: "smooth" })}>Continuar <ArrowDown size={16} /></Button></div>
