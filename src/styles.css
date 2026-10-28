@@ -1697,3 +1697,7 @@ html.dark .ab-kicker,html.dark .ab-sub{color:#B28CBD!important}
 html.dark .ab-hero-text{border-color:#693E74}
 .ab-hero{padding:64px 0 24px}
 .ab-sec{padding-top:44px;padding-bottom:44px}
+.ab>section{margin-top:56px}
+.ab>section:first-child{margin-top:0}
+.ab-teacher h4{text-transform:none!important;letter-spacing:0!important;font-size:15px!important;font-weight:600}
+.ab-belief p{font-family:Urbanist,sans-serif}
