@@ -9,7 +9,14 @@ export const interestSchema = z.object({
   consent: z.boolean().refine((v) => v, "Autorize o contato para continuar."),
   website: z.string().max(0, "Não foi possível enviar."),
   requestId: z.string().uuid(),
+  phone: z.string().trim().max(30).default("").transform((v) => v.replace(/[\s()+-]/g, "")).refine((v) => v === "" || /^\d{10,13}$/.test(v), "Informe um WhatsApp com DDD válido."),
+  marketingOptIn: z.boolean().default(false),
+  campaignPath: z.literal("/conheca").optional(),
 }).superRefine((data, ctx) => {
+  if (data.campaignPath === "/conheca") {
+    if (!data.phone) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["phone"], message: "Informe seu WhatsApp com DDD." });
+    if (!["Curso Simulado", "Curso Teórico", "Os dois"].includes(data.interest)) ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["interest"], message: "Selecione um dos cursos ou os dois." });
+  }
   if (data.source === "contact" && !data.message) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["message"], message: "Escreva sua mensagem." });
   }

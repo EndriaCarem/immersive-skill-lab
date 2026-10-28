@@ -9,4 +9,7 @@ describe("Interest capture validation", () => {
   it("requires a message for contact", () => { expect(interestSchema.safeParse({ ...entry, source: "contact" }).success).toBe(false); });
   it("rejects oversized messages", () => { expect(interestSchema.safeParse({ ...entry, message: "a".repeat(2001) }).success).toBe(false); });
   it("rejects automated honeypot submissions", () => { expect(interestSchema.safeParse({ ...entry, website: "spam" }).success).toBe(false); });
+  it("requires WhatsApp before releasing the campaign video", () => { expect(interestSchema.safeParse({ ...entry, campaignPath: "/conheca", interest: "Os dois" }).success).toBe(false); });
+  it("stores normalized WhatsApp and independent optional news consent", () => { const result = interestSchema.parse({ ...entry, campaignPath: "/conheca", phone: "(92) 90000-0000", interest: "Curso Teórico" }); expect(result.phone).toBe("92900000000"); expect(result.marketingOptIn).toBe(false); });
+  it("rejects invalid campaign course interests", () => { expect(interestSchema.safeParse({ ...entry, campaignPath: "/conheca", phone: "92900000000", interest: "Outro" }).success).toBe(false); });
 });
