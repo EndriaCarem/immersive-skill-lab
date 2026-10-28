@@ -55,7 +55,7 @@ function CampaignPage() {
     setViewer({ name, interest });
     window.scrollTo({ top: 0, behavior: "instant" });
   };
-  return <SiteShell hideNav minimalFooter><div className="cq-page" ref={root}>
+  return <div className="cq-shell"><SiteShell hideNav minimalFooter><div className="cq-page" ref={root}>
     <div className="cq-scroll-progress" aria-hidden="true" />
     <main>
       {!viewer ? <section className="cq-entry">
@@ -104,5 +104,5 @@ function CampaignPage() {
       </section>}
       <section className="cq-last cq-wrap" data-cq-reveal><span className="cq-eyebrow">EMPIRIA</span><h2>O conhecimento ganha vida<br />quando <em>vira experiência.</em></h2>{!viewer && <Button className="cq-last-cta" onClick={() => { document.querySelector<HTMLInputElement>('.cq-form input[name="name"]')?.focus(); window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" }); }}>Quero conhecer por dentro <ArrowRight size={18} /></Button>}</section>
     </main>
-  </div></SiteShell>;
+  </div></SiteShell></div>;
 }
