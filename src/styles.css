@@ -1581,3 +1581,15 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .cq-v2-quote.cq-reveal{clip-path:inset(0 0 0 75%);transform:translateX(35px);transition:clip-path 1.4s cubic-bezier(.16,1,.3,1),transform 1.4s,opacity 1s}
 .cq-v2-quote.cq-reveal.cq-visible{clip-path:inset(0);transform:none}
 @media(prefers-reduced-motion:reduce){.cq-page .cq-reveal{clip-path:none!important;filter:none!important;transform:none!important;opacity:1!important}}
+/* Scroll-linked gestures stay active when revisiting sections. */
+.cq-v2-sec{--cq-motion:0}
+.cq-v2-about .cq-v2-head{translate:0 calc(var(--cq-motion)*70px)}
+.cq-v2-step:nth-child(1){translate:calc(var(--cq-motion)*-80px) 0;rotate:calc(var(--cq-motion)*-5deg)}
+.cq-v2-step:nth-child(2){translate:0 calc(var(--cq-motion)*100px);scale:calc(1 - var(--cq-motion)*.12)}
+.cq-v2-step:nth-child(3){translate:calc(var(--cq-motion)*80px) 0;rotate:calc(var(--cq-motion)*5deg)}
+.cq-v2-courses .cq-v2-head{scale:calc(1 - var(--cq-motion)*.16)}
+.cq-v2-course.is-light{translate:calc(var(--cq-motion)*-75px) calc(var(--cq-motion)*45px);rotate:calc(var(--cq-motion)*-4deg)}
+.cq-v2-course.is-plum{translate:calc(var(--cq-motion)*75px) calc(var(--cq-motion)*85px);rotate:calc(var(--cq-motion)*4deg)}
+.cq-v2-ai .cq-v2-head{translate:calc(var(--cq-motion)*-90px) 0}
+.cq-v2-ai .cq-v2-quote{translate:calc(var(--cq-motion)*90px) 0;scale:calc(1 - var(--cq-motion)*.08)}
+@media(prefers-reduced-motion:reduce){.cq-v2-sec [data-cq-reveal]{translate:none!important;rotate:none!important;scale:none!important}}
