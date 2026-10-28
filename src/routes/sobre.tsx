@@ -55,7 +55,7 @@ const THEORY_TEACHERS: Teacher[] = [
 
 function TeacherCard({ teacher }: { teacher?: Teacher | undefined }) {
   return (
-    <article className="ab-teacher">
+    <article className="ab-teacher ab-teacher-card">
       {teacher ? (
         <img className="ab-teacher-photo ab-teacher-img" src={teacher.photo} alt={teacher.name} loading="lazy" />
       ) : (
