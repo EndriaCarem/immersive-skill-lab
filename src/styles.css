@@ -1723,3 +1723,4 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .cq-v2-hero>.cq-wrap{position:relative;z-index:1}
 .cq-shell:has(.cq-v2-hero) :is(.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.cq-v2-sec,.sitefoot){background:transparent!important;background-image:none!important;animation:none!important}
 .cq-shell:has(.cq-v2-hero) :is(.cq-v2-hero,.cq-v2-sec,.sitefoot)::before{display:none!important}
+.cq-shell:has(.cq-v2-hero) .sitefoot{background:#1E1726!important}
