@@ -979,3 +979,6 @@ html.dark .v10 .hero .fade{ background: linear-gradient(180deg,rgba(21,16,27,0),
 /* Smaller portraits on Quem somos */
 .v10 .people.two .pc .media{ aspect-ratio: 4 / 3; }
 .v10 .people.two .pc .media img.ph{ object-position: center 25%; }
+.v10 .people.two .pc .media{ aspect-ratio:auto; height:260px; }
+.v10 .people.two .pc .media img.ph{ object-position:center 30%; }
+@media (max-width:720px){ .v10 .people.two .pc .media{ height:220px; } }
