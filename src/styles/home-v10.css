@@ -1006,6 +1006,7 @@ html.dark .v10 .hero .fade{ background: linear-gradient(180deg,rgba(21,16,27,0),
 .v10 #como-funciona .step-feedback .pimg{ object-fit:cover; object-position:top; }
 .v10 .ai-one{ max-width:none; width:100%; }
 .v10 .ai-one .glass{ width:100%; text-align:left; }
+.v10 #teorico > .wrap > .pimg{ display:block; border-radius:16px; overflow:hidden; }
 .v10 .theory-preview{ width:100%; position:relative; padding:24px 0; }
 .v10 .theory-preview-screen{ display:none; }
 .v10 .theory-preview-screen img{ width:100%; height:100%; object-fit:cover; object-position:top left; }
