@@ -1352,11 +1352,11 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 
 /* Clean campaign footer (/conheca) */
 .mfoot{padding:28px 0 20px}
-.mfoot-top{padding-bottom:22px;border-bottom:1px solid color-mix(in oklab,var(--lavender) 30%,transparent)}
-.mfoot-brand{display:flex;gap:32px;align-items:center;flex-wrap:wrap}
+.mfoot-top{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-bottom:22px;border-bottom:1px solid color-mix(in oklab,var(--lavender) 30%,transparent)}
+.mfoot-brand{display:flex;gap:20px;align-items:center;min-width:0}
 .mfoot-brand img{height:32px;width:auto;display:block;margin:0}
-.mfoot-brand p{max-width:520px;font-size:18px;font-style:italic;line-height:1.6;margin:0;color:var(--on-plum)}
-.mfoot-contact{display:flex;align-items:center;justify-content:flex-end;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px;text-align:right}
+.mfoot-brand p{max-width:520px;font-size:16px;font-style:italic;line-height:1.6;margin:0;color:var(--on-plum)}
+.mfoot-contact{display:flex;align-items:center;justify-content:flex-end;gap:20px;flex:none;flex-wrap:wrap;margin:0;font-size:14px;text-align:right}
 .mfoot-contact a{overflow-wrap:anywhere}
 .sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;font-weight:400;font-size:14px;transition:color .25s ease}
 .sitefoot a.mfoot-insta:hover{background:none;color:var(--paper)}
@@ -1368,8 +1368,8 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .mfoot-bottom nav{display:flex;gap:22px}
 .sitefoot .mfoot-bottom a{color:var(--lavender)}
 .sitefoot .mfoot-bottom a:hover{color:var(--paper)}
-@media(max-width:1020px){.mfoot-brand{grid-template-columns:minmax(0,1fr) auto;gap:18px 24px}.mfoot-brand p{grid-column:1;grid-row:2}.mfoot-brand .mfoot-insta{grid-column:2;grid-row:1 / 3}}
-@media(max-width:760px){.mfoot-brand{grid-template-columns:minmax(0,1fr);gap:16px}.mfoot-brand p,.mfoot-brand .mfoot-insta{grid-column:auto;grid-row:auto}.mfoot-brand .mfoot-insta{justify-self:start}.mfoot-bottom{flex-direction:column;align-items:flex-start}}
+@media(max-width:1020px){.mfoot-top{flex-wrap:wrap}.mfoot-contact{margin-left:auto;flex-shrink:1}}
+@media(max-width:760px){.mfoot-brand{flex-wrap:wrap;gap:16px}.mfoot-contact{gap:12px 20px}.mfoot-bottom{flex-direction:column;align-items:flex-start}}
 
 /* /conheca scroll motion */
 .material-player.mp-anim{--mp:1;transform:perspective(1400px) rotateX(calc((1 - var(--mp)) * 18deg)) scale(calc(.86 + var(--mp) * .14)) translateY(calc((1 - var(--mp)) * 40px));opacity:calc(.35 + var(--mp) * .65);transform-origin:50% 100%;will-change:transform;box-shadow:0 calc(var(--mp) * 40px) calc(var(--mp) * 80px) -40px color-mix(in oklab,var(--plum) 55%,transparent)}
