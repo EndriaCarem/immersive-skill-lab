@@ -368,6 +368,32 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_answers: {
+        Row: {
+          activity_id: string
+          content: Json
+          program_id: string
+        }
+        Insert: {
+          activity_id: string
+          content: Json
+          program_id: string
+        }
+        Update: {
+          activity_id?: string
+          content?: Json
+          program_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_answers_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "learning_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_notes: {
         Row: {
           activity_id: string
