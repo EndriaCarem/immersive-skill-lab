@@ -1720,3 +1720,8 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .cq-page .cq-orbs,.cq-page .cq-orbs i,.cq-page .cq-arcs,.cq-page .cq-arcs i,.cq-page .cq-entry-wash{animation:none!important}
 .cq-shell :is(.cq-v2-about,.cq-v2-courses,.cq-v2-ai,.sitefoot){animation:none!important;background-position:0 50%!important}
 .cq-shell :is(.cq-v2-hero,.cq-v2-sec,.sitefoot)::before{animation:none!important}
+.cq-shell .cq-v2-about{background:#2A1B33!important;background-image:none!important}
+.cq-shell .cq-v2-courses{background:#3B2249!important;background-image:none!important}
+.cq-shell .cq-v2-ai{background:#4E2D5A!important;background-image:none!important}
+.cq-shell .sitefoot{background:#1E1726!important;background-image:none!important}
+.cq-shell :is(.cq-v2-sec,.sitefoot)::before{display:none!important}
