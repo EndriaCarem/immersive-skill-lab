@@ -4,6 +4,11 @@ import { AppShell } from "./AppShell";
 import { fmt, subScore, type Activity, type Program } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { canOpenActivity, currentSubmission, learningProgress } from "@/lib/learning-rules";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { addLearningNote } from "@/lib/learning.functions";
+import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 export function useActivity(slug: string, n: string) {
   const learning = useLearning();
@@ -98,8 +103,27 @@ export function ActivityLayout({
       </div>
       <div className="body">
         <aside className="rail">{rail ?? <ActivityRail program={program} current={idx} />}</aside>
-        <main className="pane">{children}</main>
+        <main className="pane">{children}<LearningNotes program={program} activity={activity} /></main>
       </div>
     </AppShell>
   );
+}
+
+function LearningNotes({ program, activity }: { program: Program; activity: Activity }) {
+  const learning = useLearning();
+  const save = useServerFn(addLearningNote);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const notes = learning.data?.notes.filter(n => n.program_id === program.id && n.activity_id === activity.id) ?? [];
+  return <section className="callout">
+    <h4>Minhas anotações</h4>
+    {notes.map(n => <p key={n.id}>{n.text}</p>)}
+    <label className="field"><span>Nova anotação</span><textarea value={text} onChange={e => setText(e.target.value)} rows={3} maxLength={10000} /></label>
+    <Button className="btn ghost" disabled={!text.trim() || saving} onClick={async () => {
+      setSaving(true);
+      try { await save({ data: { programId: program.id, activityId: activity.id, text } }); setText(""); await learning.refresh(); }
+      catch { toast.error("Não foi possível salvar a anotação."); }
+      finally { setSaving(false); }
+    }}>{saving ? "Salvando…" : "Salvar anotação"}</Button>
+  </section>;
 }
