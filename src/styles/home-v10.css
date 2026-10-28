@@ -972,3 +972,5 @@
 .v10 .feat{ padding:48px clamp(20px,4vw,56px) !important; border-radius:32px; }
 .v10 .faqw{ margin-inline:auto; }
 #perguntas .wrap > .eyebrow{ display:block; text-align:center; }
+/* Dark mode: prototype's own dark palette, driven by the platform's html.dark toggle */
+html.dark .v10{ --page:#15101B; --paper:#1F1727; --lilac:#2B2035; --lilac2:#261C30; --edge:#3A2C47; --rule:rgba(244,242,247,.13); --ink:#F4F2F7; --ink2:#F4F2F7; --ink-soft:#DED3E6; --muted:#B4A3BF; --accent:#B28CBD; --on-accent:#1A1221; --accent-soft:#C9A8D4; --lav:#B28CBD; --lav2:#5A3568; --ok:#7FD1A3; --ok-bg:#173627; --mid:#E6B85C; --mid-bg:#3A2E12; --low:#F09A9A; --low-bg:#3F1C1C; --nidia:#C9A8D4; --nidia-bg:#2B2035; --nidia-ink:#F4F2F7; --grad-soft:linear-gradient(180deg,#15101B 0%,#1C1424 100%); --shadow:0 18px 48px rgba(0,0,0,.45); --shadow-sm:0 2px 10px rgba(0,0,0,.35); --lp:none; --ln:block; color-scheme:dark; background:var(--page); color:var(--ink); }
