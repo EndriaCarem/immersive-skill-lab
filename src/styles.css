@@ -1504,7 +1504,7 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .cq-v2-hero .cq-video-intro .cq-v2-eyebrow{font-size:20px;line-height:1.5;letter-spacing:0;max-width:100%;margin-bottom:20px}
 @media(max-width:700px){.cq-v2-hero .cq-video-intro .cq-v2-eyebrow{font-size:16px;align-items:flex-start}.cq-v2-hero .cq-video-intro .cq-v2-eyebrow>i{flex-shrink:0;margin-top:7px}}
 .cq-v2-videobar{position:relative;display:flex;justify-content:space-between;padding:12px 18px;background:var(--cq-surface);border-radius:0 0 20px 20px;font-size:13px;color:var(--cq-ink)}.cq-v2-videobar>span{display:flex;gap:6px;align-items:center}.cq-v2-videobar .cq-video-line{top:0;bottom:auto}.cq-v2-videobar .cq-video-line>span{box-shadow:0 0 12px var(--cq-accent);animation:cq-v2-pulse 1.6s ease-in-out infinite}
-.cq-v2-scroll{display:flex;justify-content:center;margin-top:22px}.cq-v2-scroll button{color:var(--cq-ink);gap:10px}.cq-v2-scroll svg{animation:cq-v2-bounce 1.6s ease-in-out infinite}
+.cq-v2-scroll{display:flex;justify-content:center;margin-top:22px}.cq-v2-scroll button{color:var(--cq-ink);gap:10px;border:1px solid var(--cq-line);background:var(--cq-surface);min-height:48px;padding-inline:24px;border-radius:8px}.cq-v2-scroll button:hover,.cq-v2-scroll button:focus-visible{background:var(--cq-accent);color:var(--cq-bg);border-color:var(--cq-accent)}.cq-v2-scroll svg{animation:cq-v2-bounce 1.6s ease-in-out infinite}
 @property --cq-ang{syntax:"<angle>";inherits:false;initial-value:0deg}
 .cq-arcs{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}.cq-arcs i{position:absolute;border:1px solid color-mix(in oklab,var(--cq-accent) 30%,transparent);border-radius:50%;animation:cq-v2-arc 26s linear infinite}.cq-arcs i:nth-child(1){width:70vw;height:70vw;right:-38vw;top:-30vw}.cq-arcs i:nth-child(2){width:46vw;height:46vw;left:-26vw;bottom:-22vw;animation-duration:34s;animation-direction:reverse}
 .cq-v2-sec{position:relative;isolation:isolate;overflow:hidden;padding:96px 0}
@@ -1544,4 +1544,15 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 @keyframes cq-v2-bounce{0%,100%{translate:0 0}50%{translate:0 6px}}
 @keyframes cq-v2-sheen{0%,60%{left:-60%}100%{left:130%}}
 @media(max-width:900px){.cq-v2-steps,.cq-v2-grid,.cq-v2-ai-grid{grid-template-columns:1fr}.cq-v2-sec{padding:64px 0}.cq-v2-quote.cq-reveal{transform:translateY(40px)}.cq-v2-type{white-space:normal;width:auto!important;border:0;animation:none!important}}
+.cq-options label{color:var(--cq-ink);background:var(--cq-surface)}
+.cq-options label.selected{background:var(--cq-accent);color:var(--cq-bg)}
+.cq-options label.selected .cq-option-check{color:var(--cq-bg)}
+/* Moving, low-contrast architectural bands across the entire campaign. */
+.cq-v2-hero::before,.cq-v2-sec::before,.cq-shell .sitefoot::before{content:"";position:absolute;inset:-30%;pointer-events:none;background:var(--cq-light-lines),var(--cq-light-ribbon);opacity:.65;animation:cq-canvas-drift 16s ease-in-out infinite alternate;z-index:-1;will-change:transform}
+.cq-v2-sec:nth-child(even)::before{animation-delay:-8s;animation-direction:alternate-reverse}
+.cq-shell .sitefoot{position:relative;isolation:isolate;overflow:hidden}
+.cq-arcs i{border-radius:44% 56% 62% 38%;animation:cq-arc-drift 18s ease-in-out infinite alternate}
+@keyframes cq-canvas-drift{from{transform:translate(-6%,-3%) rotate(-4deg)}to{transform:translate(9%,7%) rotate(7deg)}}
+@keyframes cq-arc-drift{from{transform:translate(-35px,-25px) rotate(-12deg)}to{transform:translate(65px,45px) rotate(28deg)}}
+@media(prefers-reduced-motion:reduce){.cq-v2-hero::before,.cq-v2-sec::before,.cq-shell .sitefoot::before,.cq-arcs i{animation:none!important}}
 .cq-v2-words span{margin-right:.24em}
