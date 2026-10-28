@@ -487,7 +487,7 @@ body{background:var(--paper)}
 .inc svg{color:var(--plum-mid);flex:none}
 .cblock{display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--rule)}
 .cblock .ci{flex:none;width:48px;height:48px;border-radius:50%;background:var(--plum-tint);color:var(--plum);display:grid;place-items:center}
-.sitefoot{margin-top:80px;background:var(--plum);color:#DCCFE2;border-radius:32px 32px 0 0;padding:48px 0 30px}
+.sitefoot{margin-top:80px;background:#1E1726;color:#DCCFE2;border-radius:32px 32px 0 0;padding:48px 0 30px}
 .sitefoot a{color:#DCCFE2;text-decoration:none}
 .sitefoot a:hover{color:var(--paper)}
 .sitefoot h5{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lavender);margin:0 0 12px}
