@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, ArrowRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
@@ -63,14 +63,12 @@ function CampaignPage() {
         <img className="cq-backdrop" src={workspace} alt="" aria-hidden="true" />
         <div className="cq-entry-wash" aria-hidden="true" />
         <div className="cq-wrap cq-entry-content">
-          <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span><i /> FORMAÇÃO JURÍDICA PRÁTICA</span></div>
+          <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-entry-grid">
             <div className="cq-entry-copy">
               <div className="cq-eyebrow"><span /> O SEU PRÓXIMO PASSO, POR DENTRO</div>
-              <h1><span>Empiria.</span><span>O ofício antes</span><span>da <em>oportunidade.</em></span></h1>
+              <h1><span>O ofício antes</span><span>da <em>oportunidade.</em></span></h1>
               <p>Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.</p>
-              <div className="cq-invitation"><span className="cq-play-symbol"><ArrowRight size={22} /></span><div><b>Veja a plataforma por dentro.</b><span>Deixe seu interesse e libere o vídeo.</span></div></div>
-              <div className="cq-live-flow" aria-label="Da demanda à devolutiva"><span><BriefcaseBusiness size={15} /> Demanda</span><ArrowRight size={14} /><span><FileCheck2 size={15} /> Entrega</span><ArrowRight size={14} /><span><MessageSquareText size={15} /> Devolutiva</span></div>
             </div>
             <CampaignCapture onSaved={saved} />
           </div>
