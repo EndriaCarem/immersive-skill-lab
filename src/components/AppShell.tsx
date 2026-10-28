@@ -22,7 +22,9 @@ function useAccountTheme(_signedIn?: boolean) {
     const apply = () => {
       let stored: string | null = null;
       try { stored = localStorage.getItem("empiria-theme"); } catch { /* ignore */ }
-      const next = stored ? stored === "dark" : mq.matches;
+      // The /conheca campaign has its own fixed plum theme, never light/dark.
+      const fixed = window.location.pathname.startsWith("/conheca");
+      const next = fixed ? false : stored ? stored === "dark" : mq.matches;
       document.documentElement.classList.toggle("dark", next);
       setDark(next);
     };
