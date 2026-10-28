@@ -10,6 +10,7 @@ import profThais from "@/assets/prof-thais.jpg.asset.json";
 import profMaria from "@/assets/prof-maria.jpg.asset.json";
 import profGustavo from "@/assets/prof-gustavo.jpg.asset.json";
 import profJuliana from "@/assets/prof-juliana.png.asset.json";
+import profBruno from "@/assets/prof-bruno.jpg.asset.json";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -48,7 +49,7 @@ const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Fa
 type Teacher = { name: string; photo: string; bio: string };
 // Positions follow the teachers letter: index = demand/lesson number - 1.
 const PRACTICAL_TEACHERS: (Teacher | undefined)[] = [
-  undefined,
+  { name: "Bruno Hellmeister Lico Canal", photo: profBruno.url, bio: "Graduado em Direito pela Pontifícia Universidade Católica de São Paulo (PUC-SP), com menção honrosa, possui Diploma on Legal Studies in Spain pela Universidad Pontificia Comillas, em Madri. É Presidente do New Voices, grupo de jovens arbitralistas da CMA CIESP/FIESP, membro da Diretoria do Chartered Institute of Arbitrators Brazil Branch e membro do Conselho Editorial da Revista PUC-SP ADR. É Conselheiro da Jovem Advocacia da OAB-SP, Secretário-Geral da Comissão de Sociedades da OAB-SP, Coordenador do Núcleo de Direito Civil da Comissão da Jovem Advocacia da OAB-SP e pesquisador dos projetos Arbitragem em Números e Mediação em Números." },
   { name: "Thaís Freire de Vasconcellos", photo: profThais.url, bio: "Advogada e Professora Substituta na Faculdade Nacional de Direito da UFRJ, com atuação acadêmica e pesquisa nas áreas de Direito Processual, Direito Civil e Direito Empresarial. Doutoranda e Mestre em Direito pela Universidade Federal Fluminense (UFF). Pós-Graduada em Direito Processual pela UFF e em Direito Civil e Empresarial pelo IBMEC/SP, é graduada em Direito pela UFF. É pesquisadora do Grupo de Estudos Jurisdição, Constituição e Processo." },
   undefined,
   { name: "Juliana Vieira", photo: profJuliana.url, bio: "Associada plena da área de Arbitragem do escritório Tauil & Chequer Advogados, associado a Mayer Brown LLP, em São Paulo. Atua em Arbitragem Internacional, com experiência em disputas comerciais complexas, especialmente nos setores de construção, petróleo e gás e fusões e aquisições (M&A). É pós-graduada em Direito Contratual pela Fundação Getulio Vargas (FGV/SP) e bacharel em Direito pela Universidade Presbiteriana Mackenzie. Possui experiência como secretária administrativa de tribunais arbitrais em procedimentos domésticos e atuação em casos pro bono." },
