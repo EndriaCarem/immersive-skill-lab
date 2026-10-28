@@ -1672,3 +1672,32 @@ html.dark .ab-belief p{color:#F4F2F7}
 .ab [data-rv].in{opacity:1;transform:none}
 @media(max-width:1000px){.ab-hero-grid,.ab-founders{grid-template-columns:1fr;gap:28px}.ab-orgs{grid-template-columns:1fr 1fr}.ab-person{grid-column:1/-1}.ab-grid4{grid-template-columns:repeat(2,1fr)}.ab-grid3{grid-template-columns:repeat(2,1fr)}.ab-beliefs{grid-template-columns:1fr}}
 @media(max-width:600px){.ab-founder,.ab-person{grid-template-columns:1fr}.ab-founder img{width:140px}.ab-orgs,.ab-grid3,.ab-grid4{grid-template-columns:1fr}.ab-final{padding:40px 22px}}
+/* Quem somos — simplified */
+.ab-belief,.ab-founder,.ab-org,.ab-teacher{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;padding:0!important}
+.ab-beliefs{gap:40px}
+.ab-belief{border-top:1px solid var(--edge)!important;padding-top:20px!important}
+.ab-belief span{font-size:14px;letter-spacing:.1em;margin-bottom:8px}
+.ab-belief p{font-size:19px;font-weight:600;line-height:1.4}
+.ab-founders{gap:48px}
+.ab-founder{grid-template-columns:110px 1fr}
+.ab-founder img{width:110px;border-radius:10px}
+.ab-band{background:none;margin:0;border-radius:0}
+.ab-orgs{gap:40px}
+.ab-org{border-top:1px solid var(--edge)!important;padding-top:20px!important}
+.ab-org-logo{height:28px}
+html.dark .ab-org-logo{filter:brightness(0) invert(1);opacity:.85}
+.ab-person{grid-template-columns:84px 1fr}
+.ab-person-photo{width:84px;border-radius:10px}
+.ab-grid3,.ab-grid4{gap:0 32px}
+.ab-teacher{border-bottom:1px solid var(--edge)!important;padding:14px 0!important;gap:12px}
+.ab-teacher-av{width:34px;height:34px;font-size:13px;background:color-mix(in oklab,#B28CBD 22%,transparent);color:#693E74}
+html.dark .ab-teacher-av{color:#D6C2DD}
+html.dark .ab p{color:#C9BDD0}
+html.dark .ab-kicker,html.dark .ab-sub{color:#B28CBD!important}
+html.dark .ab-hero-text{border-color:#693E74}
+.ab-hero{padding:64px 0 24px}
+.ab-sec{padding-top:44px;padding-bottom:44px}
+.ab>section{margin-top:56px}
+.ab>section:first-child{margin-top:0}
+.ab-teacher h4{text-transform:none!important;letter-spacing:0!important;font-size:15px!important;font-weight:600}
+.ab-belief p{font-family:Urbanist,sans-serif}
