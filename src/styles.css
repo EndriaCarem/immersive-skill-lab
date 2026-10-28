@@ -1739,3 +1739,18 @@ html.dark .ab-who-logo{filter:brightness(0) invert(1);opacity:.9}
 .ab-teacher.ab-teacher-card p{font-size:12.5px}
 .ab-teacher.ab-teacher-card{text-align:left;align-items:stretch}
 .ab-teacher.ab-teacher-card p{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+
+/* ===== Footer responsivo: contatos sempre inteiros ===== */
+.sitefoot a[href^="mailto"]{overflow-wrap:normal;word-break:keep-all;white-space:nowrap}
+@media(max-width:1020px){
+  .footer-grid>div:last-child{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .mfoot-top{flex-direction:column;align-items:flex-start}
+  .mfoot-contact{margin-left:0;flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;gap:10px}
+  .mfoot-bottom nav{flex-wrap:wrap;gap:10px 22px}
+}
+@media(max-width:360px){.sitefoot a[href^="mailto"]{font-size:13px}}
+
+/* ===== /conheca: cores fixas, sem tema claro/escuro e sem escurecimento automático do navegador ===== */
+html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !important;forced-color-adjust:none}

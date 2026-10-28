@@ -17,6 +17,7 @@ import footerLogoWhite from "@/assets/empiria-footer-white.png";
 /** Theme follows the device (prefers-color-scheme) until the visitor picks one with the toggle. */
 function useAccountTheme(_signedIn?: boolean) {
   const [dark, setDark] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const apply = () => {
@@ -31,7 +32,7 @@ function useAccountTheme(_signedIn?: boolean) {
     apply();
     mq.addEventListener("change", apply);
     return () => mq.removeEventListener("change", apply);
-  }, []);
+  }, [pathname]);
   const toggle = () => {
     const next = !dark;
     setDark(next);
