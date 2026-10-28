@@ -1,3 +1,4 @@
+import { pluralKind } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search, ArrowRight, BookOpen, Files } from "lucide-react";
@@ -59,7 +60,7 @@ function Catalog() {
         <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginTop: 20 }}>
           {kinds.map((k) => (
             <Button variant="ghost" key={k} className={`filter ${k === kind ? "on" : ""}`} aria-pressed={k === kind} onClick={() => setKind(k)}>
-              {k}
+              {pluralKind(k)}
             </Button>
           ))}
         </div>
