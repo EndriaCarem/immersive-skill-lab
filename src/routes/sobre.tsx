@@ -3,9 +3,6 @@ import { useEffect, useRef } from "react";
 import { SiteShell } from "@/components/AppShell";
 import rebeca from "@/assets/sobre-rebeca.jpg.asset.json";
 import taina from "@/assets/sobre-taina.jpg.asset.json";
-import ibrawork from "@/assets/sobre-ibrawork.png.asset.json";
-import nidia from "@/assets/sobre-nidia.png.asset.json";
-import thomas from "@/assets/sobre-thomas-v2.jpg.asset.json";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -44,12 +41,10 @@ const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Co
 function TeacherCard({ label, title }: { label: string; title: string }) {
   return (
     <article className="ab-teacher">
-      <div className="ab-teacher-av" aria-hidden="true">E</div>
-      <div>
-        <span className="ab-kicker">{label}</span>
-        <h4>{title}</h4>
-        <p>Professor(a) a confirmar</p>
-      </div>
+      <div className="ab-teacher-photo" aria-label="Foto do professor (em breve)"><span>Foto</span></div>
+      <span className="ab-kicker">{label} · {title}</span>
+      <h4>Nome do professor</h4>
+      <p>Sócio(a) · [escritório]</p>
     </article>
   );
 }
@@ -108,43 +103,17 @@ function About() {
           </div>
         </section>
 
-        <section className="ab-band">
-          <div className="wrap ab-sec">
-            <div className="ab-head" data-rv><span className="ab-eyebrow">Investimento e tecnologia</span><h2>Quem está por trás.</h2></div>
-            <div className="ab-orgs">
-              <article className="ab-org" data-rv>
-                <img src={ibrawork.url} alt="Ibrawork" className="ab-org-logo" loading="lazy" />
-                <span className="ab-kicker">Investimento</span>
-                <p>O Ibrawork financia a construção da plataforma e do catálogo. Fundado por Thomas Law e sediado em São Paulo, é um centro de pesquisa em negócios, direito, inovação e cidades inteligentes, com unidade de P&D no Parque Científico e Tecnológico da Unicamp.</p>
-              </article>
-              <article className="ab-org" data-rv>
-                <img src={nidia.url} alt="Nidia" className="ab-org-logo" loading="lazy" />
-                <span className="ab-kicker">Tecnologia</span>
-                <p>Licenciada pelo Ibrawork, a Nidia é uma inteligência artificial especializada em direito brasileiro. Corrige cada entrega pela rubrica dos professores e acompanha o aluno no chat. A tecnologia está a serviço do critério, não no lugar dele.</p>
-              </article>
-              <article className="ab-org ab-person" data-rv>
-                <img src={thomas.url} alt="Thomas Law" className="ab-person-photo" loading="lazy" />
-                <div>
-                  <span className="ab-kicker">Fundador do Ibrawork</span>
-                  <h3>Thomas Law</h3>
-                  <p>Doutor em Direito Comercial e mestre pela PUC-SP, com pós-doutorado pela USP. Coach e árbitro do Willem C. Vis Moot, preside a Coordenação Nacional das Relações Brasil-China do Conselho Federal da OAB e o Ibrachina. Sócio do Thomas Law Advogados.</p>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
         <section className="wrap ab-sec">
           <div className="ab-head" data-rv>
             <span className="ab-eyebrow">Quem ensina</span>
             <h2>Um professor por demanda, um por aula.</h2>
             <p>Advogados das principais bancas de arbitragem do país, de casas diferentes: o padrão de correção não é o de um escritório só. O critério de cada um vira a rubrica que a Nidia aplica.</p>
           </div>
-          <h3 className="ab-sub" data-rv>Curso Simulado · seis demandas</h3>
+          <h3 className="ab-sub" data-rv>Curso prático</h3>
           <div className="ab-grid3">
             {PRACTICAL.map((t, i) => <div key={t} data-rv><TeacherCard label={`Demanda ${i + 1}`} title={t} /></div>)}
           </div>
-          <h3 className="ab-sub" data-rv>Curso Teórico · oito aulas</h3>
+          <h3 className="ab-sub" data-rv>Curso teórico</h3>
           <div className="ab-grid4">
             {THEORY.map((t, i) => <div key={t} data-rv><TeacherCard label={`Aula ${i + 1}`} title={t} /></div>)}
           </div>
