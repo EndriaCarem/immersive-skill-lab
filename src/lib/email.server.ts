@@ -91,7 +91,7 @@ export async function emailOrderCancelled(orderId: string) {
   await sendEmail({ to: c.email, subject: "Seu pedido foi cancelado — Empiria", html: layout("Pedido cancelado", `<p>O cancelamento do seu pedido foi registrado:</p><ul>${c.items}</ul><p>Se houve pagamento, o estorno segue as regras do meio de pagamento utilizado.</p>`, { label: "Ver minhas compras", href: `${SITE}/compras` }) });
 }
 
-export async function emailInterestToTeam(lead: { name: string; email: string; interest?: string | null; message?: string | null; source?: string | null; phone?: string; marketingOptIn?: boolean; campaignPath?: string }, requestId?: string) {
+export async function emailInterestToTeam(lead: { name: string; email: string; interest?: string | null; message?: string | null; source?: string | null; phone?: string; marketingOptIn?: boolean; campaignPath?: string | undefined }, requestId?: string) {
   await sendEmail({
     to: EMAIL_FROM_ADDRESS,
     replyTo: lead.email,
