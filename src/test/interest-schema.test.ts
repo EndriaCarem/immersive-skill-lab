@@ -3,6 +3,14 @@ import { interestSchema } from "@/lib/interest-schema";
 
 const entry = { name: "Ana Silva", email: "ana@example.com", interest: "Arbitragem — Nível 1", message: "", consent: true, source: "interest", website: "", requestId: "12345678-1234-4234-8234-123456789abc" };
 describe("Interest capture validation", () => {
+  it("requires every mandatory campaign field but not marketing consent", () => {
+    const complete = { ...entry, campaignPath: "/conheca", phone: "92900000000", interest: "Os dois", marketingOptIn: false };
+    expect(interestSchema.safeParse(complete).success).toBe(true);
+    for (const field of ["name", "email", "phone", "interest"] as const) {
+      expect(interestSchema.safeParse({ ...complete, [field]: "" }).success).toBe(false);
+    }
+    expect(interestSchema.safeParse({ ...complete, consent: false }).success).toBe(false);
+  });
   it("accepts an interest and normalizes email", () => { expect(interestSchema.parse({ ...entry, email: " ANA@EXAMPLE.COM " }).email).toBe("ana@example.com"); });
   it("rejects missing consent", () => { expect(interestSchema.safeParse({ ...entry, consent: false }).success).toBe(false); });
   it("rejects invalid email", () => { expect(interestSchema.safeParse({ ...entry, email: "invalid" }).success).toBe(false); });
