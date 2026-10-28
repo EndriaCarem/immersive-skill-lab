@@ -1,6 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { SiteShell } from "@/components/AppShell";
+import ibrawork from "@/assets/sobre-ibrawork.png.asset.json";
+import nidia from "@/assets/sobre-nidia.png.asset.json";
+import thomas from "@/assets/sobre-thomas-v2.jpg.asset.json";
 import rebeca from "@/assets/sobre-rebeca.jpg.asset.json";
 import taina from "@/assets/sobre-taina.jpg.asset.json";
 
@@ -104,6 +107,30 @@ function About() {
         </section>
 
         <section className="wrap ab-sec">
+          <div className="ab-head" data-rv><span className="ab-eyebrow">Investimento e tecnologia</span><h2>Quem está por trás.</h2></div>
+          <div className="ab-who">
+            <article data-rv>
+              <div className="ab-who-media"><img src={ibrawork.url} alt="Ibrawork" className="ab-who-logo" /></div>
+              <span className="ab-kicker">Investimento</span>
+              <h3>Ibrawork</h3>
+              <p>Financia a construção da plataforma e do catálogo. Centro de pesquisa em negócios, direito, inovação e cidades inteligentes, sediado em São Paulo, com unidade de P&D no Parque Científico e Tecnológico da Unicamp.</p>
+            </article>
+            <article data-rv>
+              <div className="ab-who-media"><img src={nidia.url} alt="Nidia" className="ab-who-logo" /></div>
+              <span className="ab-kicker">Tecnologia</span>
+              <h3>Nidia</h3>
+              <p>Inteligência artificial especializada em direito brasileiro, licenciada pelo Ibrawork. Corrige cada entrega pela rubrica dos professores e acompanha o aluno no chat. A tecnologia está a serviço do critério, não no lugar dele.</p>
+            </article>
+            <article data-rv>
+              <div className="ab-who-media"><img src={thomas.url} alt="Thomas Law" className="ab-who-photo" /></div>
+              <span className="ab-kicker">Fundador do Ibrawork</span>
+              <h3>Thomas Law</h3>
+              <p>Doutor em Direito Comercial e mestre pela PUC-SP, com pós-doutorado pela USP. Coach e árbitro do Willem C. Vis Moot, preside a Coordenação Nacional das Relações Brasil-China do Conselho Federal da OAB e o Ibrachina. Sócio do Thomas Law Advogados.</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="wrap ab-sec">
           <div className="ab-head" data-rv>
             <span className="ab-eyebrow">Quem ensina</span>
             <h2>Um professor por demanda, um por aula.</h2>
@@ -119,16 +146,6 @@ function About() {
           </div>
         </section>
 
-        <section className="wrap">
-          <div className="ab-final" data-rv>
-            <h2>A oportunidade deve encontrar você pronto.</h2>
-            <p>Curso Teórico por R$ 590 e Curso Simulado por R$ 890 até a liberação dos cursos em 14 de dezembro, com acesso por seis meses.</p>
-            <div className="ab-acts">
-              <Link to="/cursos" className="ab-btn">Garantir o preço de lançamento</Link>
-              <Link to="/contato" className="ab-btn ghost">Fale com a gente</Link>
-            </div>
-          </div>
-        </section>
       </div>
     </SiteShell>
   );
