@@ -1358,8 +1358,8 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 .mfoot-brand p{max-width:520px;font-size:18px;font-style:italic;line-height:1.6;margin:0;color:var(--on-plum)}
 .mfoot-contact{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px}
 .mfoot-contact a{overflow-wrap:anywhere}
-.sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border:1px solid color-mix(in oklab,var(--lavender) 55%,transparent);border-radius:999px;font-weight:600;font-size:14px;transition:background-color .25s ease,border-color .25s ease}
-.sitefoot a.mfoot-insta:hover{background:color-mix(in oklab,var(--lavender) 18%,transparent);border-color:var(--lavender)}
+.sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:8px;padding:0;border:0;border-radius:0;font-weight:400;font-size:14px;transition:color .25s ease}
+.sitefoot a.mfoot-insta:hover{background:none;color:var(--paper)}
 .mfoot-partners{justify-self:end;text-align:right}
 .mfoot-logos{display:flex;gap:32px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 .mfoot-logos img{height:34px;width:auto;filter:brightness(0) invert(1);opacity:.8;transition:opacity .25s ease}
