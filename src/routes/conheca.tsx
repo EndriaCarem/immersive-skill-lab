@@ -53,8 +53,6 @@ function CampaignPage() {
   const [viewer, setViewer] = useState<{ name: string; interest: string } | null>(null);
   const [muted, setMuted] = useState(true);
   const [completed, setCompleted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
@@ -119,16 +117,15 @@ function CampaignPage() {
         <div className="cq-orbs" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="cq-arcs" aria-hidden="true"><i /><i /></div>
         <div className="cq-wrap">
-          <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /><span className="cq-v2-pill">PRÉ-VENDA</span></div>
+          <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-video-intro">
             <div className="cq-eyebrow cq-v2-eyebrow"><i />OBRIGADA, {viewer.name.split(" ")[0]?.toLocaleUpperCase("pt-BR")}. O VÍDEO ESTÁ LIBERADO.</div>
             <h1 className="cq-letters" aria-label="A plataforma, por dentro."><span aria-hidden="true"><AnimatedWords text="A plataforma," start={0} /> <em><AnimatedWords text="por dentro." start={12} /></em></span></h1>
             <p>Da demanda à devolutiva, do documento de referência à aula do Teórico: um minuto e meio dentro da plataforma.</p>
           </div>
           <div className="cq-video-stage cq-v2-video">
-            {materialCampaign.videoUrl ? <video ref={video} width={848} height={480} style={{ aspectRatio: "848 / 480" }} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onLoadedMetadata={() => { const d = video.current?.duration; if (d && Number.isFinite(d)) setDuration(d); }} onVolumeChange={() => setMuted(video.current?.muted ?? true)} onTimeUpdate={() => { const player = video.current; if (player && Number.isFinite(player.duration) && player.duration > 0) setProgress(player.currentTime / player.duration); }} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
+            {materialCampaign.videoUrl ? <video ref={video} width={848} height={480} style={{ aspectRatio: "848 / 480" }} controls autoPlay muted={muted} playsInline preload="auto" aria-label="Vídeo de apresentação da Empiria" onVolumeChange={() => setMuted(video.current?.muted ?? true)} onEnded={() => setCompleted(true)}><source src={materialCampaign.videoUrl} type="video/mp4" /><source src={compatibleVideo.url} type="video/webm" /></video> : <p>O vídeo está em preparação.</p>}
             <Button variant="ghost" size="icon" className="cq-sound" title={muted ? "Ativar som" : "Silenciar"} aria-label={muted ? "Ativar som" : "Silenciar"} onClick={() => { if (video.current) video.current.muted = !muted; setMuted(!muted); }}>{muted ? <VolumeX size={20} /> : <Volume2 size={20} />}</Button>
-            <div className="cq-v2-videobar"><span>{completed ? <><Check size={14} /> Apresentação concluída</> : "Área do aluno"}</span><span>{duration ? `${Math.floor(duration / 60)} min ${Math.round(duration % 60)} s` : ""}</span><div className="cq-video-line"><span ref={(el) => { el?.style.setProperty("--video-progress", String(progress)); }} /></div></div>
           </div>
           <div className="cq-v2-scroll"><Button variant="ghost" onClick={() => document.getElementById("cq-sobre")?.scrollIntoView({ behavior: "smooth" })}>Continuar <ArrowDown size={16} /></Button></div>
         </div>
