@@ -75,9 +75,6 @@ function ProgramPage() {
               <span className="mn">{String(i + 1).padStart(2, "0")}</span>
               <div>
                 <b style={{ fontSize: 16 }}>{a.title}</b>
-                <div className="muted sm">
-                  {a.summary}
-                </div>
               </div>
             </div>
           ))}
