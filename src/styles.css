@@ -1353,9 +1353,11 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 /* Clean campaign footer (/conheca) */
 .mfoot{padding:28px 0 20px}
 .mfoot-top{padding-bottom:22px;border-bottom:1px solid color-mix(in oklab,var(--lavender) 30%,transparent)}
-.mfoot-brand{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:32px;align-items:center}
+.mfoot-brand{display:flex;gap:32px;align-items:center;flex-wrap:wrap}
 .mfoot-brand img{height:32px;width:auto;display:block;margin:0}
-.mfoot-brand p{max-width:520px;font-size:14px;line-height:1.6;margin:0;color:var(--on-plum)}
+.mfoot-brand p{max-width:520px;font-size:18px;font-style:italic;line-height:1.6;margin:0;color:var(--on-plum)}
+.mfoot-contact{display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:20px;font-size:14px}
+.mfoot-contact a{overflow-wrap:anywhere}
 .sitefoot a.mfoot-insta{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border:1px solid color-mix(in oklab,var(--lavender) 55%,transparent);border-radius:999px;font-weight:600;font-size:14px;transition:background-color .25s ease,border-color .25s ease}
 .sitefoot a.mfoot-insta:hover{background:color-mix(in oklab,var(--lavender) 18%,transparent);border-color:var(--lavender)}
 .mfoot-partners{justify-self:end;text-align:right}

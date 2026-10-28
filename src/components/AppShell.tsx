@@ -134,16 +134,20 @@ function MinimalFooter() {
       <div className="wrap mfoot-top">
         <div className="mfoot-brand">
           <img src={footerLogoWhite} alt="Empiria" />
-          <p>Viva a rotina de um escritório simulado: receba demandas, construa suas entregas e desenvolva segurança para atuar.</p>
-          <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
-            <Instagram size={18} /> <span>Siga @empiria.law</span> <ArrowUpRight size={16} />
-          </a>
+          <p className="doc-voice">Empiria: o conhecimento que vem da experiência.</p>
         </div>
+        <nav className="mfoot-contact" aria-label="Contatos da Empiria">
+          <a className="mfoot-insta" href="https://www.instagram.com/empiria.law/" target="_blank" rel="noopener noreferrer">
+            <Instagram size={18} /> <span>Instagram @empiria.law</span> <ArrowUpRight size={16} />
+          </a>
+          <a href="mailto:atendimento@empiria-law.com">atendimento@empiria-law.com</a>
+          <a href="https://empiria-law.com">empiria-law.com</a>
+        </nav>
       </div>
       <div className="wrap mfoot-bottom">
-        <span>© {new Date().getFullYear()} Empiria · Formação jurídica prática</span>
+        <span>© {new Date().getFullYear()} Empiria. Os casos, a banca e os nomes nas telas são fictícios.</span>
         <nav aria-label="Documentos legais">
-          <Link to="/termos">Termos de uso</Link>
+          <Link to="/termos">Termos de uso e matrícula</Link>
           <Link to="/privacidade">Privacidade e LGPD</Link>
         </nav>
       </div>
