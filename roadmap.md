@@ -1,7 +1,7 @@
 # Progresso do aluno
-- [ ] Vincular atividades, entregas, arquivos e notas às contas reais no Cloud, sem importar registros demonstrativos.
-- [ ] Integrar portal do aluno e fila de correção com dados compartilhados e acesso por matrícula.
-- [ ] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
+- [x] Vincular atividades, entregas, arquivos e notas às contas reais no Cloud, sem importar registros demonstrativos.
+- [x] Integrar portal do aluno e fila de correção com dados compartilhados e acesso por matrícula.
+- [x] Verificar envio, correção e leitura em outro aparelho; testar privacidade entre contas.
 
 # Institucional e catálogo
 - [x] Criar página separada de captação em /conheca, mantendo a inicial e o acesso restrito.

@@ -13,18 +13,20 @@ function submission(row: Row, name?: string): Submission & { userId: string; fil
     ...(row.teacher_comment !== null ? { teacherComment: row.teacher_comment } : {}), humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined };
 }
 export const learnerData = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
-  const [programs, subs, notes, enrollments] = await Promise.all([
+  const [programs, subs, notes, enrollments, answers] = await Promise.all([
     context.supabase.from("learning_programs").select("content"),
     context.supabase.from("learning_submissions").select("*").eq("user_id", context.userId).order("submitted_at"),
     context.supabase.from("learning_notes").select("*").eq("user_id", context.userId).order("created_at"),
     context.supabase.from("commerce_enrollments").select("*").eq("user_id", context.userId).eq("status", "active"),
+    context.supabase.from("learning_answers").select("*"),
   ]);
-  for (const r of [programs, subs, notes, enrollments]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
+  for (const r of [programs, subs, notes, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
     const latest = (subs.data ?? []).filter(s => s.program_id === p.id && s.activity_id === a.id).at(-1);
     const pending = latest && Array.isArray(latest.human_reviews) && latest.human_reviews.length > 0 && !latest.reviewed_at;
-    return latest && !pending ? a : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
+    const answer = answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content;
+    return latest && !pending && answer ? { ...a, ...(answer as unknown as Partial<typeof a>) } : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
     submissions: (subs.data ?? []).map(s => submission(s)), notes: notes.data ?? [], enrollments: active };
 });
@@ -62,12 +64,13 @@ export const requestLearningReview = createServerFn({ method: "POST" }).middlewa
 export const adminLearningData = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (!allowed) throw new Error("Acesso restrito à administração.");
-  const [programs, subs, profiles, enrollments] = await Promise.all([
+  const [programs, subs, profiles, enrollments, answers] = await Promise.all([
     context.supabase.from("learning_programs").select("content"), context.supabase.from("learning_submissions").select("*").order("submitted_at"),
     context.supabase.from("profiles").select("id,full_name"), context.supabase.from("commerce_enrollments").select("*"),
+    context.supabase.from("learning_answers").select("*"),
   ]);
-  for (const r of [programs, subs, profiles, enrollments]) if (r.error) throw new Error("Não foi possível carregar as entregas.");
-  return { programs: (programs.data ?? []).map(p => p.content as unknown as Program),
+  for (const r of [programs, subs, profiles, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar as entregas.");
+  return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).map(p => ({ ...p, activities: p.activities.map(a => ({ ...a, ...(answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content as unknown as Partial<typeof a> ?? {}) })) })),
     submissions: (subs.data ?? []).map(s => submission(s, profiles.data?.find(p => p.id === s.user_id)?.full_name)),
     enrollments: (enrollments.data ?? []).map(e => ({ programId: e.product_id, student: profiles.data?.find(p => p.id === e.user_id)?.full_name || e.user_id, userId: e.user_id, enrolledAt: e.enrolled_at })) };
 });
