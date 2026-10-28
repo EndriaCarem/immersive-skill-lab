@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUpRight, ArrowRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
+import { ArrowDown, ArrowUpRight, BriefcaseBusiness, FileCheck2, MessageSquareText, Volume2, VolumeX, Check, BookOpen } from "lucide-react";
 import { SiteShell } from "@/components/AppShell";
 import { CampaignCapture } from "@/components/CampaignCapture";
 import { Button } from "@/components/ui/button";
