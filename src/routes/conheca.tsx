@@ -67,7 +67,6 @@ function CampaignPage() {
           <div className="cq-brand-row"><img src={logo.url} alt="Empiria" /></div>
           <div className="cq-entry-grid">
             <div className="cq-entry-copy">
-              <div className="cq-eyebrow"><span /> O SEU PRÓXIMO PASSO, POR DENTRO</div>
               <h1><span>O ofício antes</span><span>da <em>oportunidade.</em></span></h1>
               <p>Um escritório simulado. Demandas que chegam à sua mesa. Entregas que transformam conhecimento em prática.</p>
             </div>
