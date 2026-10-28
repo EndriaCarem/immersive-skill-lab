@@ -1542,3 +1542,4 @@ html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:
 @keyframes cq-v2-bounce{0%,100%{translate:0 0}50%{translate:0 6px}}
 @keyframes cq-v2-sheen{0%,60%{left:-60%}100%{left:130%}}
 @media(max-width:900px){.cq-v2-steps,.cq-v2-grid,.cq-v2-ai-grid{grid-template-columns:1fr}.cq-v2-sec{padding:64px 0}.cq-v2-quote.cq-reveal{transform:translateY(40px)}.cq-v2-type{white-space:normal;width:auto!important;border:0;animation:none!important}}
+.cq-v2-words span{margin-right:.24em}
