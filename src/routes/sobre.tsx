@@ -42,8 +42,8 @@ const FOUNDERS = [
   },
 ];
 
-const PRACTICAL = ["Revisão de cláusula compromissória", "Redação de requerimento de arbitragem", "Indicação de coárbitro", "Pesquisa sobre jurisdição", "Desenvolvimento de written statement", "Análise de sentença arbitral"];
-const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Constituição do tribunal", "Fase postulatória", "Fase instrutória", "Fase decisória", "Fase executória"];
+const PRACTICAL = ["Revisão de cláusula compromissória", "Redação de requerimento de arbitragem", "Indicação de árbitro", "Pesquisa sobre jurisdição", "Desenvolvimento de written statement", "Análise de sentença arbitral"];
+const THEORY = ["Fase contratual", "Fase cautelar", "Fase de instauração", "Fase administrativa", "Fase instrutória", "Provas", "Audiências", "Fase executória"];
 
 type Teacher = { name: string; photo: string; bio: string };
 const PRACTICAL_TEACHERS: Teacher[] = [
