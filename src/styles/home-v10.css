@@ -950,7 +950,7 @@
 .v10-anim .v-fade{filter:blur(10px)}
 .v10-anim .v-flip{transform:perspective(1200px) rotateY(18deg) translateY(50px)}
 .v10-anim .v-right{transform:translateX(70px)}
-.v10-anim .v-left{transform:translateX(-70px) rotate(-2deg);clip-path:inset(0 30% 0 0 round 24px)}
+.v10-anim .v-left{transform:translateX(-70px) rotate(-2deg)}
 .v10-anim .v-zoom{transform:scale(.85)}
 .v10-anim .v-tilt{transform:perspective(1000px) rotateX(16deg) translateY(60px)}
 .v10-anim .v-rv.v-in{opacity:1;transform:none;filter:none;clip-path:inset(0 0 0 0 round 0)}
@@ -962,3 +962,10 @@
 .v10 .logos-group > *{ flex-shrink:0; white-space:nowrap; margin-left:0 !important; }
 @keyframes v10-marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 .v10 .logos img[alt="Ibrawork"]{ height:18px !important; filter:grayscale(1) contrast(1.1); opacity:.7 !important; }
+.v10 .cmp > div{ display:flex !important; flex-direction:column; }
+.v10 .cmp .cbuy{ margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-top:22px; }
+.v10 .cmp .cbuy .btn{ margin-left:auto; }
+.v10 .feat, .v10 .feat .copy{ overflow:visible !important; }
+.v10 .feat .copy{ padding-inline:4px; }
+.v10 .feat .copy, .v10 .feat .copy *{ clip-path:none !important; }
+.v10-anim .feat::before,.v10-anim .cmp>*::before{ z-index:-1; }

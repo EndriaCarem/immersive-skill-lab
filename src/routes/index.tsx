@@ -43,7 +43,7 @@ function Landing() {
       strip.innerHTML = `<div class="logos-track"><div class="logos-group">${group}</div><div class="logos-group" aria-hidden="true">${group}</div></div>`;
       strip.classList.add("logos-marquee");
     }
-    const io = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("v-in", e.isIntersecting)), { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("v-in"); io.unobserve(e.target); } }), { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
     REVEALS.forEach(([sel, cls]) => node.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
       if (el.closest(".hero")) return;
       el.classList.add("v-rv", cls);
