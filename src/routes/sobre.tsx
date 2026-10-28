@@ -1,84 +1,60 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { AppShell } from "@/components/AppShell";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { SiteShell } from "@/components/AppShell";
+import { SOBRE_V10_HTML } from "@/lib/sobre-v10";
 import { founders } from "@/lib/founders";
-import { useEffect } from "react";
+import ibrawork from "@/assets/sobre-ibrawork.png.asset.json";
+import nidia from "@/assets/sobre-nidia.png.asset.json";
+import thomas from "@/assets/sobre-thomas.jpg.asset.json";
+import homeV10Css from "@/styles/home-v10.css?url";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
     meta: [
-      { title: "Sobre a Empiria — fundadoras, método e parceiros" },
-      { name: "description", content: "Conheça Rebeca Franzoni e Tainá Malta Rodrigues, o método da Empiria e os parceiros Arbipédia e CJA/CBMA." },
-      { property: "og:title", content: "Sobre a Empiria" },
-      { property: "og:description", content: "Não é um curso sobre arbitragem; é o que você redige quando o caso chega." },
+      { title: "Quem somos — Empiria" },
+      { name: "description", content: "Empiria é o conhecimento que vem da experiência: as fundadoras Rebeca Franzoni e Tainá Malta, o Ibrawork, a Nidia e quem ensina." },
+      { property: "og:title", content: "Quem somos — Empiria" },
+      { property: "og:description", content: "Empiria é o conhecimento que vem da experiência." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "stylesheet", href: homeV10Css }],
   }),
   component: About,
 });
 
-const method = [
-  ["O caso", "O contexto chega antes da demanda, na mesma ordem em que chegaria no escritório."],
-  ["A demanda", "Uma sócia de uma banca fictícia pede a peça. Sem roteiro — com o assistente de ofício ao lado."],
-  ["A devolutiva", "Correção individual por rubrica, critério a critério, com nota e leitura do uso de IA."],
-  ["O gabarito", "Liberado só depois da entrega: peça de referência comentada e vídeo de debriefing."],
+const HTML = SOBRE_V10_HTML
+  .replaceAll("%%REBECA%%", founders[0].photo)
+  .replaceAll("%%TAINA%%", founders[1].photo)
+  .replaceAll("%%IBRAWORK%%", ibrawork.url)
+  .replaceAll("%%NIDIA%%", nidia.url)
+  .replaceAll("%%THOMAS%%", thomas.url);
+
+const REVEALS: [string, string][] = [
+  [".pagehead > *", "v-up"],
+  [".sec-head, .ghead, .sublabel2", "v-up"],
+  [".beliefs > *", "v-zoom"],
+  [".people.two > *", "v-flip"],
+  [".people.three > *", "v-tilt"],
+  [".final", "v-zoom"],
 ];
 
 function About() {
+  const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const els = document.querySelectorAll(".fbio");
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.25 });
-    els.forEach((el) => io.observe(el));
+    const node = root.current;
+    if (!node) return;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("v-in"); else if (e.boundingClientRect.top > 0) e.target.classList.remove("v-in"); }), { threshold: 0.12, rootMargin: "0px 0px -10% 0px" });
+    REVEALS.forEach(([sel, cls]) => node.querySelectorAll<HTMLElement>(sel).forEach((el, i) => {
+      el.classList.add("v-rv", cls);
+      el.style.setProperty("--vd", String(i % 4));
+      io.observe(el);
+    }));
     return () => io.disconnect();
   }, []);
   return (
-    <AppShell>
-      <main className="pane">
-        <div className="eyebrow">Sobre a Empiria</div>
-        <p className="quote">Não é um curso sobre arbitragem; é o que você redige quando o caso chega.</p>
-
-        <h4>O método</h4>
-        <ul className="acts">
-          {method.map(([t, d], i) => (
-            <li key={t}>
-              <span className="num">{i + 1}</span>
-              <span>
-                <span className="ttl">{t}</span>
-                <div className="meta">{d}</div>
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="muted sm">
-          Rebeca e Tainá desenharam a sequência a partir da rotina de bancas de arbitragem: o aluno recebe, produz e é avaliado como seria no
-          primeiro ano de escritório.
-        </p>
-
-        <h4>Fundadoras</h4>
-        <div className="fbios">
-          {founders.map((f, i) => (
-            <article className="fbio" key={f.name} style={{ ["--i" as string]: i }}>
-              <img className="fbio-photo" src={f.photo} alt={f.name} width={120} height={120} loading="lazy" />
-              <div>
-                <h3>{f.name}</h3>
-                <div className="fbio-role">{f.role}</div>
-                <p className="fbio-text doc-voice">
-                  {f.bio.split(" ").map((w, k) => (
-                    <span key={k} style={{ ["--w" as string]: k }}>{w} </span>
-                  ))}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-
-
-        <div style={{ marginTop: 28 }}>
-          <Link to="/" className="btn">
-            Ver os cursos
-          </Link>
-        </div>
-      </main>
-    </AppShell>
+    <SiteShell>
+      <div ref={root} className="v10 v10-anim" dangerouslySetInnerHTML={{ __html: HTML }} />
+    </SiteShell>
   );
 }
