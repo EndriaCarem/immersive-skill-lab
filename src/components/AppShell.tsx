@@ -73,8 +73,8 @@ function TopNav() {
       <Link to="/" activeOptions={{ exact: true }} {...item}>Início</Link>
       {user && <Link to="/meus-programas" {...item}>Meus programas</Link>}
       <Link to="/cursos" {...item}>Cursos</Link>
-      <Link to="/webinars" {...item}>Blog</Link>
       <Link to="/sobre" {...item}>Quem somos</Link>
+      <Link to="/webinars" {...item}>Blog</Link>
       {!user && <Link to="/contato" {...item}>Contato</Link>}
     </>
   );
