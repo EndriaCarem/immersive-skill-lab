@@ -1224,7 +1224,8 @@ html,body{overflow-x:clip}
 .auth-clean-back:hover{color:var(--plum)}
 .auth-clean-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:11px;color:var(--slate);padding:12px 0}
 .auth-clean-legal a:hover{color:var(--plum)}
-.auth-clean-form .auth-message{margin:0;font-size:13px}
+.auth-clean-form .auth-message{margin:0;font-size:14px;line-height:1.45;color:var(--ink);border:1px solid var(--plum-mid);border-left-width:4px;border-radius:6px;padding:10px 12px;background:color-mix(in srgb,var(--plum-mid) 8%,transparent)}
+.auth-password-toggle:disabled{opacity:.4}
 html.dark .auth-brand img{filter:brightness(0) invert(.9)}
 html.dark .auth-scene .auth-brand img{filter:none}
 html.dark .auth-scene-copy p{color:var(--auth-photo-ink)}

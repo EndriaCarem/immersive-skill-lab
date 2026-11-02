@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useHydrated, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { accountData } from "@/lib/commerce.functions";
 import { postLoginDestination } from "@/lib/post-login";
@@ -20,7 +20,17 @@ function Auth() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const hydrated = useHydrated();
   const nav = useNavigate();
+  useEffect(() => {
+    // Never keep credentials in the address bar if the form was ever sent before the page finished loading.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("password") || url.searchParams.has("email")) {
+      url.searchParams.delete("password");
+      url.searchParams.delete("email");
+      window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    }
+  }, []);
   const readAccount = useServerFn(accountData);
   async function enterAccount() {
     let destination: "/cursos" | "/compras" = "/compras";
@@ -78,14 +88,23 @@ function Auth() {
         await enterAccount();
       }
     } catch (error) {
-      if (authErrorKind(error) === "weak_password") {
+      const kind = error instanceof z.ZodError ? "form" : authErrorKind(error);
+      if (kind === "form") {
+        setMessage(mode === "reset" ? "Digite um e-mail válido." : "Confira o e-mail digitado. A senha precisa ter pelo menos 8 caracteres.");
+      } else if (kind === "weak_password") {
         setMessage("Essa senha é muito comum ou fácil de adivinhar. Escolha uma senha única e mais longa, evitando nomes, datas e sequências como 12345678.");
-      } else if (authErrorKind(error) === "invalid_email") {
+      } else if (kind === "invalid_email") {
         setMessage("Use um e-mail válido que possa receber a confirmação do cadastro.");
+      } else if (kind === "invalid_credentials") {
+        setMessage("E-mail ou senha incorretos. Confira os dados ou clique em “Esqueci minha senha” para criar uma nova.");
+      } else if (kind === "email_not_confirmed") {
+        setMessage("Seu cadastro ainda não foi confirmado. Abra o link que enviamos para o seu e-mail e tente de novo.");
+      } else if (kind === "rate_limited") {
+        setMessage("Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.");
       } else
         setMessage(
           mode === "login"
-            ? "Não foi possível entrar. Confira e-mail, senha e confirmação do cadastro."
+            ? "Não foi possível entrar agora. Verifique sua internet e tente novamente."
             : "Não foi possível concluir. Tente novamente em alguns instantes.",
         );
     } finally {
@@ -111,7 +130,7 @@ function Auth() {
         <div className="auth-clean-content">
           <h1>{mode === "signup" ? "Crie sua conta" : mode === "reset" ? "Recuperar senha" : "Bem-vindo de volta!"}</h1>
           <p className="auth-intro">{mode === "signup" ? "Seu próximo capítulo começa aqui." : mode === "reset" ? "Receba no seu e-mail um link para redefinir sua senha." : "Entre para continuar sua jornada."}</p>
-        <form className="auth-clean-form" onSubmit={submit}>
+        <form className="auth-clean-form" method="post" noValidate onSubmit={submit}>
           {mode === "signup" && (
             <label className="field">
               Nome completo
@@ -133,11 +152,11 @@ function Auth() {
                 minLength={8}
                 maxLength={128}
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              /><Button type="button" variant="ghost" size="icon" className="auth-password-toggle" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} title={showPassword ? "Ocultar senha" : "Mostrar senha"} onClick={() => setShowPassword((value) => !value)}>{showPassword ? <EyeOff /> : <Eye />}</Button></span>
+              /><Button type="button" variant="ghost" size="icon" className="auth-password-toggle" disabled={!hydrated} aria-pressed={showPassword} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} title={showPassword ? "Ocultar senha" : "Mostrar senha"} onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.preventDefault(); setShowPassword((value) => !value); }}>{showPassword ? <EyeOff /> : <Eye />}</Button></span>
             </label>
           )}
           {mode === "login" && <div className="auth-clean-recovery"><Button type="button" variant="link" onClick={() => changeMode("reset")}>Esqueci minha senha</Button></div>}
-          <Button className="btn auth-clean-submit" disabled={busy}>
+          <Button type="submit" className="btn auth-clean-submit" disabled={busy || !hydrated}>
             {busy
               ? "Aguarde…"
               : mode === "signup"
@@ -146,7 +165,7 @@ function Auth() {
                   ? "Enviar link"
                    : "Entrar"}<ArrowRight size={18} aria-hidden="true" />
           </Button>
-          {message && <p role="status" className="muted auth-message">{message}</p>}
+          {message && <p role="alert" aria-live="assertive" className="auth-message">{message}</p>}
         </form>
         <Link to="/cursos" className="auth-clean-back">
           <ArrowLeft size={16} aria-hidden="true" />
