@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { ReviewWindow } from "@/components/ReviewWindow";
-import { fmt, reviewPending, reviewsLeft, subScore } from "@/lib/store";
+import { fmt, reviewPending, reviewQuota, subScore } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { currentSubmission } from "@/lib/learning-rules";
 import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
@@ -37,7 +36,7 @@ function FeedbackPage() {
   const [requesting, setRequesting] = useState(false);
   const submissions = learning.data?.submissions ?? [];
   const sub = program && activity ? currentSubmission(submissions, program.id, activity.id) : undefined;
-  const left = program && activity ? reviewsLeft({ submissions }, program.id, learning.user?.id ?? "", activity.id) : 0;
+  const quota = reviewQuota({ submissions }, program?.id ?? "", learning.user?.id ?? "", activity?.id ?? "");
   if (!program || !activity) return <NotFoundBlock />;
   if (!sub)
     return (
@@ -61,13 +60,17 @@ function FeedbackPage() {
         try { window.location.assign(await fileUrl({ data: { id: sub.id } })); }
         catch { toast.error("Não foi possível abrir sua entrega."); }
       }}>Baixar minha entrega</Button>
-      <p className="muted sm">Como o sênior marca a peça: trechos riscados, inserções e notas na margem.</p>
-      <div style={{ marginBottom: 22 }}><ReviewWindow compact /></div>
       <div className="score-top">
         <div>
           <div className="lab">Nota da atividade</div>
-          <span className="big">{fmt(score)}</span>
-          <span className="of">/10</span>
+          {score == null ? (
+            <span className="wait">Aguardando correção</span>
+          ) : (
+            <>
+              <span className="big">{fmt(score)}</span>
+              <span className="of">/10</span>
+            </>
+          )}
         </div>
         <div className="side">
           {score == null
@@ -136,21 +139,32 @@ function FeedbackPage() {
       <div className="callout">
         <div className="k">Correção humana</div>
         <p>
-          Discorda de algum critério? Um sênior relê a peça. Você pode pedir correção humana em até duas atividades
-          por curso — restam <b>{left}</b>. Enquanto a revisão estiver em andamento, o gabarito fica trancado.
+          Discorda de algum critério? Um sênior relê a peça. Você pode pedir correção humana em até {quota.max} atividades
+          por curso. Enquanto a revisão estiver em andamento, o gabarito fica trancado.
         </p>
-        <Button
-          className="btn ghost"
-          disabled={left === 0 || requesting}
-          onClick={async () => {
-            setRequesting(true);
-            try { await request({ data: { id: sub.id } }); await learning.refresh(); toast.success("Pedido enviado."); }
-            catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível pedir revisão."); }
-            finally { setRequesting(false); }
-          }}
-        >
-          Pedir correção humana
-        </Button>
+        <p className="review-quota">
+          <span>Saldo no curso: <b>{quota.courseLeft} de {quota.max}</b> {quota.courseLeft === 1 ? "disponível" : "disponíveis"}</span>
+          <span>
+            Nesta atividade:{" "}
+            <b>
+              {quota.status === "pending" ? "revisão solicitada · em andamento" : quota.status === "done" ? "revisão concluída" : "nenhuma revisão solicitada"}
+            </b>
+          </span>
+        </p>
+        {quota.status === "none" && (
+          <Button
+            className="btn ghost"
+            disabled={!quota.canRequest || requesting}
+            onClick={async () => {
+              setRequesting(true);
+              try { await request({ data: { id: sub.id } }); await learning.refresh(); toast.success("Pedido enviado."); }
+              catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível pedir revisão."); }
+              finally { setRequesting(false); }
+            }}
+          >
+            {quota.courseLeft === 0 ? "Saldo de revisões esgotado" : "Pedir correção humana"}
+          </Button>
+        )}
       </div>
       <div style={{ marginTop: 26 }}>
         {reviewPending(sub) ? (

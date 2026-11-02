@@ -341,6 +341,18 @@ export function reviewsLeft(s: Pick<State, "submissions">, programId: string, st
   if (activityId && used.has(activityId)) return 0;
   return Math.max(0, MAX_HUMAN_REVIEWS - used.size);
 }
+/**
+ * Course-wide human-review balance (max 2 activities per student per course) shown separately from
+ * this activity's own review status. Mirrors request_learning_review; the database stays authoritative.
+ */
+export function reviewQuota(s: Pick<State, "submissions">, programId: string, student: string, activityId: string) {
+  const used = reviewedActivities(s, programId, student);
+  const reviewed = s.submissions.filter((x) => x.programId === programId && x.student === student && x.activityId === activityId && x.humanReviews?.length);
+  const requested = reviewed.length > 0;
+  const status: "none" | "pending" | "done" = !requested ? "none" : reviewed.some((x) => !x.reviewedAt) ? "pending" : "done";
+  const courseLeft = Math.max(0, MAX_HUMAN_REVIEWS - used.size);
+  return { courseLeft, courseUsed: used.size, max: MAX_HUMAN_REVIEWS, status, canRequest: !requested && courseLeft > 0 };
+}
 /** Backlog EMP-027: answer key stays locked while a human review is pending (requested, not yet re-graded). */
 export const reviewPending = (sub?: Submission) => !!sub?.humanReviews?.length && !sub.reviewedAt;
 /** SLA for grading a submission, in hours. */
