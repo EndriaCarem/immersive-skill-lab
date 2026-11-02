@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useHydrated, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { accountData } from "@/lib/commerce.functions";
 import { postLoginDestination } from "@/lib/post-login";
@@ -20,7 +20,17 @@ function Auth() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const hydrated = useHydrated();
   const nav = useNavigate();
+  useEffect(() => {
+    // Never keep credentials in the address bar if the form was ever sent before the page finished loading.
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("password") || url.searchParams.has("email")) {
+      url.searchParams.delete("password");
+      url.searchParams.delete("email");
+      window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
+    }
+  }, []);
   const readAccount = useServerFn(accountData);
   async function enterAccount() {
     let destination: "/cursos" | "/compras" = "/compras";
