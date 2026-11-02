@@ -27,6 +27,14 @@ export function currentSubmission(submissions: Submission[], programId: string, 
   return submissions.filter(s => s.programId === programId && s.activityId === activityId)
     .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)).at(-1);
 }
+/** True while ANY delivery of this activity has a requested, unfinished human review — not only the newest one. */
+export function activityReviewPending(submissions: Pick<Submission, "programId" | "activityId" | "humanReviews" | "reviewedAt">[], programId: string, activityId: string) {
+  return submissions.some(s => s.programId === programId && s.activityId === activityId && (s.humanReviews?.length ?? 0) > 0 && !s.reviewedAt);
+}
+/** Answer key, reference models and feedback video: open after a delivery, closed while any review of the activity is pending. */
+export function answerKeyOpen(submissions: Pick<Submission, "programId" | "activityId" | "humanReviews" | "reviewedAt">[], programId: string, activityId: string) {
+  return submissions.some(s => s.programId === programId && s.activityId === activityId) && !activityReviewPending(submissions, programId, activityId);
+}
 export function canOpenActivity(program: Program, submissions: Submission[], index: number) {
   const previous = program.activities[index - 1];
   return index === 0 || Boolean(previous && currentSubmission(submissions, program.id, previous.id));
