@@ -468,6 +468,7 @@ export type Database = {
         Row: {
           activity_id: string
           ai_use: string
+          attempt: number | null
           file_name: string
           file_path: string
           file_size: number
@@ -484,6 +485,7 @@ export type Database = {
         Insert: {
           activity_id: string
           ai_use?: string
+          attempt?: number | null
           file_name: string
           file_path: string
           file_size: number
@@ -500,6 +502,7 @@ export type Database = {
         Update: {
           activity_id?: string
           ai_use?: string
+          attempt?: number | null
           file_name?: string
           file_path?: string
           file_size?: number

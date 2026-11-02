@@ -34,3 +34,4 @@
 - The homepage body is a scoped static port of the approved Site v10 reference (HTML in src/lib/home-v10.ts, CSS scoped under .v10 in src/styles/home-v10.css) inside the shared SiteShell, so the platform header and footer stay unchanged.
 - Homepage course comparisons use shared CSS subgrid rows so matching sections remain aligned without clipping variable-length text; the theoretical course preview uses the supplied complete image through a Lovable asset pointer to preserve its arbitration cover, isolated from learner records.
 - The /sobre page body is a scoped static port of the Site v10 "Quem somos" reference (HTML in src/lib/sobre-v10.ts, reusing .v10 CSS) with the reference portraits as Lovable assets.
+- The per-activity delivery limit is enforced by a database trigger that serializes inserts with a transaction advisory lock and assigns the attempt number; server and UI only mirror it, so direct or concurrent requests cannot exceed it.

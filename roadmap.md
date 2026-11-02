@@ -30,3 +30,6 @@
 - [ ] Liberar pagamentos reais — aguardando validação em teste e autorização explícita; nenhum teste concede matrícula paga.
 - [ ] Configurar notificações Mercado Pago — aguardando publicação do endereço e chave de assinatura.
 - [ ] Ativar confirmação por Resend — aguardando credenciais e autorização de Diego.
+# Marco 2 (7 etapas, uma por vez com aprovação)
+- [x] Etapa 1 — Limite de 2 entregas por atividade.
+- [ ] Etapas 2–7 — aguardando aprovação da Etapa 1.

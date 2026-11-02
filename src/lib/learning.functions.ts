@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { deliverySchema, gradingSchema } from "./learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
 import type { Program, Submission } from "./store";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -35,15 +35,27 @@ export const deliverActivity = createServerFn({ method: "POST" }).middleware([re
     if (!data.filePath.startsWith(`${context.userId}/${data.programId}/`)) throw new Error("Arquivo inválido.");
     const parts = data.filePath.split("/"); const file = parts.pop();
     if (!file) throw new Error("Arquivo inválido.");
-    const { data: files, error: listError } = await context.supabase.storage.from("learner-submissions").list(parts.join("/"), { search: file });
+    const storage = context.supabase.storage.from("learner-submissions");
+    const discard = async () => { await storage.remove([data.filePath]); };
+    // Friendly early answer; the database trigger is the authoritative, concurrency-safe check.
+    const { count, error: countError } = await context.supabase.from("learning_submissions")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", context.userId).eq("program_id", data.programId).eq("activity_id", data.activityId);
+    if (countError) throw new Error("Não foi possível verificar suas tentativas. Tente novamente.");
+    if ((count ?? 0) >= MAX_ATTEMPTS) { await discard(); throw new Error(ATTEMPT_LIMIT_MESSAGE); }
+    const { data: files, error: listError } = await storage.list(parts.join("/"), { search: file });
     const stored = files?.find(f => f.name === file);
-    if (listError || !stored || Number(stored.metadata?.size) !== data.fileSize) throw new Error("O arquivo não foi recebido. Envie novamente.");
+    if (listError || !stored || Number(stored.metadata?.size) !== data.fileSize) { await discard(); throw new Error("O arquivo não foi recebido. Envie novamente."); }
     const { data: row, error } = await context.supabase.from("learning_submissions").insert({
       user_id: context.userId, program_id: data.programId, activity_id: data.activityId, file_name: data.fileName,
       file_size: data.fileSize, file_path: data.filePath, ai_use: data.aiUse,
     }).select("*").single();
-    if (error || !row) throw new Error(error?.message || "Não foi possível salvar a entrega.");
-    return submission(row);
+    if (error || !row) {
+      await discard();
+      if (isAttemptLimitError(error)) throw new Error(ATTEMPT_LIMIT_MESSAGE);
+      throw new Error(error?.message || "Não foi possível salvar a entrega.");
+    }
+    return { ...submission(row), attempt: row.attempt ?? (count ?? 0) + 1, maxAttempts: MAX_ATTEMPTS };
   });
 export const addLearningNote = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(x => z.object({ programId: z.string(), activityId: z.string(), text: z.string().trim().min(1).max(10000) }).parse(x))
