@@ -165,7 +165,7 @@ function Auth() {
                   ? "Enviar link"
                    : "Entrar"}<ArrowRight size={18} aria-hidden="true" />
           </Button>
-          {message && <p role="status" className="muted auth-message">{message}</p>}
+          {message && <p role="alert" aria-live="assertive" className="auth-message">{message}</p>}
         </form>
         <Link to="/cursos" className="auth-clean-back">
           <ArrowLeft size={16} aria-hidden="true" />
