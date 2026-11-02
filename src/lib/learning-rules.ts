@@ -12,6 +12,17 @@ export const gradingSchema = z.object({
   grades: z.array(z.object({ criterion: z.string().min(1), score: z.number().min(0).max(10), comment: z.string().max(5000) })).min(1),
   teacherComment: z.string().max(10000),
 });
+/** Max registered deliveries per student + program + activity (enforced by the database trigger). */
+export const MAX_ATTEMPTS = 2;
+export const ATTEMPT_LIMIT_MESSAGE = "Limite de 2 tentativas atingido para esta atividade.";
+export function attemptStatus(submissions: Pick<Submission, "programId" | "activityId">[], programId: string, activityId: string) {
+  const used = submissions.filter(s => s.programId === programId && s.activityId === activityId).length;
+  return { used, max: MAX_ATTEMPTS, left: Math.max(0, MAX_ATTEMPTS - used), reached: used >= MAX_ATTEMPTS };
+}
+/** Recognizes the database's attempt-limit rejection (hint first, message as fallback). */
+export function isAttemptLimitError(error: { hint?: string | null; message?: string | null } | null | undefined) {
+  return Boolean(error && (error.hint === "learning_attempt_limit" || /limite de 2 tentativas/i.test(error.message ?? "")));
+}
 export function currentSubmission(submissions: Submission[], programId: string, activityId: string) {
   return submissions.filter(s => s.programId === programId && s.activityId === activityId)
     .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)).at(-1);
