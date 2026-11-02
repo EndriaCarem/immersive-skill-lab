@@ -197,7 +197,6 @@ function DemandPage() {
         <small>{file ? `${(file.size / 1024).toFixed(0)} KB · clique para trocar` : activity.uploadHint}</small>
       </div>
       <input ref={input} type="file" accept=".doc,.docx,.pdf" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-      </>)}
       <h4>Uso de inteligência artificial</h4>
       <p className="muted sm">Declare como usou. A avaliação não pune o uso — classifica cada emprego.</p>
       <div className="chips">
@@ -207,6 +206,7 @@ function DemandPage() {
           </button>
         ))}
       </div>
+      </>)}
       {error && <p role="alert" className="attempt-error">{error}</p>}
       {confirmed !== null ? (
         <div className="attempt-ok" role="status">
