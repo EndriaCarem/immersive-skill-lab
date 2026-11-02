@@ -5,7 +5,8 @@ import { Steps } from "@/components/AppShell";
 import { downloadDoc } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { deliverActivity } from "@/lib/learning.functions";
-import { deliverySchema } from "@/lib/learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, attemptStatus, deliverySchema } from "@/lib/learning-rules";
+import { learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -44,10 +45,22 @@ function DemandPage() {
   const deliver = useServerFn(deliverActivity);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [confirmed, setConfirmed] = useState<number | null>(null);
+  const fileUrl = useServerFn(learningFileUrl);
   if (!program || !activity) return <NotFoundBlock />;
+  const mine = (learning.data?.submissions ?? []).filter(s => s.programId === program.id && s.activityId === activity.id)
+    .sort((a, b) => a.submittedAt.localeCompare(b.submittedAt));
+  const attempts = attemptStatus(mine, program.id, activity.id);
+  const known = Boolean(learning.data);
+  const locked = attempts.reached;
+  const openFile = async (id: string) => {
+    try { window.open(await fileUrl({ data: { id } }), "_blank", "noopener"); }
+    catch (e) { setError(e instanceof Error ? e.message : "Não foi possível abrir o arquivo."); }
+  };
 
   const send = async () => {
-    if (!file || !learning.user || sending) return;
+    if (!file || !learning.user || sending || !known) return;
+    if (locked) { setError(ATTEMPT_LIMIT_MESSAGE); return; }
     setSending(true); setError("");
     const path = `${learning.user.id}/${program.id}/${crypto.randomUUID()}.${file.name.split(".").pop()?.toLowerCase()}`;
     let uploaded = false;
@@ -56,8 +69,12 @@ function DemandPage() {
       const result = await supabase.storage.from("learner-submissions").upload(path, file, { upsert: false });
       if (result.error) throw new Error("Não foi possível enviar o arquivo.");
       uploaded = true;
-      await deliver({ data: payload });
+      const saved = await deliver({ data: payload });
+      uploaded = false;
       await learning.refresh();
+      setConfirmed(saved.attempt);
+      const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      await new Promise(r => setTimeout(r, calm ? 300 : 1100));
       await nav({ to: "/estagio/$slug/$n/devolutiva", params: { slug, n } });
     } catch (e) {
       if (uploaded) await supabase.storage.from("learner-submissions").remove([path]);
@@ -142,6 +159,29 @@ function DemandPage() {
         {activity.demandHtml ? <Rich html={activity.demandHtml} /> : <p>{activity.demandBody}</p>}
       </div>
       <h4>Sua entrega</h4>
+      <div className={`attempts${locked ? " is-full" : ""}`} aria-live="polite">
+        <span className="pips" aria-hidden="true">
+          {Array.from({ length: attempts.max }, (_, i) => <i key={i} className={i < attempts.used ? "on" : ""} />)}
+        </span>
+        <span>
+          {!known ? "Verificando suas tentativas…"
+            : attempts.used === 0 ? <>Você tem <b>2 tentativas</b> disponíveis.</>
+            : attempts.used === 1 ? <><b>1 de 2</b> tentativas utilizadas. Resta uma última oportunidade de envio.</>
+            : <><b>Limite de 2 tentativas atingido.</b> Suas entregas continuam disponíveis abaixo.</>}
+        </span>
+      </div>
+      {mine.length > 0 && (
+        <div className="files attempt-files">
+          {mine.map((s, i) => (
+            <div className="file" key={s.id}>
+              <span className="ic">{i + 1}ª</span>
+              <span className="attempt-name">{s.fileName}<small>{new Date(s.submittedAt).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</small></span>
+              <button className="dl" onClick={() => openFile(s.id)}>Abrir</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {!locked && (<>
       <div
         className="drop"
         role="button"
@@ -157,6 +197,7 @@ function DemandPage() {
         <small>{file ? `${(file.size / 1024).toFixed(0)} KB · clique para trocar` : activity.uploadHint}</small>
       </div>
       <input ref={input} type="file" accept=".doc,.docx,.pdf" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      </>)}
       <h4>Uso de inteligência artificial</h4>
       <p className="muted sm">Declare como usou. A avaliação não pune o uso — classifica cada emprego.</p>
       <div className="chips">
@@ -166,10 +207,17 @@ function DemandPage() {
           </button>
         ))}
       </div>
-      {error && <p role="alert">{error}</p>}
-      <Button className="btn" onClick={send} disabled={!file || sending}>
-        {sending ? "Enviando…" : "Enviar para correção"}
-      </Button>
+      {error && <p role="alert" className="attempt-error">{error}</p>}
+      {confirmed !== null ? (
+        <div className="attempt-ok" role="status">
+          <span className="seal" aria-hidden="true" />
+          Entrega registrada · tentativa {confirmed} de {attempts.max}
+        </div>
+      ) : (
+        <Button className="btn" onClick={send} disabled={!file || sending || locked || !known} aria-busy={sending}>
+          {locked ? "Limite de tentativas atingido" : sending ? "Registrando entrega…" : attempts.used === 1 ? "Enviar última tentativa" : "Enviar para correção"}
+        </Button>
+      )}
       <div className="lockline">O gabarito é liberado somente depois que você enviar.</div>
     </ActivityLayout>
   );
