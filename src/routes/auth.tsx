@@ -130,7 +130,7 @@ function Auth() {
         <div className="auth-clean-content">
           <h1>{mode === "signup" ? "Crie sua conta" : mode === "reset" ? "Recuperar senha" : "Bem-vindo de volta!"}</h1>
           <p className="auth-intro">{mode === "signup" ? "Seu próximo capítulo começa aqui." : mode === "reset" ? "Receba no seu e-mail um link para redefinir sua senha." : "Entre para continuar sua jornada."}</p>
-        <form className="auth-clean-form" onSubmit={submit}>
+        <form className="auth-clean-form" method="post" noValidate onSubmit={submit}>
           {mode === "signup" && (
             <label className="field">
               Nome completo
@@ -152,11 +152,11 @@ function Auth() {
                 minLength={8}
                 maxLength={128}
                 autoComplete={mode === "signup" ? "new-password" : "current-password"}
-              /><Button type="button" variant="ghost" size="icon" className="auth-password-toggle" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} title={showPassword ? "Ocultar senha" : "Mostrar senha"} onClick={() => setShowPassword((value) => !value)}>{showPassword ? <EyeOff /> : <Eye />}</Button></span>
+              /><Button type="button" variant="ghost" size="icon" className="auth-password-toggle" disabled={!hydrated} aria-pressed={showPassword} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} title={showPassword ? "Ocultar senha" : "Mostrar senha"} onMouseDown={(e) => e.preventDefault()} onClick={(e) => { e.preventDefault(); setShowPassword((value) => !value); }}>{showPassword ? <EyeOff /> : <Eye />}</Button></span>
             </label>
           )}
           {mode === "login" && <div className="auth-clean-recovery"><Button type="button" variant="link" onClick={() => changeMode("reset")}>Esqueci minha senha</Button></div>}
-          <Button className="btn auth-clean-submit" disabled={busy}>
+          <Button type="submit" className="btn auth-clean-submit" disabled={busy || !hydrated}>
             {busy
               ? "Aguarde…"
               : mode === "signup"
