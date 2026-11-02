@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
 import type { Program, Submission } from "./store";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -23,10 +23,9 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
   for (const r of [programs, subs, notes, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
-    const latest = (subs.data ?? []).filter(s => s.program_id === p.id && s.activity_id === a.id).at(-1);
-    const pending = latest && Array.isArray(latest.human_reviews) && latest.human_reviews.length > 0 && !latest.reviewed_at;
+    const open = answerKeyOpen((subs.data ?? []).map(s => ({ programId: s.program_id, activityId: s.activity_id, humanReviews: Array.isArray(s.human_reviews) ? (s.human_reviews as string[]) : [], reviewedAt: s.reviewed_at ?? undefined })), p.id, a.id);
     const answer = answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content;
-    return latest && !pending && answer ? { ...a, ...(answer as unknown as Partial<typeof a>) } : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
+    return open && answer ? { ...a, ...(answer as unknown as Partial<typeof a>) } : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
     submissions: (subs.data ?? []).map(s => submission(s)), notes: notes.data ?? [], enrollments: active };
 });

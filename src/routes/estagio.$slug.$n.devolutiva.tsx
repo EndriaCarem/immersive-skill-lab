@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { fmt, reviewPending, reviewQuota, subScore } from "@/lib/store";
+import { fmt, reviewQuota, subScore } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
-import { currentSubmission } from "@/lib/learning-rules";
+import { activityReviewPending, currentSubmission } from "@/lib/learning-rules";
 import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -167,7 +167,7 @@ function FeedbackPage() {
         )}
       </div>
       <div style={{ marginTop: 26 }}>
-        {reviewPending(sub) ? (
+        {activityReviewPending(submissions, program.id, activity.id) ? (
           <div className="lockline">Correção humana em andamento. O gabarito é liberado quando o sênior concluir.</div>
         ) : (
           <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn">

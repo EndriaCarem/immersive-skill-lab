@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc, reviewPending } from "@/lib/store";
+import { downloadDoc } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
-import { currentSubmission } from "@/lib/learning-rules";
+import { activityReviewPending, currentSubmission } from "@/lib/learning-rules";
 import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
@@ -26,8 +26,9 @@ function AnswerPage() {
   const { program, activity, idx } = useActivity(slug, n);
   const learning = useLearning();
   const sub = program && activity ? currentSubmission(learning.data?.submissions ?? [], program.id, activity.id) : undefined;
+  const pending = program && activity ? activityReviewPending(learning.data?.submissions ?? [], program.id, activity.id) : false;
   if (!program || !activity) return <NotFoundBlock />;
-  if (!sub || reviewPending(sub))
+  if (!sub || pending)
     return (
       <ActivityLayout program={program} activity={activity} idx={idx}>
         <h1>Gabarito bloqueado</h1>
