@@ -263,6 +263,8 @@ ul.clean li{margin-bottom:7px}
 .score-top .of{font-size:15px;color:#DCCFE2;margin-left:3px;font-weight:500}
 .score-top .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--lavender)}
 .score-top .side{margin-left:auto;text-align:right;font-size:12.5px;color:#DCCFE2;max-width:270px;line-height:1.5}
+.score-top .wait{display:block;margin-top:6px;font-family:var(--font-brand);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.callout p.review-quota{display:flex;flex-wrap:wrap;gap:6px 22px;margin:10px 0 12px;font-size:13px}
 
 .rubric{width:100%;border-collapse:collapse;margin-bottom:6px}
 .rubric th{
