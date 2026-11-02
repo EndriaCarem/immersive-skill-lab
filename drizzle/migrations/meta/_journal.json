@@ -71,6 +71,13 @@
       "when": 1793208238622,
       "tag": "0009_align_courses_with_teacher_letter",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793654958986,
+      "tag": "0010_limit_two_submissions_per_activity",
+      "breakpoints": true
     }
   ]
 }
