@@ -78,14 +78,23 @@ function Auth() {
         await enterAccount();
       }
     } catch (error) {
-      if (authErrorKind(error) === "weak_password") {
+      const kind = error instanceof z.ZodError ? "form" : authErrorKind(error);
+      if (kind === "form") {
+        setMessage(mode === "reset" ? "Digite um e-mail válido." : "Confira o e-mail digitado. A senha precisa ter pelo menos 8 caracteres.");
+      } else if (kind === "weak_password") {
         setMessage("Essa senha é muito comum ou fácil de adivinhar. Escolha uma senha única e mais longa, evitando nomes, datas e sequências como 12345678.");
-      } else if (authErrorKind(error) === "invalid_email") {
+      } else if (kind === "invalid_email") {
         setMessage("Use um e-mail válido que possa receber a confirmação do cadastro.");
+      } else if (kind === "invalid_credentials") {
+        setMessage("E-mail ou senha incorretos. Confira os dados ou clique em “Esqueci minha senha” para criar uma nova.");
+      } else if (kind === "email_not_confirmed") {
+        setMessage("Seu cadastro ainda não foi confirmado. Abra o link que enviamos para o seu e-mail e tente de novo.");
+      } else if (kind === "rate_limited") {
+        setMessage("Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.");
       } else
         setMessage(
           mode === "login"
-            ? "Não foi possível entrar. Confira e-mail, senha e confirmação do cadastro."
+            ? "Não foi possível entrar agora. Verifique sua internet e tente novamente."
             : "Não foi possível concluir. Tente novamente em alguns instantes.",
         );
     } finally {
