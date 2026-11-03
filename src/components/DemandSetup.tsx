@@ -89,14 +89,14 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
       let video_poster_path = dropPoster ? null : row?.video_poster_path ?? null;
       if (videoFile) {
         const p = mediaPath(target.programId, target.activityId, videoFile.name);
-        const up = await supabase.storage.from(BUCKET).upload(p, videoFile, { contentType: videoFile.type || undefined, upsert: false });
+        const up = await supabase.storage.from(BUCKET).upload(p, videoFile, { contentType: videoFile.type || "application/octet-stream", upsert: false });
         if (up.error) throw new Error("Não foi possível enviar o vídeo.");
         uploaded.push(p);
         video_path = p;
       }
       if (posterFile) {
         const p = mediaPath(target.programId, target.activityId, posterFile.name);
-        const up = await supabase.storage.from(BUCKET).upload(p, posterFile, { contentType: posterFile.type || undefined, upsert: false });
+        const up = await supabase.storage.from(BUCKET).upload(p, posterFile, { contentType: posterFile.type || "application/octet-stream", upsert: false });
         if (up.error) throw new Error("Não foi possível enviar a capa.");
         uploaded.push(p);
         video_poster_path = p;
@@ -229,7 +229,7 @@ function MaterialsEditor({ target }: { target: DemandTarget }) {
     if (err) { toast.error(err); return; }
     setBusy(true);
     const p = mediaPath(target.programId, target.activityId, f.name);
-    const up = await supabase.storage.from(BUCKET).upload(p, f, { contentType: f.type || undefined, upsert: false });
+    const up = await supabase.storage.from(BUCKET).upload(p, f, { contentType: f.type || "application/octet-stream", upsert: false });
     if (up.error) { setBusy(false); toast.error("Não foi possível enviar o material."); return; }
     const { error } = await supabase.from("learning_activity_materials").insert({
       program_id: target.programId, activity_id: target.activityId, title: f.name.replace(/\.[^.]+$/, "").slice(0, 200) || f.name,

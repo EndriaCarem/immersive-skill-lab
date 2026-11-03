@@ -67,7 +67,7 @@ export function ActivityVideo({
   label: string;
   emptyTitle: string;
   emptyText: string;
-  video?: DemandVideo;
+  video?: DemandVideo | undefined;
   showNeutral?: boolean;
 }) {
   const embed = url ? embedUrl(url) : null;
