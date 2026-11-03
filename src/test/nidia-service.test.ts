@@ -42,7 +42,7 @@ describe("Nidia service", () => {
   beforeEach(() => generateResponse.mockReset());
 
   it("marks the question failed (not consumed) when the AI service errors", async () => {
-    generateResponse.mockRejectedValue(new Error("network down"));
+    generateResponse.mockImplementation(async () => { throw new Error("network down"); });
     const updates: Update[] = [];
     const out = await answerQuestion(fakeDb(updates) as never, "q1");
     expect(out).toEqual({ ok: false, code: "service" });
