@@ -1967,3 +1967,34 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
   .lib-item.is-busy:after{transform:scaleX(.5)}
   .lib-item.is-done:after{transition:none}
 }
+
+/* ─── Nidia (Etapa 4): real assistant inside the practice room ─── */
+.nidia-hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.nidia-quota{font-variant-numeric:tabular-nums;letter-spacing:.04em;color:var(--plum-mid);display:inline-flex;overflow:hidden;line-height:1.2}
+.nidia-quota-n{display:inline-block;color:var(--plum);animation:nidia-tick .38s cubic-bezier(.2,.7,.2,1) both}
+@keyframes nidia-tick{from{transform:translateY(-70%);opacity:0}to{transform:none;opacity:1}}
+.nidia-log{max-height:min(52vh,420px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.nidia-pair{display:grid;gap:8px;margin-bottom:10px}
+.nidia-pair:last-child{margin-bottom:0}
+.nidia-assist .m{margin-bottom:0;white-space:pre-line;overflow-wrap:anywhere}
+.nidia-sent{animation:nidia-file .26s ease-out both}
+@keyframes nidia-file{from{transform:translateY(6px) scale(.985);opacity:.35}to{transform:none;opacity:1}}
+.nidia-fresh{animation:nidia-ink .6s ease-out both}
+@keyframes nidia-ink{from{filter:blur(3px);opacity:0;transform:translateY(2px)}to{filter:none;opacity:1;transform:none}}
+.nidia-wait{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--plum-mid);font-style:italic;margin-right:8%;padding:6px 2px}
+.nidia-wait-mark{width:7px;height:7px;border:1.5px solid var(--plum-mid);border-radius:2px;transform:rotate(45deg);flex:none}
+.nidia-empty{font-size:13px;line-height:1.55;color:var(--plum-mid);margin:0}
+.nidia-status{font-size:12.5px;color:var(--plum);margin:10px 0 0;font-weight:600}
+.nidia-error{font-size:12.5px;color:#8A2B2B;margin:10px 0 0;line-height:1.45}
+.nidia-form{margin-top:10px;display:grid;gap:6px}
+.nidia-input{width:100%;resize:vertical;min-height:58px;font:inherit;font-size:13.5px;line-height:1.45;transition:border-color .2s,box-shadow .2s}
+.nidia-input:focus-visible{outline:none;border-color:var(--plum);box-shadow:inset 3px 0 0 var(--plum)}
+.nidia-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nidia-count{font-size:11.5px;color:var(--plum-mid);font-variant-numeric:tabular-nums}
+.nidia-send{border:1px solid var(--plum);background:var(--plum);color:#fff;border-radius:999px;padding:7px 16px;font-size:12.5px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:background .2s,color .2s}
+.nidia-send:hover:not(:disabled){background:transparent;color:var(--plum)}
+.nidia-send:focus-visible{outline:2px solid var(--plum-mid);outline-offset:2px}
+.nidia-send:disabled{opacity:.5;cursor:not-allowed}
+html.dark .nidia-error{color:#E6A3A3}
+html.dark .nidia-send:hover:not(:disabled){color:var(--ink)}
+@media (prefers-reduced-motion: reduce){.nidia-quota-n,.nidia-sent,.nidia-fresh{animation:none}.nidia-input,.nidia-send{transition:none}}
