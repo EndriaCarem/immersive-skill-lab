@@ -1803,7 +1803,7 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
 .mail .from{color:var(--slate)}
 .mail .from b{color:var(--ink)}
 .mail p,.mail .rich,.mail .rich :is(p,li,strong){color:var(--ink);opacity:1}
-.upload-guidance{margin:-4px 0 14px}
+.upload-guidance{margin:8px 0 16px}
 
 .fac-video{margin:0 0 12px}
 .fac-video .video{margin-bottom:10px;overflow:hidden;width:100%;display:block}
