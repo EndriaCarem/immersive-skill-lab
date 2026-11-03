@@ -4,6 +4,27 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
 import type { Program, Submission } from "./store";
 import type { Database } from "@/integrations/supabase/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { resolveActivityStaff, visiblePeople } from "./professionals";
+
+/** Faculty for the learner's courses. Failures leave staff empty instead of blocking progress. */
+async function loadStaff(db: SupabaseClient<Database>, programIds: string[]) {
+  const empty = { links: [] as Database["public"]["Tables"]["learning_course_professionals"]["Row"][], rows: [] as Database["public"]["Tables"]["learning_activity_staff"]["Row"][], people: visiblePeople([], new Map()) };
+  if (!programIds.length) return empty;
+  const [links, rows, people] = await Promise.all([
+    db.from("learning_course_professionals").select("*").in("program_id", programIds),
+    db.from("learning_activity_staff").select("*").in("program_id", programIds),
+    db.from("learning_professionals").select("id, full_name, title, specialty, bio, photo_path, active, display_authorized").eq("active", true).eq("display_authorized", true),
+  ]);
+  if (links.error || rows.error || people.error) return empty;
+  const paths = (people.data ?? []).map(p => p.photo_path).filter((p): p is string => Boolean(p));
+  const urls = new Map<string, string>();
+  if (paths.length) {
+    const signed = await db.storage.from("professional-photos").createSignedUrls(paths, 3600);
+    for (const s of signed.data ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
+  }
+  return { links: links.data ?? [], rows: rows.data ?? [], people: visiblePeople(people.data ?? [], urls) };
+}
 
 type Row = Database["public"]["Tables"]["learning_submissions"]["Row"];
 function submission(row: Row, name?: string): Submission & { userId: string; filePath: string } {
@@ -22,10 +43,12 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
   ]);
   for (const r of [programs, subs, notes, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
+  const staff = await loadStaff(context.supabase, active.map(e => e.product_id));
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
     const open = answerKeyOpen((subs.data ?? []).map(s => ({ programId: s.program_id, activityId: s.activity_id, humanReviews: Array.isArray(s.human_reviews) ? (s.human_reviews as string[]) : [], reviewedAt: s.reviewed_at ?? undefined })), p.id, a.id);
     const answer = answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content;
-    return open && answer ? { ...a, ...(answer as unknown as Partial<typeof a>) } : { ...a, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
+    const withStaff = { ...a, staff: resolveActivityStaff(staff.links.filter(l => l.program_id === p.id), staff.rows.find(r => r.program_id === p.id && r.activity_id === a.id), staff.people) };
+    return open && answer ? { ...withStaff, ...(answer as unknown as Partial<typeof a>) } : { ...withStaff, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
     submissions: (subs.data ?? []).map(s => submission(s)), notes: notes.data ?? [], enrollments: active };
 });
