@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { fmt, reviewQuota, subScore } from "@/lib/store";
+import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
-import { activityReviewPending, currentSubmission } from "@/lib/learning-rules";
-import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
+import { activityReviewPending } from "@/lib/learning-rules";
+import { isTerminal, issueMessage, type AiStatus } from "@/lib/ai-grading-rules";
+import { requestLearningReview, learningFileUrl, runMyEvaluation } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Rich } from "@/components/Rich";
@@ -26,6 +27,10 @@ export const Route = createFileRoute("/estagio/$slug/$n/devolutiva")({
 });
 
 const pipClass = (n: number) => (n >= 8 ? "ok" : n >= 6 ? "mid" : "low");
+const pip = (n: number) => <span className={`pip ${pipClass(n)}`}>{fmt(n).replace(",0", "")}</span>;
+const POLL = [4000, 6000, 9000, 14000, 20000, 30000];
+const MAX_POLLS = 40;
+const working = (s?: AiStatus) => s === "pending" || s === "extracting" || s === "evaluating";
 
 function FeedbackPage() {
   const { slug, n } = Route.useParams();
@@ -33,10 +38,34 @@ function FeedbackPage() {
   const learning = useLearning();
   const request = useServerFn(requestLearningReview);
   const fileUrl = useServerFn(learningFileUrl);
+  const kick = useServerFn(runMyEvaluation);
   const [requesting, setRequesting] = useState(false);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const kicked = useRef(new Set<string>());
+  const polls = useRef(0);
   const submissions = learning.data?.submissions ?? [];
-  const sub = program && activity ? currentSubmission(submissions, program.id, activity.id) : undefined;
+  const mine = program && activity ? submissions.filter((s) => s.programId === program.id && s.activityId === activity.id).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)) : [];
+  const sub = mine.find((s) => s.id === picked) ?? mine.at(-1);
+  const status = sub?.ai?.status;
   const quota = reviewQuota({ submissions }, program?.id ?? "", learning.user?.id ?? "", activity?.id ?? "");
+  const { refresh } = learning;
+
+  // Start grading of a queued delivery immediately; the scheduled job covers the case where this page is closed.
+  useEffect(() => {
+    if (!sub || !working(status) || kicked.current.has(sub.id)) return;
+    kicked.current.add(sub.id);
+    kick({ data: { submissionId: sub.id } }).catch(() => undefined).finally(() => { void refresh(); });
+  }, [sub?.id, status, kick, refresh]);
+
+  // Light polling with backoff only while the evaluation is still moving.
+  useEffect(() => {
+    if (!working(status)) { polls.current = 0; return; }
+    if (polls.current >= MAX_POLLS) return;
+    const t = window.setTimeout(() => { polls.current += 1; void refresh(); }, POLL[Math.min(polls.current, POLL.length - 1)]);
+    return () => window.clearTimeout(t);
+  }, [status, sub?.ai, refresh]);
+
   if (!program || !activity) return <NotFoundBlock />;
   if (!sub)
     return (
@@ -48,7 +77,9 @@ function FeedbackPage() {
         </Link>
       </ActivityLayout>
     );
-  const score = subScore(sub);
+  const ai = sub.ai;
+  const done = ai?.status === "completed" && ai.overallScore !== undefined && ai.criteria;
+  const humanScore = subScore(sub);
   return (
     <ActivityLayout program={program} activity={activity} idx={idx}>
       <Steps current={3} done={2} />
@@ -56,28 +87,44 @@ function FeedbackPage() {
         Devolutiva · atividade {idx + 1} · {activity.shortTitle.toLowerCase()}
       </div>
       <h1>Ficha de avaliação</h1>
+      {mine.length > 1 && (
+        <div className="ai-attempts" role="tablist" aria-label="Entregas desta atividade">
+          {mine.map((s, i) => (
+            <button key={s.id} role="tab" aria-selected={s.id === sub.id} className={s.id === sub.id ? "on" : ""} onClick={() => { setPicked(s.id); setOpen(null); }}>
+              {i + 1}ª entrega <span>{new Date(s.submittedAt).toLocaleDateString("pt-BR")}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <Button className="btn ghost" onClick={async () => {
         try { window.location.assign(await fileUrl({ data: { id: sub.id } })); }
         catch { toast.error("Não foi possível abrir sua entrega."); }
-      }}>Baixar minha entrega</Button>
+      }}>Baixar esta entrega</Button>
       <div className="score-top">
         <div>
           <div className="lab">Nota da atividade</div>
-          {score == null ? (
-            <span className="wait">Aguardando correção</span>
-          ) : (
-            <>
-              <span className="big">{fmt(score)}</span>
+          {done ? (
+            <span className="ai-settle" key={ai.id}>
+              <span className="big">{fmt(ai.overallScore!)}</span>
               <span className="of">/10</span>
-            </>
+            </span>
+          ) : (
+            <span className="wait">{working(ai?.status) ? "Em correção" : ai && isTerminal(ai.status) ? "Em análise pela equipe" : "Aguardando correção"}</span>
           )}
         </div>
         <div className="side">
-          {score == null
-            ? `Entrega ${sub.fileName} recebida. A correção por critério é feita contra a rubrica do programa e aparece aqui assim que concluída.`
-            : "Avaliada por critério contra a rubrica do programa."}
+          {done
+            ? "Correção automatizada com IA, critério a critério, pela rubrica docente da atividade."
+            : working(ai?.status)
+              ? `Entrega ${sub.fileName} recebida. A correção pela rubrica está em andamento.`
+              : ai && isTerminal(ai.status)
+                ? issueMessage(ai.issueCode)
+                : `Entrega ${sub.fileName} recebida. A correção por critério aparece aqui assim que concluída.`}
         </div>
       </div>
+
+      {working(ai?.status) && <AiReading status={ai!.status} />}
+
       <table className="rubric">
         <thead>
           <tr>
@@ -87,24 +134,54 @@ function FeedbackPage() {
           </tr>
         </thead>
         <tbody>
-          {activity.rubric.map((r) => {
-            const g = sub.grades?.find((x) => x.criterion === r.criterion);
-            return (
-              <tr key={r.criterion} className={g && g.score < 6 ? "flag" : ""}>
-                <td className="crit">{r.criterion}</td>
-                <td className="sc">{g ? <span className={`pip ${pipClass(g.score)}`}>{fmt(g.score).replace(",0", "")}</span> : <span className="muted">—</span>}</td>
-                <td className="cmt">{g?.comment || <span className="muted">Aguardando correção.</span>}</td>
-              </tr>
-            );
-          })}
+          {done
+            ? ai.criteria!.map((c) => {
+                const expanded = open === c.criterion;
+                const more = c.strengths.length > 0 || c.improvements.length > 0;
+                return (
+                  <tr key={c.criterion} className={c.score < 6 ? "flag" : ""}>
+                    <td className="crit">{c.criterion}</td>
+                    <td className="sc">{pip(c.score)}</td>
+                    <td className="cmt">
+                      {c.comment}
+                      {more && (
+                        <>
+                          <button className="ai-more" aria-expanded={expanded} onClick={() => setOpen(expanded ? null : c.criterion)}>
+                            {expanded ? "Recolher detalhes" : "Pontos fortes e a desenvolver"}
+                          </button>
+                          {expanded && (
+                            <div className="ai-detail">
+                              {c.strengths.length > 0 && <div><b>Pontos fortes</b><ul>{c.strengths.map((s) => <li key={s}>{s}</li>)}</ul></div>}
+                              {c.improvements.length > 0 && <div><b>A desenvolver</b><ul>{c.improvements.map((s) => <li key={s}>{s}</li>)}</ul></div>}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            : activity.rubric.map((r) => (
+                <tr key={r.criterion}>
+                  <td className="crit">{r.criterion}</td>
+                  <td className="sc"><span className="muted">—</span></td>
+                  <td className="cmt"><span className="muted">{working(ai?.status) ? "Em correção." : "Aguardando correção."}</span></td>
+                </tr>
+              ))}
         </tbody>
       </table>
-      {sub.teacherComment && (
+      {done && ai.overallFeedback && (
         <div className="callout">
-          <div className="k">Comentário do corretor</div>
-          <p>{sub.teacherComment}</p>
+          <div className="k">Síntese da correção</div>
+          <p>{ai.overallFeedback}</p>
         </div>
       )}
+      {done && (
+        <p className="ai-provenance">
+          Avaliação gerada por correção automatizada com IA em {new Date(ai.completedAt ?? sub.submittedAt).toLocaleString("pt-BR")}. Ela não substitui a revisão humana, que pode ser solicitada abaixo.
+        </p>
+      )}
+      {sub.grades && <HumanReview sub={sub} score={humanScore} />}
       <div className="callout">
         <div className="k">Orientação imediata</div>
         {activity.feedbackHtml ? <Rich html={activity.feedbackHtml} /> : <p>{activity.feedbackGuidance}</p>}
@@ -135,6 +212,7 @@ function FeedbackPage() {
             </span>
           </div>
         ))}
+        {done && ai.ethicsNote && <p className="ai-ethics"><b>Orientação da correção:</b> {ai.ethicsNote} <span>Esta orientação não altera a nota.</span></p>}
       </div>
       <div className="callout">
         <div className="k">Correção humana</div>
@@ -176,5 +254,55 @@ function FeedbackPage() {
         )}
       </div>
     </ActivityLayout>
+  );
+}
+
+const STAGES: { key: AiStatus; label: string }[] = [
+  { key: "pending", label: "Entrega recebida" },
+  { key: "extracting", label: "Leitura do documento" },
+  { key: "evaluating", label: "Avaliação pela rubrica" },
+];
+/** Real queue stage (from the database), shown as a page being read line by line. */
+function AiReading({ status }: { status: AiStatus }) {
+  const at = STAGES.findIndex((s) => s.key === status);
+  return (
+    <div className="ai-reading" role="status" aria-live="polite">
+      <div className="ai-sheet" aria-hidden="true">
+        {Array.from({ length: 7 }, (_, i) => <i key={i} style={{ animationDelay: `${i * 0.55}s` }} />)}
+      </div>
+      <div>
+        <b>{status === "pending" ? "Na fila de correção" : status === "extracting" ? "Lendo o seu documento" : "Aplicando a rubrica docente"}</b>
+        <ol className="ai-stages">
+          {STAGES.map((s, i) => (
+            <li key={s.key} className={i < at ? "done" : i === at ? "now" : ""}>{s.label}</li>
+          ))}
+        </ol>
+        <p className="muted sm">Pode sair desta página: a devolutiva fica salva e aparece aqui quando concluída.</p>
+      </div>
+    </div>
+  );
+}
+
+function HumanReview({ sub, score }: { sub: Submission; score: number | null }) {
+  return (
+    <section className="ai-human">
+      <div className="ai-human-hd">
+        <h3>Revisão humana</h3>
+        {score != null && <span>Nota da revisão {pip(score)}</span>}
+      </div>
+      <p className="muted sm">Registrada pela equipe e exibida separadamente da correção automatizada.</p>
+      <table className="rubric">
+        <tbody>
+          {sub.grades!.map((g) => (
+            <tr key={g.criterion}>
+              <td className="crit">{g.criterion}</td>
+              <td className="sc">{pip(g.score)}</td>
+              <td className="cmt">{g.comment || <span className="muted">Sem comentário.</span>}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {sub.teacherComment && <p className="ai-human-cmt">{sub.teacherComment}</p>}
+    </section>
   );
 }
