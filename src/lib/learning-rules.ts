@@ -12,6 +12,13 @@ export const gradingSchema = z.object({
   grades: z.array(z.object({ criterion: z.string().min(1), score: z.number().min(0).max(10), comment: z.string().max(5000) })).min(1),
   teacherComment: z.string().max(10000),
 });
+/** What the delivery upload actually accepts (mirrors deliverySchema and the file input). */
+export const UPLOAD_RULES_LABEL = "PDF, DOC ou DOCX · até 10 MB";
+/** Pedagogical page guidance carried in the activity hint (e.g. "até 5 páginas"); not an automatic check. */
+export function pageGuidance(hint: string | undefined): string | null {
+  const m = hint?.match(/até\s+(\d+)\s+páginas?/i);
+  return m ? `Orientação do exercício: até ${m[1]} ${m[1] === "1" ? "página" : "páginas"}.` : null;
+}
 /** Max registered deliveries per student + program + activity (enforced by the database trigger). */
 export const MAX_ATTEMPTS = 2;
 export const ATTEMPT_LIMIT_MESSAGE = "Limite de 2 tentativas atingido para esta atividade.";
