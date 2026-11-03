@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Rich, textToHtml } from "@/components/Rich";
 import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
-import { gradeLearningSubmission, learningFileUrl } from "@/lib/learning.functions";
+import { gradeLearningSubmission, learningFileUrl, requeueAiEvaluation } from "@/lib/learning.functions";
+import { issueMessage } from "@/lib/ai-grading-rules";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const program = programs.find(p => p.id === sub.programId);
   const grade = useServerFn(gradeLearningSubmission);
   const fileUrl = useServerFn(learningFileUrl);
+  const requeue = useServerFn(requeueAiEvaluation);
   const client = useQueryClient();
   const [saving, setSaving] = useState(false);
   const activity = program?.activities.find((a) => a.id === sub.activityId);
@@ -123,6 +125,24 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
                 <dt>Status</dt><dd>{sub.grades ? `Corrigida · nota ${fmt(avg(sub.grades.map((g) => g.score)))}` : "Aguardando correção"}</dd>
                 <dt>Critérios da rubrica</dt><dd>{activity.rubric.length}</dd>
               </dl>
+              {sub.ai && (
+                <div className="wb-ai">
+                  <b>Correção automatizada:</b>{" "}
+                  {sub.ai.status === "completed" && sub.ai.overallScore !== undefined
+                    ? `concluída · nota ${fmt(sub.ai.overallScore)} (exibida ao aluno separadamente da correção humana)`
+                    : sub.ai.status === "failed" || sub.ai.status === "needs_human_review"
+                      ? `${sub.ai.status === "failed" ? "falhou" : "precisa de análise humana"} — ${issueMessage(sub.ai.issueCode)}`
+                      : "em processamento"}
+                  {(sub.ai.status === "failed" || sub.ai.status === "needs_human_review") && (
+                    <div style={{ marginTop: 8 }}>
+                      <Button className="btn ghost sm" onClick={async () => {
+                        try { await requeue({ data: { id: sub.ai!.id } }); await client.invalidateQueries({ queryKey: ["admin-learning"] }); toast.success("Correção automatizada recolocada na fila."); }
+                        catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível reprocessar."); }
+                      }}>Reprocessar correção automatizada</Button>
+                    </div>
+                  )}
+                </div>
+              )}
               <Button className="btn ghost" onClick={async () => {
                 try { window.location.assign(await fileUrl({ data: { id: sub.id } })); }
                 catch { toast.error("Não foi possível abrir o arquivo."); }

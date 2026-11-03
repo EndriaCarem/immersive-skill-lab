@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authen
 import { Route as ApiPublicAcessoRestritoRouteImport } from './routes/api/public/acesso-restrito'
 import { Route as ApiPublicMercadoPagoRouteImport } from './routes/api/public/mercado-pago'
 import { Route as AuthenticatedAdminProgramaIdRouteImport } from './routes/_authenticated/admin.programa.$id'
+import { Route as ApiPublicJobsAiGradingRouteImport } from './routes/api/public/jobs/ai-grading'
 import { Route as EstagioSlugNCasoRouteImport } from './routes/estagio.$slug.$n.caso'
 import { Route as EstagioSlugNDemandaRouteImport } from './routes/estagio.$slug.$n.demanda'
 import { Route as EstagioSlugNDevolutivaRouteImport } from './routes/estagio.$slug.$n.devolutiva'
@@ -185,6 +186,11 @@ const AuthenticatedAdminProgramaIdRoute =
     path: '/admin/programa/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicJobsAiGradingRoute = ApiPublicJobsAiGradingRouteImport.update({
+  id: '/api/public/jobs/ai-grading',
+  path: '/api/public/jobs/ai-grading',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EstagioSlugNCasoRoute = EstagioSlugNCasoRouteImport.update({
   id: '/estagio/$slug/$n/caso',
   path: '/estagio/$slug/$n/caso',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
+  '/api/public/jobs/ai-grading': typeof ApiPublicJobsAiGradingRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
+  '/api/public/jobs/ai-grading': typeof ApiPublicJobsAiGradingRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -302,6 +310,7 @@ export interface FileRoutesById {
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/programa/$id': typeof AuthenticatedAdminProgramaIdRoute
+  '/api/public/jobs/ai-grading': typeof ApiPublicJobsAiGradingRoute
   '/estagio/$slug/$n/caso': typeof EstagioSlugNCasoRoute
   '/estagio/$slug/$n/demanda': typeof EstagioSlugNDemandaRoute
   '/estagio/$slug/$n/devolutiva': typeof EstagioSlugNDevolutivaRoute
@@ -337,6 +346,7 @@ export interface FileRouteTypes {
     | '/api/public/mercado-pago'
     | '/admin/'
     | '/admin/programa/$id'
+    | '/api/public/jobs/ai-grading'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/api/public/mercado-pago'
     | '/admin'
     | '/admin/programa/$id'
+    | '/api/public/jobs/ai-grading'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/api/public/mercado-pago'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/programa/$id'
+    | '/api/public/jobs/ai-grading'
     | '/estagio/$slug/$n/caso'
     | '/estagio/$slug/$n/demanda'
     | '/estagio/$slug/$n/devolutiva'
@@ -432,6 +444,7 @@ export interface RootRouteChildren {
   WebinarsIndexRoute: typeof WebinarsIndexRoute
   ApiPublicAcessoRestritoRoute: typeof ApiPublicAcessoRestritoRoute
   ApiPublicMercadoPagoRoute: typeof ApiPublicMercadoPagoRoute
+  ApiPublicJobsAiGradingRoute: typeof ApiPublicJobsAiGradingRoute
   EstagioSlugNCasoRoute: typeof EstagioSlugNCasoRoute
   EstagioSlugNDemandaRoute: typeof EstagioSlugNDemandaRoute
   EstagioSlugNDevolutivaRoute: typeof EstagioSlugNDevolutivaRoute
@@ -636,6 +649,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProgramaIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/jobs/ai-grading': {
+      id: '/api/public/jobs/ai-grading'
+      path: '/api/public/jobs/ai-grading'
+      fullPath: '/api/public/jobs/ai-grading'
+      preLoaderRoute: typeof ApiPublicJobsAiGradingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/estagio/$slug/$n/caso': {
       id: '/estagio/$slug/$n/caso'
       path: '/estagio/$slug/$n/caso'
@@ -712,6 +732,7 @@ const rootRouteChildren: RootRouteChildren = {
   WebinarsIndexRoute: WebinarsIndexRoute,
   ApiPublicAcessoRestritoRoute: ApiPublicAcessoRestritoRoute,
   ApiPublicMercadoPagoRoute: ApiPublicMercadoPagoRoute,
+  ApiPublicJobsAiGradingRoute: ApiPublicJobsAiGradingRoute,
   EstagioSlugNCasoRoute: EstagioSlugNCasoRoute,
   EstagioSlugNDemandaRoute: EstagioSlugNDemandaRoute,
   EstagioSlugNDevolutivaRoute: EstagioSlugNDevolutivaRoute,
