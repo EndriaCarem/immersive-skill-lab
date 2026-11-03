@@ -94,7 +94,7 @@ export function ActivityLayout({
         </div>
         <div className="progress">
           <div className="lbl">
-            {done} de {program.activities.length} atividades
+            {done} de {program.activities.length} concluídas
           </div>
           <div className="track">
             <i style={{ width: `${pct}%` }} />

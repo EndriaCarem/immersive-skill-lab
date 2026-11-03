@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ActivityVideo } from "@/components/FacultyMedia";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { downloadDoc } from "@/lib/store";
@@ -43,14 +44,13 @@ function AnswerPage() {
   const next = program.activities[idx + 1];
   const rail = (
     <>
-      {activity.answerVideoUrl ? (
-        <video className="video" style={{ width: "100%" }} src={activity.answerVideoUrl} controls />
-      ) : (
-        <div className="video">
-          <div className="play" />
-          <div className="cap">{activity.answerVideoCaption}</div>
-        </div>
-      )}
+      <ActivityVideo
+        url={activity.answerVideoUrl}
+        person={activity.staff?.feedback ?? null}
+        label="Devolutiva em vídeo"
+        emptyTitle="Vídeo de devolutiva ainda não publicado"
+        emptyText="O gabarito comentado ao lado já está disponível."
+      />
       <h4>Competências esperadas</h4>
       <p className="sm muted">{activity.answerIntro}</p>
     </>
