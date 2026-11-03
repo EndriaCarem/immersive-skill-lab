@@ -133,10 +133,13 @@ function DemandPage() {
 
   const rail = (
     <>
-      <div className="video">
-        <div className="play" />
-        <div className="cap">{activity.demandVideoCaption}</div>
-      </div>
+      <ActivityVideo
+        url={activity.staff?.demandVideoUrl ?? ""}
+        person={activity.staff?.supervisor ?? null}
+        label="Supervisão da atividade"
+        emptyTitle="Vídeo da demanda ainda não publicado"
+        emptyText="A instrução completa está no e-mail ao lado."
+      />
       <p className="muted sm">
         A demanda chega por vídeo ou por e-mail — como chegaria de verdade.
       </p>
