@@ -242,7 +242,14 @@ function DemandPage() {
             className="drop"
             role="button"
             tabIndex={0}
+            aria-label={file ? `Arquivo selecionado: ${file.name}. Pressione Enter para trocar.` : `Selecionar arquivo da entrega (${UPLOAD_RULES_LABEL})`}
             onClick={() => input.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                input.current?.click();
+              }
+            }}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
