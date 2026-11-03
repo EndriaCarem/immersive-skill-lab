@@ -377,30 +377,110 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_activity_materials: {
+        Row: {
+          activity_id: string
+          category: string
+          created_at: string
+          description: string
+          doc_type: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          position: number
+          program_id: string
+          title: string
+          version: string
+        }
+        Insert: {
+          activity_id: string
+          category: string
+          created_at?: string
+          description?: string
+          doc_type?: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          position?: number
+          program_id: string
+          title: string
+          version?: string
+        }
+        Update: {
+          activity_id?: string
+          category?: string
+          created_at?: string
+          description?: string
+          doc_type?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          position?: number
+          program_id?: string
+          title?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_activity_materials_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_activity_staff: {
         Row: {
           activity_id: string
           demand_video_url: string
           feedback_professional_id: string | null
+          mail_html: string
+          mail_subject: string
           program_id: string
+          release_at: string | null
+          release_offset_days: number | null
           supervisor_id: string | null
           updated_at: string
+          video_description: string
+          video_duration_seconds: number | null
+          video_path: string | null
+          video_poster_path: string | null
         }
         Insert: {
           activity_id: string
           demand_video_url?: string
           feedback_professional_id?: string | null
+          mail_html?: string
+          mail_subject?: string
           program_id: string
+          release_at?: string | null
+          release_offset_days?: number | null
           supervisor_id?: string | null
           updated_at?: string
+          video_description?: string
+          video_duration_seconds?: number | null
+          video_path?: string | null
+          video_poster_path?: string | null
         }
         Update: {
           activity_id?: string
           demand_video_url?: string
           feedback_professional_id?: string | null
+          mail_html?: string
+          mail_subject?: string
           program_id?: string
+          release_at?: string | null
+          release_offset_days?: number | null
           supervisor_id?: string | null
           updated_at?: string
+          video_description?: string
+          video_duration_seconds?: number | null
+          video_path?: string | null
+          video_poster_path?: string | null
         }
         Relationships: [
           {
