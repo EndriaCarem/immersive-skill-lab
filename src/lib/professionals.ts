@@ -63,18 +63,32 @@ export function courseLead(links: CourseLink[], people: Map<string, Professional
   return courseFaculty(links, people)[0] ?? null;
 }
 
-/** Activity-specific choice when set and visible; otherwise falls back to the course's main professor. */
+/**
+ * Activity-specific choice when set and visible; otherwise falls back to the course's main professor.
+ * `media` maps private storage paths to signed URLs: an uploaded video wins over an external link,
+ * and a video whose file could not be signed is treated as absent (never a broken player).
+ */
 export function resolveActivityStaff(
   links: CourseLink[],
   row: StaffRow | undefined,
   people: Map<string, Professional>,
+  media: Map<string, string> = new Map(),
 ): ActivityStaff {
   const lead = courseLead(links, people);
   const pick = (id: string | null | undefined) => (id ? people.get(id) : undefined) ?? lead;
+  const uploaded = row?.video_path ? media.get(row.video_path) ?? "" : "";
+  const url = uploaded || (row?.demand_video_url ?? "").trim();
   return {
     supervisor: pick(row?.supervisor_id),
     feedback: pick(row?.feedback_professional_id),
-    demandVideoUrl: row?.demand_video_url ?? "",
+    demandVideoUrl: url,
+    video: {
+      url,
+      posterUrl: row?.video_poster_path ? media.get(row.video_poster_path) ?? null : null,
+      description: (row?.video_description ?? "").trim(),
+      durationSeconds: url && row?.video_duration_seconds ? row.video_duration_seconds : null,
+    },
+    mail: { subject: (row?.mail_subject ?? "").trim(), html: (row?.mail_html ?? "").trim() },
   };
 }
 
