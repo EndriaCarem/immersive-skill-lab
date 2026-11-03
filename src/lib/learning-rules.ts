@@ -14,6 +14,19 @@ export const gradingSchema = z.object({
 });
 /** What the delivery upload actually accepts (mirrors deliverySchema and the file input). */
 export const UPLOAD_RULES_LABEL = "PDF, DOC ou DOCX · até 10 MB";
+/** An uploaded file must become a delivery within this window; older unlinked files are orphans. */
+export const DELIVERY_FILE_MAX_AGE_MINUTES = 30;
+/** Cleanup only touches unlinked files older than this (database floor is also 60). Must exceed the delivery window. */
+export const ORPHAN_FILE_MIN_AGE_MINUTES = 60;
+export function isFreshUpload(createdAt: string | undefined | null, now = Date.now()) {
+  const t = createdAt ? Date.parse(createdAt) : NaN;
+  return Number.isFinite(t) && now - t <= DELIVERY_FILE_MAX_AGE_MINUTES * 60_000;
+}
+/** Never removes a path linked to a registered delivery, whatever the candidate list says. */
+export function selectRemovableOrphans(candidates: string[], linkedPaths: string[]) {
+  const linked = new Set(linkedPaths);
+  return [...new Set(candidates)].filter(p => !linked.has(p));
+}
 /** Pedagogical page guidance carried in the activity hint (e.g. "até 5 páginas"); not an automatic check. */
 export function pageGuidance(hint: string | undefined): string | null {
   const m = hint?.match(/até\s+(\d+)\s+páginas?/i);

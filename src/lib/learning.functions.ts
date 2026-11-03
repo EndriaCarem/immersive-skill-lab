@@ -102,6 +102,8 @@ export const deliverActivity = createServerFn({ method: "POST" }).middleware([re
     const { data: files, error: listError } = await storage.list(parts.join("/"), { search: file });
     const stored = files?.find(f => f.name === file);
     if (listError || !stored || Number(stored.metadata?.size) !== data.fileSize) { await discard(); throw new Error("O arquivo não foi recebido. Envie novamente."); }
+    // Old unlinked uploads belong to the orphan cleanup window; never turn them into deliveries.
+    if (!isFreshUpload(stored.created_at)) { await discard(); throw new Error("O arquivo não foi recebido. Envie novamente."); }
     const { data: row, error } = await context.supabase.from("learning_submissions").insert({
       user_id: context.userId, program_id: data.programId, activity_id: data.activityId, file_name: data.fileName,
       file_size: data.fileSize, file_path: data.filePath, ai_use: data.aiUse,
