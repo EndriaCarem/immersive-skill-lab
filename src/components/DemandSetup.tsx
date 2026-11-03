@@ -199,6 +199,8 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
 
         <MaterialsEditor target={target} />
 
+        <NidiaSetup target={target} />
+
         <div className="wb-modal-actions">
           <span style={{ flex: 1 }} />
           <Button variant="ghost" onClick={onClose} disabled={busy}>Fechar</Button>
