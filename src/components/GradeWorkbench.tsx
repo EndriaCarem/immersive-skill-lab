@@ -3,8 +3,8 @@ import { toast } from "sonner";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Rich, textToHtml } from "@/components/Rich";
 import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
-import { gradeLearningSubmission, learningFileUrl, requeueAiEvaluation } from "@/lib/learning.functions";
-import { issueMessage } from "@/lib/ai-grading-rules";
+import { gradeLearningSubmission, learningFileUrl, processAiEvaluationNow, requeueAiEvaluation } from "@/lib/learning.functions";
+import { isWorking, issueMessage } from "@/lib/ai-grading-rules";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -43,8 +43,10 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const grade = useServerFn(gradeLearningSubmission);
   const fileUrl = useServerFn(learningFileUrl);
   const requeue = useServerFn(requeueAiEvaluation);
+  const processNow = useServerFn(processAiEvaluationNow);
   const client = useQueryClient();
   const [saving, setSaving] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const activity = program?.activities.find((a) => a.id === sub.activityId);
   const [grades, setGrades] = useState<Grade[]>(
     () => activity?.rubric.map((r) => sub.grades?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: 7, comment: "" }) ?? [],
@@ -133,12 +135,22 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
                     : sub.ai.status === "failed" || sub.ai.status === "needs_human_review"
                       ? `${sub.ai.status === "failed" ? "falhou" : "precisa de análise humana"} — ${issueMessage(sub.ai.issueCode)}`
                       : "em processamento"}
-                  {(sub.ai.status === "failed" || sub.ai.status === "needs_human_review") && (
+                  {(sub.ai.status === "failed" || sub.ai.status === "needs_human_review" || isWorking(sub.ai.status)) && (
                     <div style={{ marginTop: 8 }}>
-                      <Button className="btn ghost sm" onClick={async () => {
-                        try { await requeue({ data: { id: sub.ai!.id } }); await client.invalidateQueries({ queryKey: ["admin-learning"] }); toast.success("Correção automatizada recolocada na fila."); }
+                      <Button className="btn ghost sm" disabled={processing} onClick={async () => {
+                        const id = sub.ai!.id;
+                        setProcessing(true);
+                        try {
+                          if (!isWorking(sub.ai!.status)) await requeue({ data: { id } });
+                          const r = await processNow({ data: { id } });
+                          await client.invalidateQueries({ queryKey: ["admin-learning"] });
+                          if (r.status === "completed") toast.success("Correção automatizada concluída.");
+                          else if (r.status === "not_claimed") toast.message("Esta correção já está em andamento ou aguardando nova tentativa. Atualize em alguns instantes.");
+                          else toast.message("A correção automatizada não foi concluída. Veja o status atualizado.");
+                        }
                         catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível reprocessar."); }
-                      }}>Reprocessar correção automatizada</Button>
+                        finally { setProcessing(false); }
+                      }}>{processing ? "Corrigindo… (cerca de 30 s)" : isWorking(sub.ai.status) ? "Processar correção agora" : "Reprocessar correção automatizada"}</Button>
                     </div>
                   )}
                 </div>

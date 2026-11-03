@@ -5,7 +5,7 @@ import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { activityReviewPending } from "@/lib/learning-rules";
 import { isTerminal, issueMessage, type AiStatus } from "@/lib/ai-grading-rules";
-import { requestLearningReview, learningFileUrl, runMyEvaluation } from "@/lib/learning.functions";
+import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -35,14 +35,13 @@ const working = (s?: AiStatus) => s === "pending" || s === "extracting" || s ===
 function FeedbackPage() {
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
+  // useLearning also starts (and later resumes) grading of a queued delivery while any course page is open.
   const learning = useLearning();
   const request = useServerFn(requestLearningReview);
   const fileUrl = useServerFn(learningFileUrl);
-  const kick = useServerFn(runMyEvaluation);
   const [requesting, setRequesting] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
-  const kicked = useRef(new Set<string>());
   const polls = useRef(0);
   const submissions = learning.data?.submissions ?? [];
   const mine = program && activity ? submissions.filter((s) => s.programId === program.id && s.activityId === activity.id).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)) : [];
@@ -50,13 +49,6 @@ function FeedbackPage() {
   const status = sub?.ai?.status;
   const quota = reviewQuota({ submissions }, program?.id ?? "", learning.user?.id ?? "", activity?.id ?? "");
   const { refresh } = learning;
-
-  // Start grading of a queued delivery immediately; the scheduled job covers the case where this page is closed.
-  useEffect(() => {
-    if (!sub || !working(status) || kicked.current.has(sub.id)) return;
-    kicked.current.add(sub.id);
-    kick({ data: { submissionId: sub.id } }).catch(() => undefined).finally(() => { void refresh(); });
-  }, [sub?.id, status, kick, refresh]);
 
   // Light polling with backoff only while the evaluation is still moving.
   useEffect(() => {

@@ -146,9 +146,20 @@ export function parseEvaluation(raw: string, rubric: RubricItem[]): ParsedEvalua
 
 /** Terminal states stop polling; the rest are still moving through the queue. */
 export const isTerminal = (s: AiStatus) => s === "completed" || s === "failed" || s === "needs_human_review";
+export const isWorking = (s?: AiStatus) => s === "pending" || s === "extracting" || s === "evaluating";
 
 /** Delay before an automatic retry after a transient failure (1 min, then 5 min). */
 export const retryDelayMs = (tries: number) => (tries <= 1 ? 60_000 : 300_000);
+
+/**
+ * Grading runs only inside requests whose caller waits for it (learner page or admin action),
+ * because the scheduler's HTTP call is cut after a few seconds. The same delivery is asked
+ * again at most once per cooldown; the database lease still prevents duplicate processing.
+ */
+export const RESUME_COOLDOWN_MS = 60_000;
+export function resumableEvaluations(subs: { id: string; ai?: { status: AiStatus } }[], lastKick: ReadonlyMap<string, number>, now: number) {
+  return subs.filter(s => isWorking(s.ai?.status) && now - (lastKick.get(s.id) ?? Number.NEGATIVE_INFINITY) >= RESUME_COOLDOWN_MS).map(s => s.id);
+}
 
 /**
  * One-line status for lists. Automated and human results are both named by source;
