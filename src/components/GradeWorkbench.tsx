@@ -172,20 +172,20 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
         <section className="wb-right">
           <div className="wb-score">
             <span>Nota final</span>
-            <b>{fmt(mean)}</b>
+            <b>{ready ? fmt(mean) : "—"}</b>
           </div>
           {grades.map((g, i) => (
             <div key={g.criterion} className={`wb-crit ${focus === i ? "on" : ""}`} onClick={() => setFocus(i)}>
               <div className="wb-crit-top">
                 <b>{g.criterion}</b>
-                <span className="wb-val">{fmt(g.score)}</span>
+                <span className="wb-val">{g.score === null ? <span className="muted">Sem nota</span> : fmt(g.score)}</span>
               </div>
               <div className="wb-quick">
                 {QUICK.map((n) => (
                   <button key={n} className={g.score === n ? "on" : ""} onClick={() => set(i, { score: n })}>{String(n).replace(".", ",")}</button>
                 ))}
               </div>
-              <input type="range" min={0} max={10} step={0.5} value={g.score} onChange={(e) => set(i, { score: Number(e.target.value) })} />
+              <input type="range" min={0} max={10} step={0.5} value={g.score ?? 0} aria-label={`Nota de ${g.criterion}`} aria-valuetext={g.score === null ? "Sem nota" : fmt(g.score)} style={g.score === null ? { opacity: 0.45 } : undefined} onChange={(e) => set(i, { score: Number(e.target.value) })} />
               <input className="input" placeholder="O que a correção observou" value={g.comment} onChange={(e) => set(i, { comment: e.target.value })} />
               {focus === i && (
                 <div className="wb-snips">
@@ -205,6 +205,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
               <button key={s} onClick={() => setComment((c) => append(c, s))}>+ {s}</button>
             ))}
           </div>
+          {!ready && <p className="muted sm" role="status" style={{ margin: "10px 0" }}>Nenhuma nota vem preenchida: escolha a nota de cada critério para liberar o salvamento{missing.length ? ` (faltam ${missing.length})` : ""}.</p>}
           <p className="muted sm" style={{ margin: "10px 0" }}>Atalhos: ↑/↓ escolhe o critério · 1–9 dá a nota (0 = 10) · Ctrl+Enter salva e avança</p>
         </section>
       </div>
@@ -213,8 +214,8 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
         <button className="btn ghost sm" disabled={!prev} onClick={() => prev && onChange(prev)}>← Anterior</button>
         <button className="btn ghost sm" disabled={!next} onClick={() => next && onChange(next)}>Pular →</button>
         <span style={{ flex: 1 }} />
-        <Button className="btn ghost" disabled={saving} onClick={() => save(false)}>Salvar</Button>
-        <Button className="btn" disabled={saving} onClick={() => save(true)}>{saving ? "Salvando…" : next ? "Salvar e próxima" : "Salvar e fechar"}</Button>
+        <Button className="btn ghost" disabled={saving || !ready} onClick={() => save(false)}>Salvar</Button>
+        <Button className="btn" disabled={saving || !ready} onClick={() => save(true)}>{saving ? "Salvando…" : next ? "Salvar e próxima" : "Salvar e fechar"}</Button>
       </div>
     </div>
   );
