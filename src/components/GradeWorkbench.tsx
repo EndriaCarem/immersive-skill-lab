@@ -5,6 +5,7 @@ import { Rich, textToHtml } from "@/components/Rich";
 import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
 import { gradeLearningSubmission, learningFileUrl, processAiEvaluationNow, requeueAiEvaluation } from "@/lib/learning.functions";
 import { isWorking, issueMessage } from "@/lib/ai-grading-rules";
+import { initialGradeDraft, unscoredCriteria, type GradeDraft } from "@/lib/learning-rules";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -48,23 +49,26 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const [saving, setSaving] = useState(false);
   const [processing, setProcessing] = useState(false);
   const activity = program?.activities.find((a) => a.id === sub.activityId);
-  const [grades, setGrades] = useState<Grade[]>(
-    () => activity?.rubric.map((r) => sub.grades?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: 7, comment: "" }) ?? [],
-  );
+  const [grades, setGrades] = useState<GradeDraft[]>(() => (activity ? initialGradeDraft(activity.rubric, sub.grades) : []));
   const [comment, setComment] = useState(sub.teacherComment ?? "");
   const [view, setView] = useState<"entrega" | "demanda" | "gabarito">("entrega");
   const [focus, setFocus] = useState(0);
-  const mean = avg(grades.map((g) => g.score));
+  const missing = unscoredCriteria(grades);
+  const ready = grades.length > 0 && missing.length === 0;
+  const scored = grades.flatMap((g) => (g.score === null ? [] : [g.score]));
+  const mean = avg(scored);
   const idx = queue.findIndex((q) => q.id === sub.id);
   const next = idx >= 0 ? queue[idx + 1] : undefined;
   const prev = idx > 0 ? queue[idx - 1] : undefined;
 
-  const set = (i: number, patch: Partial<Grade>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  const set = (i: number, patch: Partial<GradeDraft>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
   const save = async (goNext: boolean) => {
     if (saving) return;
+    if (!ready) { toast.error(`Dê nota a todos os critérios antes de salvar (falta: ${missing.join(", ")}).`); return; }
+    const final: Grade[] = grades.map((g) => ({ ...g, score: g.score as number }));
     setSaving(true);
     try {
-      await grade({ data: { id: sub.id, grades, teacherComment: comment } });
+      await grade({ data: { id: sub.id, grades: final, teacherComment: comment } });
       await client.invalidateQueries({ queryKey: ["admin-learning"] });
       await client.invalidateQueries({ queryKey: ["learner-progress"] });
       toast.success("Correção salva", { description: `${sub.student} · nota ${fmt(mean)}` });
