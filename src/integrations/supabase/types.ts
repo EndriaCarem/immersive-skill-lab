@@ -970,6 +970,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_orphan_learner_files: {
+        Args: { p_limit: number; p_min_age_minutes: number }
+        Returns: {
+          created_at: string
+          name: string
+        }[]
+      }
       request_learning_review: {
         Args: { p_submission: string }
         Returns: undefined
