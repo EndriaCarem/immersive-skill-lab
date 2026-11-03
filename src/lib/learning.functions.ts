@@ -27,21 +27,34 @@ async function loadStaff(db: SupabaseClient<Database>, programIds: string[]) {
 }
 
 type Row = Database["public"]["Tables"]["learning_submissions"]["Row"];
-function submission(row: Row, name?: string): Submission & { userId: string; filePath: string } {
+type EvalRow = Pick<Database["public"]["Tables"]["learning_ai_evaluations"]["Row"], "id" | "submission_id" | "status" | "issue_code" | "overall_score" | "overall_feedback" | "ethics_note" | "criteria" | "model" | "completed_at">;
+const EVAL_COLUMNS = "id, submission_id, status, issue_code, overall_score, overall_feedback, ethics_note, criteria, model, completed_at";
+/** Only completed rows carry scores; any other state is shown as status, never as a grade. */
+function evaluation(row: EvalRow): AiEvaluation {
+  const done = row.status === "completed";
+  const criteria = done ? z.array(z.object({ criterion: z.string(), score: z.number(), comment: z.string(), strengths: z.array(z.string()), improvements: z.array(z.string()) })).safeParse(row.criteria) : null;
+  return { id: row.id, submissionId: row.submission_id, status: row.status as AiStatus, ...(row.issue_code ? { issueCode: row.issue_code } : {}),
+    ...(done && row.overall_score !== null && criteria?.success ? { overallScore: Number(row.overall_score), criteria: criteria.data } : {}),
+    ...(done && row.overall_feedback ? { overallFeedback: row.overall_feedback } : {}), ...(done && row.ethics_note ? { ethicsNote: row.ethics_note } : {}),
+    ...(row.model ? { model: row.model } : {}), ...(row.completed_at ? { completedAt: row.completed_at } : {}) };
+}
+function submission(row: Row, name?: string, ai?: EvalRow): Submission & { userId: string; filePath: string } {
   return { id: row.id, userId: row.user_id, student: name || row.user_id, programId: row.program_id,
     activityId: row.activity_id, fileName: row.file_name, fileSize: row.file_size, filePath: row.file_path,
     aiUse: row.ai_use, submittedAt: row.submitted_at, ...(row.grades ? { grades: gradingSchema.shape.grades.parse(row.grades) } : {}),
-    ...(row.teacher_comment !== null ? { teacherComment: row.teacher_comment } : {}), humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined };
+    ...(row.teacher_comment !== null ? { teacherComment: row.teacher_comment } : {}), humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined,
+    ...(row.attempt !== null ? { attempt: row.attempt } : {}), ...(ai ? { ai: evaluation(ai) } : {}) };
 }
 export const learnerData = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
-  const [programs, subs, notes, enrollments, answers] = await Promise.all([
+  const [programs, subs, notes, enrollments, answers, evals] = await Promise.all([
     context.supabase.from("learning_programs").select("content"),
     context.supabase.from("learning_submissions").select("*").eq("user_id", context.userId).order("submitted_at"),
     context.supabase.from("learning_notes").select("*").eq("user_id", context.userId).order("created_at"),
     context.supabase.from("commerce_enrollments").select("*").eq("user_id", context.userId).eq("status", "active"),
     context.supabase.from("learning_answers").select("*"),
+    context.supabase.from("learning_ai_evaluations").select(EVAL_COLUMNS).eq("user_id", context.userId),
   ]);
-  for (const r of [programs, subs, notes, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
+  for (const r of [programs, subs, notes, enrollments, answers, evals]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
   const staff = await loadStaff(context.supabase, active.map(e => e.product_id));
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
@@ -50,8 +63,28 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
     const withStaff = { ...a, staff: resolveActivityStaff(staff.links.filter(l => l.program_id === p.id), staff.rows.find(r => r.program_id === p.id && r.activity_id === a.id), staff.people) };
     return open && answer ? { ...withStaff, ...(answer as unknown as Partial<typeof a>) } : { ...withStaff, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
-    submissions: (subs.data ?? []).map(s => submission(s)), notes: notes.data ?? [], enrollments: active };
+    submissions: (subs.data ?? []).map(s => submission(s, undefined, evals.data?.find(e => e.submission_id === s.id))), notes: notes.data ?? [], enrollments: active };
 });
+/**
+ * Lets the learner's open feedback page start grading of their own queued delivery right away.
+ * Ownership is checked through RLS; the lease in the database prevents duplicate processing.
+ */
+export const runMyEvaluation = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(x => z.object({ submissionId: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
+    const { data: row, error } = await context.supabase.from("learning_ai_evaluations").select("id, status, user_id").eq("submission_id", data.submissionId).maybeSingle();
+    if (error || !row || row.user_id !== context.userId) throw new Error("Entrega não encontrada.");
+    if (row.status === "completed" || row.status === "failed" || row.status === "needs_human_review") return { status: row.status };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { processEvaluations } = await import("./ai-grading.server");
+    const [result] = await processEvaluations(supabaseAdmin, { limit: 1, only: row.id });
+    return { status: result?.result ?? row.status };
+  });
+export const requeueAiEvaluation = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(x => z.object({ id: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
+    const { error } = await context.supabase.rpc("requeue_learning_ai_evaluation", { p_evaluation: data.id });
+    if (error) throw new Error(error.message);
+    return true;
+  });
 export const deliverActivity = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(x => deliverySchema.parse(x)).handler(async ({ data, context }) => {
     if (!data.filePath.startsWith(`${context.userId}/${data.programId}/`)) throw new Error("Arquivo inválido.");
