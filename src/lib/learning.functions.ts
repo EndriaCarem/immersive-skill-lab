@@ -77,7 +77,8 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
     const open = answerKeyOpen((subs.data ?? []).map(s => ({ programId: s.program_id, activityId: s.activity_id, humanReviews: Array.isArray(s.human_reviews) ? (s.human_reviews as string[]) : [], reviewedAt: s.reviewed_at ?? undefined })), p.id, a.id);
     const answer = answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content;
-    const withStaff = { ...a, staff: resolveActivityStaff(staff.links.filter(l => l.program_id === p.id), staff.rows.find(r => r.program_id === p.id && r.activity_id === a.id), staff.people) };
+    const withStaff = { ...a, staff: resolveActivityStaff(staff.links.filter(l => l.program_id === p.id), staff.rows.find(r => r.program_id === p.id && r.activity_id === a.id), staff.people, staff.media),
+      materials: staff.materials.filter(m => m.program_id === p.id && m.activity_id === a.id).map(material) };
     return open && answer ? { ...withStaff, ...(answer as unknown as Partial<typeof a>) } : { ...withStaff, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
     submissions: (subs.data ?? []).map(s => submission(s, undefined, evals.data?.find(e => e.submission_id === s.id))), notes: notes.data ?? [], enrollments: active };
@@ -181,4 +182,13 @@ export const learningFileUrl = createServerFn({ method: "POST" }).middleware([re
     const url = new URL(link.signedUrl); const browserBase = import.meta.env['VITE_SUPABASE_URL'];
     if (!browserBase) throw new Error("Armazenamento indisponível.");
     return new URL(url.pathname + url.search, browserBase).href;
+  });
+/** Short-lived download link for a pre-delivery material. RLS (active enrollment) decides access to row and file. */
+export const activityMaterialUrl = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(x => z.object({ id: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
+    const { data: row } = await context.supabase.from("learning_activity_materials").select("file_path, file_name").eq("id", data.id).maybeSingle();
+    if (!row) throw new Error("Material indisponível.");
+    const { data: link, error } = await context.supabase.storage.from("activity-media").createSignedUrl(row.file_path, 300, { download: row.file_name });
+    if (error || !link) throw new Error("Não foi possível baixar o material.");
+    return browserUrl(link.signedUrl);
   });
