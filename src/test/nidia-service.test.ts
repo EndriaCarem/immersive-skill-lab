@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const generateResponse = vi.fn();
+// Plain flag instead of a rejecting vi.fn result: vitest tracks mock promises and reports their rejection as unhandled.
+let failNext = false;
 vi.mock("@lovable.dev/ai-gateway", () => {
   class GatewayError extends Error { code = "x"; httpStatus = 500; }
   class PaymentRequiredError extends GatewayError {}
   class PermissionDeniedError extends GatewayError {}
   class RateLimitError extends GatewayError {}
-  return { generateResponse: (...a: unknown[]) => generateResponse(...a), GatewayError, PaymentRequiredError, PermissionDeniedError, RateLimitError };
+  return { generateResponse: async (...a: unknown[]) => { if (failNext) throw new Error("network down"); return generateResponse(...a); }, GatewayError, PaymentRequiredError, PermissionDeniedError, RateLimitError };
 });
 import { answerQuestion } from "@/lib/nidia.server";
 
@@ -39,14 +41,12 @@ function fakeDb(updates: Update[]) {
 }
 
 describe("Nidia service", () => {
-  beforeEach(() => generateResponse.mockReset());
+  beforeEach(() => { generateResponse.mockReset(); failNext = false; });
 
   it("marks the question failed (not consumed) when the AI service errors", async () => {
-    generateResponse.mockImplementation(async () => { throw new Error("network down"); });
+    failNext = true;
     const updates: Update[] = [];
-    let out: unknown; let thrown: unknown;
-    try { out = await answerQuestion(fakeDb(updates) as never, "q1"); } catch (e) { thrown = e; }
-    console.log("DBG", JSON.stringify(out), String(thrown), JSON.stringify(updates));
+    const out = await answerQuestion(fakeDb(updates) as never, "q1");
     expect(out).toEqual({ ok: false, code: "service" });
     expect(updates.some((u) => u.patch["status"] === "failed")).toBe(true);
     expect(updates.some((u) => u.patch["status"] === "answered")).toBe(false);
