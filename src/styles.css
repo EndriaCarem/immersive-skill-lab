@@ -107,6 +107,11 @@ button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 .progress .lbl{font-size:12px;color:var(--slate);margin-bottom:6px}
 .track{height:6px;border-radius:4px;background:#EDEDF1;overflow:hidden}
 .track i{display:block;height:6px;background:var(--plum);border-radius:4px}
+@media (max-width:640px){
+  .proghead{flex-wrap:wrap;padding:18px 20px;gap:12px}
+  .proghead > div:first-child{flex:1 1 100%;min-width:0}
+  .progress{margin-left:0;min-width:0;width:100%;text-align:left}
+}
 
 /* ─── layout interno ─── */
 .body{display:grid;grid-template-columns:326px 1fr}
