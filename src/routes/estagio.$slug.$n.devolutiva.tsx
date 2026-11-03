@@ -5,7 +5,7 @@ import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { activityReviewPending } from "@/lib/learning-rules";
 import { isTerminal, issueMessage, type AiStatus } from "@/lib/ai-grading-rules";
-import { requestLearningReview, learningFileUrl, runMyEvaluation } from "@/lib/learning.functions";
+import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,6 @@ function FeedbackPage() {
   const status = sub?.ai?.status;
   const quota = reviewQuota({ submissions }, program?.id ?? "", learning.user?.id ?? "", activity?.id ?? "");
   const { refresh } = learning;
-
 
   // Light polling with backoff only while the evaluation is still moving.
   useEffect(() => {
