@@ -9,14 +9,31 @@ export type Professional = {
   photoUrl: string | null;
 };
 
+/** Demand video as the learner sees it. `url` is an embed/external link or a short-lived signed URL. */
+export type DemandVideo = { url: string; posterUrl: string | null; description: string; durationSeconds: number | null };
+/** Admin overrides of the simulated e-mail; empty strings mean "use the course content". */
+export type DemandMailOverride = { subject: string; html: string };
+
 export type ActivityStaff = {
   supervisor: Professional | null;
   feedback: Professional | null;
   demandVideoUrl: string;
+  video?: DemandVideo;
+  mail?: DemandMailOverride;
 };
 
 export type CourseLink = { professional_id: string; is_lead: boolean; position: number };
-export type StaffRow = { supervisor_id: string | null; feedback_professional_id: string | null; demand_video_url: string };
+export type StaffRow = {
+  supervisor_id: string | null;
+  feedback_professional_id: string | null;
+  demand_video_url: string;
+  video_path?: string | null;
+  video_poster_path?: string | null;
+  video_description?: string;
+  video_duration_seconds?: number | null;
+  mail_subject?: string;
+  mail_html?: string;
+};
 
 export const PHOTO_TYPES: Record<string, "jpg" | "png" | "webp"> = {
   "image/jpeg": "jpg",
