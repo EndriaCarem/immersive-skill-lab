@@ -11,11 +11,11 @@ describe("formulário do revisor", () => {
   });
   it("só libera salvar quando todos os critérios recebem nota explícita", () => {
     const draft = initialGradeDraft(rubric);
-    draft[0].score = 8;
-    draft[1].score = 0;
-    expect(unscoredCriteria(draft)).toEqual(["Pedidos"]);
-    draft[2].score = 7;
-    expect(unscoredCriteria(draft)).toEqual([]);
+    const scoreAt = (i: number, score: number) => draft.map((g, j) => (j === i ? { ...g, score } : g));
+    const partial = scoreAt(0, 8).map((g, j) => (j === 1 ? { ...g, score: 0 } : g));
+    expect(unscoredCriteria(partial)).toEqual(["Pedidos"]);
+    const full = partial.map((g, j) => (j === 2 ? { ...g, score: 7 } : g));
+    expect(unscoredCriteria(full)).toEqual([]);
   });
   it("correção já salva reabre com as notas gravadas", () => {
     const draft = initialGradeDraft(rubric, [{ criterion: "Estrutura", score: 9, comment: "ok" }]);
