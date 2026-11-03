@@ -23,7 +23,7 @@
 - Uploaded files (covers, attachments) are stored as blobs in IndexedDB via src/lib/files.ts and referenced by id from the store; rich text is saved as HTML in *Html fields and always rendered through the sanitizing Rich component.
 - Brand manual v2 overrides live at the end of src/styles.css (flat buttons, 1px borders, signal colors, Newsreader via .doc-voice/.rich); the review-mark visual is the shared ReviewWindow component for marketing pages only, because its sample marks and scores must never appear as a learner's real evaluation.
 - Interest and contact forms share InterestForm and a Zod schema; public write-only server actions store private submissions in Lovable Cloud, never in the unprotected local admin panel.
-- Public-page responsive layouts and mobile navigation are shared through SiteShell and semantic CSS classes to keep institutional and catalog pages consistent.
+- Public responsive layouts and mobile navigation are shared via SiteShell and semantic CSS classes for consistency.
 - Founder identity and portrait references are centralized in src/lib/founders.ts so profile cards and compact avatars use the same mapping.
 - Classify authentication failures by provider code or known message in src/lib/auth-errors.ts, never HTTP status alone, so different validation failures are not misreported.
 - Signup without a session navigates to the public /confirmar-cadastro route; only a confirmed authenticated session grants access to protected account pages.
