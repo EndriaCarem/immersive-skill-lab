@@ -8,23 +8,39 @@ import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveActivityStaff, visiblePeople } from "./professionals";
 
-/** Faculty for the learner's courses. Failures leave staff empty instead of blocking progress. */
+type MaterialRow = Database["public"]["Tables"]["learning_activity_materials"]["Row"];
+/** Signed URLs come back on the server's storage host; rewrite them to the browser-facing one. */
+function browserUrl(signed: string) {
+  const base = import.meta.env['VITE_SUPABASE_URL'];
+  if (!base) return signed;
+  const u = new URL(signed);
+  return new URL(u.pathname + u.search, base).href;
+}
+async function signAll(db: SupabaseClient<Database>, bucket: string, paths: string[], seconds: number) {
+  const urls = new Map<string, string>();
+  if (!paths.length) return urls;
+  const signed = await db.storage.from(bucket).createSignedUrls(paths, seconds);
+  for (const s of signed.data ?? []) if (s.path && s.signedUrl) urls.set(s.path, browserUrl(s.signedUrl));
+  return urls;
+}
+/** Faculty, demand media and support library for the learner's courses. Failures leave them empty instead of blocking progress. */
 async function loadStaff(db: SupabaseClient<Database>, programIds: string[]) {
-  const empty = { links: [] as Database["public"]["Tables"]["learning_course_professionals"]["Row"][], rows: [] as Database["public"]["Tables"]["learning_activity_staff"]["Row"][], people: visiblePeople([], new Map()) };
+  const empty = { links: [] as Database["public"]["Tables"]["learning_course_professionals"]["Row"][], rows: [] as Database["public"]["Tables"]["learning_activity_staff"]["Row"][], people: visiblePeople([], new Map()), media: new Map<string, string>(), materials: [] as MaterialRow[] };
   if (!programIds.length) return empty;
-  const [links, rows, people] = await Promise.all([
+  const [links, rows, people, materials] = await Promise.all([
     db.from("learning_course_professionals").select("*").in("program_id", programIds),
     db.from("learning_activity_staff").select("*").in("program_id", programIds),
     db.from("learning_professionals").select("id, full_name, title, specialty, bio, photo_path, active, display_authorized").eq("active", true).eq("display_authorized", true),
+    db.from("learning_activity_materials").select("*").in("program_id", programIds).order("position").order("created_at"),
   ]);
   if (links.error || rows.error || people.error) return empty;
-  const paths = (people.data ?? []).map(p => p.photo_path).filter((p): p is string => Boolean(p));
-  const urls = new Map<string, string>();
-  if (paths.length) {
-    const signed = await db.storage.from("professional-photos").createSignedUrls(paths, 3600);
-    for (const s of signed.data ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
-  }
-  return { links: links.data ?? [], rows: rows.data ?? [], people: visiblePeople(people.data ?? [], urls) };
+  const photoPaths = (people.data ?? []).map(p => p.photo_path).filter((p): p is string => Boolean(p));
+  const mediaPaths = (rows.data ?? []).flatMap(r => [r.video_path, r.video_poster_path]).filter((p): p is string => Boolean(p));
+  const [urls, media] = await Promise.all([signAll(db, "professional-photos", photoPaths, 3600), signAll(db, "activity-media", mediaPaths, 3 * 3600)]);
+  return { links: links.data ?? [], rows: rows.data ?? [], people: visiblePeople(people.data ?? [], urls), media, materials: materials.error ? [] : materials.data ?? [] };
+}
+function material(m: MaterialRow) {
+  return { id: m.id, title: m.title, docType: m.doc_type, description: m.description, category: m.category as "case" | "annex" | "template", version: m.version, fileName: m.file_name, fileSize: m.file_size };
 }
 
 type Row = Database["public"]["Tables"]["learning_submissions"]["Row"];

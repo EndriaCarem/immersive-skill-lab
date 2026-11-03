@@ -1,6 +1,7 @@
 import { useSyncExternalStore , useEffect, useState } from "react";
 import type { FileRef } from "./files";
 import type { ActivityStaff } from "./professionals";
+import type { ActivityMaterial } from "./activity-room";
 import type { AiEvaluation } from "./ai-grading-rules";
 export type { FileRef };
 
@@ -36,6 +37,8 @@ export type Activity = {
   answerFiles?: FileRef[];
   /** Resolved faculty for the activity (Cloud learner data only). */
   staff?: ActivityStaff;
+  /** Pre-delivery support library managed in Cloud (case documents, annexes, templates). */
+  materials?: ActivityMaterial[];
 };
 export type Program = {
   id: string;
