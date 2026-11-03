@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppShell } from "./AppShell";
-import { fmt, subScore, type Activity, type Program } from "@/lib/store";
+import { fmt, type Activity, type Program } from "@/lib/store";
+import { deliveryStatusLabel } from "@/lib/ai-grading-rules";
 import { useLearning } from "@/lib/learning";
 import { canOpenActivity, currentSubmission, learningProgress } from "@/lib/learning-rules";
 import { useState } from "react";
@@ -42,7 +43,6 @@ export function ActivityRail({ program, current }: { program: Program; current: 
         const sub = currentSubmission(submissions, program.id, a.id);
         const unlocked = canOpenActivity(program, submissions, i);
         const cls = sub ? "done" : i === current ? "now" : unlocked ? "" : "locked";
-        const score = subScore(sub);
         return (
           <li key={a.id} className={cls}>
             <span className="num">{sub ? "✓" : i + 1}</span>
@@ -55,7 +55,7 @@ export function ActivityRail({ program, current }: { program: Program; current: 
                 <span className="ttl">{a.shortTitle}</span>
               )}
               <div className="meta">
-                {sub ? (score != null ? `Concluída · nota ${fmt(score)}` : "Entregue · aguardando correção") : i === current ? "Em andamento" : unlocked ? "Disponível agora" : a.duration}
+                {sub ? deliveryStatusLabel(sub, fmt) : i === current ? "Em andamento" : unlocked ? "Disponível agora" : a.duration}
               </div>
             </span>
           </li>

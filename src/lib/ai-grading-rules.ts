@@ -149,3 +149,20 @@ export const isTerminal = (s: AiStatus) => s === "completed" || s === "failed" |
 
 /** Delay before an automatic retry after a transient failure (1 min, then 5 min). */
 export const retryDelayMs = (tries: number) => (tries <= 1 ? 60_000 : 300_000);
+
+/**
+ * One-line status for lists. Automated and human results are both named by source;
+ * no rule here decides which one prevails.
+ */
+export function deliveryStatusLabel(sub: { grades?: { score: number }[]; ai?: Pick<AiEvaluation, "status" | "overallScore"> }, fmt: (n: number) => string) {
+  const human = sub.grades?.length ? sub.grades.reduce((t, g) => t + g.score, 0) / sub.grades.length : null;
+  const ai = sub.ai?.status === "completed" && sub.ai.overallScore !== undefined ? sub.ai.overallScore : null;
+  const parts: string[] = [];
+  if (ai !== null) parts.push(`nota ${fmt(ai)} (IA)`);
+  if (human !== null) parts.push(`revisão humana ${fmt(human)}`);
+  if (parts.length) return `Corrigida · ${parts.join(" · ")}`;
+  const s = sub.ai?.status;
+  if (s === "pending" || s === "extracting" || s === "evaluating") return "Entregue · em correção";
+  if (s === "needs_human_review" || s === "failed") return "Entregue · em análise pela equipe";
+  return "Entregue · aguardando correção";
+}

@@ -7,7 +7,8 @@ import { accountData } from "@/lib/commerce.functions";
 import { commerceHead } from "@/lib/commerce-schema";
 import { useLearning } from "@/lib/learning";
 import { learningProgress, currentSubmission } from "@/lib/learning-rules";
-import { fmt, subScore } from "@/lib/store";
+import { fmt } from "@/lib/store";
+import { deliveryStatusLabel } from "@/lib/ai-grading-rules";
 export const Route = createFileRoute("/meus-programas")({
   head: () => commerceHead("Meus programas", "Acompanhe suas matrículas da Empiria."),
   component: Portal,
@@ -85,7 +86,7 @@ function Portal() {
                           <Link className="btn" to="/estagio/$slug/$n/caso" params={{ slug: program.slug, n: String(progress.next + 1) }}>{progress.done ? "Continuar programa" : "Iniciar programa"}</Link>
                           <ul className="clean">{program.activities.map((a, i) => {
                             const sub = currentSubmission(learning.data?.submissions ?? [], program.id, a.id);
-                            return <li key={a.id}>{a.shortTitle} — {sub ? sub.grades ? `Nota ${fmt(subScore(sub))}` : "Aguardando correção" : "Não entregue"}
+                            return <li key={a.id}>{a.shortTitle} — {sub ? deliveryStatusLabel(sub, fmt) : "Não entregue"}
                               {sub && <> · <Link to="/estagio/$slug/$n/devolutiva" params={{ slug: program.slug, n: String(i + 1) }}>Ver devolutiva</Link></>}
                             </li>;
                           })}</ul>
