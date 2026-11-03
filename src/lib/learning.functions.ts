@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError, isFreshUpload } from "./learning-rules";
 import type { Program, Submission } from "./store";
 import type { AiEvaluation, AiStatus } from "./ai-grading-rules";
 import type { Database } from "@/integrations/supabase/types";
