@@ -12,6 +12,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileList } from "@/components/FileList";
+import { NidiaPanel } from "@/components/NidiaPanel";
 
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
   head: () => ({
@@ -46,14 +47,6 @@ function DemandPage() {
   const { program, activity, idx } = useActivity(slug, n);
   const [file, setFile] = useState<File | null>(null);
   const [ai, setAi] = useState<string[]>([]);
-  const [chat, setChat] = useState<{ me: boolean; t: string }[]>([
-    { me: true, t: "Como se estrutura a qualificação das partes num requerimento?" },
-    {
-      me: false,
-      t: "Vem antes dos fatos, em parágrafo corrido e não em lista: razão social completa, CNPJ, endereço e forma de representação.",
-    },
-  ]);
-  const [ask, setAsk] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const learning = useLearning();
   const deliver = useServerFn(deliverActivity);
@@ -114,22 +107,6 @@ function DemandPage() {
       setSending(false);
     }
   };
-  const askAssistant = (q = ask) => {
-    if (!q.trim()) return;
-    const ask_ = q;
-    const delegating = /escrev|faz|redij|pronto|faça/i.test(ask_);
-    setChat((c) => [
-      ...c,
-      { me: true, t: ask_ },
-      {
-        me: false,
-        t: delegating
-          ? "Não. Redija a sua e me pergunte se ficou no padrão — eu comento a forma, não produzo o conteúdo."
-          : "Boa pergunta. Comece pela instrução da demanda e confira nos materiais anexos o que a sustenta. Quer que eu comente a estrutura depois que você escrever um rascunho?",
-      },
-    ]);
-    setAsk("");
-  };
 
   const rail = (
     <>
@@ -154,34 +131,11 @@ function DemandPage() {
       <h4>
         <span className="nidia-name">Nidia</span> · revisora de método
       </h4>
-      <div className="assist">
-        <div className="hd">Disponível durante o exercício</div>
-        {chat.map((m, i) => (
-          <div key={i} className={`m ${m.me ? "me" : "ai"}`}>
-            {m.t}
-          </div>
-        ))}
-        <div className="chips" style={{ marginTop: 10 }}>
-          {[
-            "Como estruturo os pedidos?",
-            "Onde fundamento a competência?",
-            "Meu parágrafo está no padrão?",
-          ].map((q) => (
-            <button key={q} className="filter" onClick={() => askAssistant(q)}>
-              {q}
-            </button>
-          ))}
-        </div>
-        <input
-          className="input"
-          style={{ marginTop: 10 }}
-          placeholder="Pergunte sobre forma ou método…"
-          value={ask}
-          onChange={(e) => setAsk(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && askAssistant()}
-        />
-        <div className="foot">Orienta linguagem, estrutura, formatação e método de pesquisa.</div>
-      </div>
+      {learning.user ? (
+        <NidiaPanel programId={program.id} activityId={activity.id} userId={learning.user.id} />
+      ) : (
+        <div className="assist"><div className="foot">Entre na sua conta para conversar com a Nidia.</div></div>
+      )}
     </>
   );
 

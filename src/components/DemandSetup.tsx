@@ -199,6 +199,8 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
 
         <MaterialsEditor target={target} />
 
+        <NidiaSetup target={target} />
+
         <div className="wb-modal-actions">
           <span style={{ flex: 1 }} />
           <Button variant="ghost" onClick={onClose} disabled={busy}>Fechar</Button>
@@ -297,5 +299,93 @@ function MaterialItem({ m, onSave, onRemove }: { m: Material; onSave: (p: Partia
         <Button type="button" size="sm" variant="ghost" onClick={onRemove}>Remover</Button>
       </div>
     </div>
+  );
+}
+
+type AssistantSettings = Database["public"]["Tables"]["learning_assistant_settings"]["Row"];
+const LIMITS = [2, 3, 4, 5];
+
+/** Nidia per activity: on/off, question limit (2–5, or the general default) and optional faculty guidance. Admin-only by RLS. */
+function NidiaSetup({ target }: { target: DemandTarget }) {
+  const [loaded, setLoaded] = useState(false);
+  const [base, setBase] = useState<number>(3);
+  const [baseSaved, setBaseSaved] = useState<number>(3);
+  const [row, setRow] = useState<AssistantSettings | null>(null);
+  const [enabled, setEnabled] = useState(true);
+  const [limit, setLimit] = useState<string>("");
+  const [guidance, setGuidance] = useState("");
+  const [busy, setBusy] = useState(false);
+  const load = async () => {
+    const [cfg, s] = await Promise.all([
+      supabase.from("learning_assistant_config").select("default_question_limit").eq("id", "default").maybeSingle(),
+      supabase.from("learning_assistant_settings").select("*").eq("program_id", target.programId).eq("activity_id", target.activityId).maybeSingle(),
+    ]);
+    if (cfg.error || s.error) { toast.error("Não foi possível carregar a configuração da Nidia."); return; }
+    const d = cfg.data?.default_question_limit ?? 3;
+    setBase(d); setBaseSaved(d);
+    setRow(s.data ?? null);
+    setEnabled(s.data?.enabled ?? true);
+    setLimit(s.data?.question_limit ? String(s.data.question_limit) : "");
+    setGuidance(s.data?.teacher_guidance ?? "");
+    setLoaded(true);
+  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [target.programId, target.activityId]);
+
+  async function save() {
+    setBusy(true);
+    try {
+      if (base !== baseSaved) {
+        const { error } = await supabase.from("learning_assistant_config").update({ default_question_limit: base, updated_at: new Date().toISOString() }).eq("id", "default");
+        if (error) throw new Error("Não foi possível salvar o padrão geral.");
+      }
+      const { error } = await supabase.from("learning_assistant_settings").upsert({
+        program_id: target.programId, activity_id: target.activityId, enabled,
+        question_limit: limit ? Number(limit) : null, teacher_guidance: guidance.trim(), updated_at: new Date().toISOString(),
+      });
+      if (error) throw new Error("Não foi possível salvar a configuração da Nidia.");
+      toast.success("Configuração da Nidia salva.");
+      await load();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível salvar.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!loaded) return <span className="muted sm">Carregando configuração da Nidia…</span>;
+  const dirty = base !== baseSaved || enabled !== (row?.enabled ?? true) || limit !== (row?.question_limit ? String(row.question_limit) : "") || guidance.trim() !== (row?.teacher_guidance ?? "");
+  return (
+    <section style={{ display: "grid", gap: 10 }} aria-label="Nidia nesta atividade">
+      <h4 style={{ margin: "8px 0 0" }}>Nidia nesta atividade</h4>
+      <label style={{ display: "flex", gap: 8, alignItems: "center", fontWeight: 400 }}>
+        <input type="checkbox" checked={enabled} onChange={(e) => setEnabled(e.target.checked)} style={{ width: "auto" }} />
+        Nidia disponível para os alunos nesta atividade
+      </label>
+      <div className="wb-2col">
+        <label>
+          Perguntas por aluno nesta atividade
+          <select className="wb-select" style={{ width: "100%" }} value={limit} onChange={(e) => setLimit(e.target.value)}>
+            <option value="">Padrão geral ({base})</option>
+            {LIMITS.map((n) => <option key={n} value={n}>{n} perguntas</option>)}
+          </select>
+        </label>
+        <label>
+          Padrão geral (todas as atividades)
+          <select className="wb-select" style={{ width: "100%" }} value={base} onChange={(e) => setBase(Number(e.target.value))}>
+            {LIMITS.map((n) => <option key={n} value={n}>{n} perguntas</option>)}
+          </select>
+        </label>
+      </div>
+      <span className="muted sm">Padrão provisório de 3 até a aprovação pedagógica. Alterar o limite não apaga o histórico nem devolve perguntas já usadas.</span>
+      <label>
+        Orientações do professor para a Nidia (opcional)
+        <textarea rows={3} maxLength={4000} value={guidance} placeholder="Sem orientações docentes cadastradas." onChange={(e) => setGuidance(e.target.value)} />
+      </label>
+      <span className="muted sm">Lidas só pela Nidia, nunca mostradas ao aluno. Não inclua a solução nem trechos do gabarito.</span>
+      <div style={{ display: "flex", gap: 8 }}>
+        <Button type="button" size="sm" disabled={!dirty || busy} onClick={save}>{busy ? "Salvando…" : "Salvar Nidia"}</Button>
+      </div>
+    </section>
   );
 }
