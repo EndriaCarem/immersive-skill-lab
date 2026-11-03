@@ -14,9 +14,9 @@
 - Commercial writes use validated authenticated server functions and atomic database operations; prices, coupons, consent and entitlements are server-authoritative.
 - Privileged roles live separately from editable profiles; administrative routes are client-only protected children with server-validated role checks.
 - Administrative navigation uses an account-scoped role RPC query and stays hidden until verified; navigation visibility never replaces route or server authorization.
-- External payment and app-email adapters remain inactive until authorized integration; missing credentials never generate paid orders or sent-email claims.
+- Payment and email adapters stay inactive until authorized; missing credentials never create paid orders or sent-email claims.
 - Mercado Pago uses server-only Checkout Transparente payments (card tokenized in-browser by the MP Brick; amount from the order). Production credentials (MERCADO_PAGO_ACCESS_TOKEN) enable live mode; only live attempts update orders and enrollments via the service-only apply_commerce_payment function, while test attempts never do. Signed callbacks reconcile against the provider API.
-- Published terms are immutable versioned records; changes create a new version so existing order acceptance remains auditable.
+- Published terms are immutable versions; changes create a new version so past acceptances stay auditable.
 - Visual styles are ported from the uploaded mockup as plain CSS classes in src/styles.css; reuse those classes so screens stay faithful to the mockup.
 - Marketing pages use SiteShell (floating nav + footer); app screens use AppShell, which wraps SiteShell in a rounded frame, so navigation stays identical everywhere.
 - The sign-in route uses a dedicated unframed account-entry layout rather than SiteShell so the form remains focused and follows the approved reference; authentication behavior is shared unchanged.
@@ -36,4 +36,4 @@
 - The /sobre page body is a scoped static port of the Site v10 "Quem somos" reference (HTML in src/lib/sobre-v10.ts, reusing .v10 CSS) with the reference portraits as Lovable assets.
 - The per-activity delivery limit is enforced by a database trigger that serializes inserts with a transaction advisory lock and assigns the attempt number; server and UI only mirror it, so direct or concurrent requests cannot exceed it.
 - The answer key (answer content, reference models, feedback video) is readable only after a delivery and while no delivery of that activity has a pending human review; the same rule lives in learning_answers RLS, learnerData and the shared answerKeyOpen helper, because a later delivery must never bypass an open review.
-- Course faculty lives in Cloud as one professional record linked to courses (lead + others) and per-activity supervisor/feedback choices; display is limited to active, display-authorized rows by RLS, photos sit in a private bucket served by signed URLs, and the shared resolver in src/lib/professionals.ts falls back to the course lead, so the same person is never duplicated and no presenter is invented.
+- Course faculty: one Cloud record per professional, linked to courses and per-activity roles; RLS shows only active, display-authorized rows, photos use a private bucket with signed URLs, and src/lib/professionals.ts falls back to the course lead, so people are never duplicated or invented.
