@@ -103,6 +103,16 @@ export const requeueAiEvaluation = createServerFn({ method: "POST" }).middleware
     if (error) throw new Error(error.message);
     return true;
   });
+/** Admin action: runs one queued/interrupted evaluation now, inside this waiting request. The lease prevents duplicates. */
+export const processAiEvaluationNow = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(x => z.object({ id: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
+    const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!allowed) throw new Error("Acesso restrito à administração.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { processEvaluations } = await import("./ai-grading.server");
+    const [result] = await processEvaluations(supabaseAdmin, { limit: 1, only: data.id });
+    return { status: result?.result ?? "not_claimed" };
+  });
 export const deliverActivity = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(x => deliverySchema.parse(x)).handler(async ({ data, context }) => {
     if (!data.filePath.startsWith(`${context.userId}/${data.programId}/`)) throw new Error("Arquivo inválido.");
