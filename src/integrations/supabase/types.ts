@@ -426,6 +426,125 @@ export type Database = {
           },
         ]
       }
+      learning_ai_evaluations: {
+        Row: {
+          activity_id: string
+          attempt: number | null
+          completed_at: string | null
+          created_at: string
+          criteria: Json | null
+          ethics_note: string | null
+          extraction: Json | null
+          gateway_request_id: string | null
+          id: string
+          issue_code: string | null
+          lease_token: string | null
+          lease_until: string | null
+          model: string | null
+          next_attempt_at: string
+          overall_feedback: string | null
+          overall_score: number | null
+          program_id: string
+          prompt_version: string | null
+          rubric_snapshot: Json | null
+          rubric_version: string | null
+          started_at: string | null
+          status: string
+          submission_id: string
+          tries: number
+          updated_at: string
+          usage: Json | null
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          attempt?: number | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          ethics_note?: string | null
+          extraction?: Json | null
+          gateway_request_id?: string | null
+          id?: string
+          issue_code?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          model?: string | null
+          next_attempt_at?: string
+          overall_feedback?: string | null
+          overall_score?: number | null
+          program_id: string
+          prompt_version?: string | null
+          rubric_snapshot?: Json | null
+          rubric_version?: string | null
+          started_at?: string | null
+          status?: string
+          submission_id: string
+          tries?: number
+          updated_at?: string
+          usage?: Json | null
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          attempt?: number | null
+          completed_at?: string | null
+          created_at?: string
+          criteria?: Json | null
+          ethics_note?: string | null
+          extraction?: Json | null
+          gateway_request_id?: string | null
+          id?: string
+          issue_code?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
+          model?: string | null
+          next_attempt_at?: string
+          overall_feedback?: string | null
+          overall_score?: number | null
+          program_id?: string
+          prompt_version?: string | null
+          rubric_snapshot?: Json | null
+          rubric_version?: string | null
+          started_at?: string | null
+          status?: string
+          submission_id?: string
+          tries?: number
+          updated_at?: string
+          usage?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_ai_evaluations_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: true
+            referencedRelation: "learning_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_ai_job_state: {
+        Row: {
+          id: string
+          paused_at: string | null
+          paused_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          paused_at?: string | null
+          paused_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          paused_at?: string | null
+          paused_reason?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       learning_answers: {
         Row: {
           activity_id: string
@@ -791,6 +910,44 @@ export type Database = {
         Args: { p_order: string; p_reason: string; p_user: string }
         Returns: string
       }
+      claim_learning_ai_evaluations: {
+        Args: { p_lease_seconds: number; p_limit: number; p_only?: string }
+        Returns: {
+          activity_id: string
+          attempt: number | null
+          completed_at: string | null
+          created_at: string
+          criteria: Json | null
+          ethics_note: string | null
+          extraction: Json | null
+          gateway_request_id: string | null
+          id: string
+          issue_code: string | null
+          lease_token: string | null
+          lease_until: string | null
+          model: string | null
+          next_attempt_at: string
+          overall_feedback: string | null
+          overall_score: number | null
+          program_id: string
+          prompt_version: string | null
+          rubric_snapshot: Json | null
+          rubric_version: string | null
+          started_at: string | null
+          status: string
+          submission_id: string
+          tries: number
+          updated_at: string
+          usage: Json | null
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "learning_ai_evaluations"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       create_commerce_order: {
         Args: {
           p_coupon: string
@@ -815,6 +972,10 @@ export type Database = {
       }
       request_learning_review: {
         Args: { p_submission: string }
+        Returns: undefined
+      }
+      requeue_learning_ai_evaluation: {
+        Args: { p_evaluation: string }
         Returns: undefined
       }
     }
