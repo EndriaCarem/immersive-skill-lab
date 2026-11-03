@@ -1797,3 +1797,63 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
   .attempt-ok,.attempt-ok .seal:after{animation:none;clip-path:none}
   .attempts .pips i{transition:none}
 }
+
+/* ===== Sala prática: demanda legível, vídeo honesto e corpo docente ===== */
+.mail{background:var(--paper);color:var(--ink)}
+.mail .from{color:var(--slate)}
+.mail .from b{color:var(--ink)}
+.mail p,.mail .rich,.mail .rich :is(p,li,strong){color:var(--ink);opacity:1}
+.upload-guidance{margin:-4px 0 14px}
+
+.fac-video{margin:0 0 12px}
+.fac-video .video{margin-bottom:10px;overflow:hidden;width:100%;display:block}
+.fac-video .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.fac-video video.video{object-fit:cover;background:var(--plum-deep)}
+.fac-video .video.is-empty{
+  background:var(--plum-tint);border:1px dashed var(--plum-edge);
+  display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:16px 18px;
+}
+.fac-video .video.is-empty b{font-family:var(--font-brand);font-size:14px;color:var(--ink);line-height:1.3}
+.fac-video .video.is-empty span{font-size:12.5px;color:var(--slate);line-height:1.45}
+.fac-empty-mark{position:absolute;top:16px;left:18px;width:28px;height:2px;background:var(--plum-mid)}
+.fac-tag{display:flex;align-items:center;gap:12px}
+.fac-tag>span{display:flex;flex-direction:column;min-width:0}
+.fac-tag small{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate)}
+.fac-tag b{font-family:var(--font-brand);font-size:14px;color:var(--ink);line-height:1.25}
+.fac-tag em{font-style:normal;font-size:12.5px;color:var(--slate);line-height:1.35}
+.fac-portrait{
+  flex:none;display:grid;place-items:center;overflow:hidden;
+  width:44px;aspect-ratio:4/5;border-radius:8px;
+  background:var(--plum-tint);border:1px solid var(--plum-edge);
+  color:var(--plum-mid);font-family:var(--font-brand);font-weight:700;font-size:13px;
+}
+.fac-portrait img{width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(1.02)}
+.fac-portrait.lg{width:120px;border-radius:12px;font-size:28px}
+.fac-lead{display:flex;gap:22px;align-items:flex-start;border-top:1px solid var(--rule);padding-top:20px}
+.fac-lead>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.fac-lead b{font-family:var(--font-brand);font-size:19px;color:var(--ink)}
+.fac-role{font-size:14px;color:var(--slate)}
+.fac-spec{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--plum-mid);margin-top:2px}
+.fac-lead p{margin:10px 0 0;font-size:15px;color:var(--slate);text-align:justify;hyphens:auto}
+.fac-others{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.fac-others li{display:flex;gap:12px;align-items:center}
+.fac-others span{display:flex;flex-direction:column;min-width:0}
+.fac-others b{font-family:var(--font-brand);font-size:14px;color:var(--ink)}
+.fac-others em{font-style:normal;font-size:12.5px;color:var(--slate)}
+@media(max-width:560px){.fac-lead{flex-direction:column}.fac-portrait.lg{width:104px}}
+
+/* Administração de professores */
+.prof-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:12px}
+.prof-item{border:1px solid var(--rule);border-radius:14px;padding:14px;background:var(--paper);display:flex;flex-direction:column;gap:10px}
+.prof-item .fac-tag b{font-size:15px}
+.prof-flags{display:flex;gap:6px;flex-wrap:wrap}
+.prof-flag{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--rule);color:var(--slate)}
+.prof-flag.on{border-color:var(--plum-edge);color:var(--plum-mid);background:var(--plum-tint)}
+.prof-photo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.prof-photo .fac-portrait{width:72px}
+.prof-check{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;font-size:14px}
+.prof-check input{width:auto!important}
+.prof-table{width:100%;border-collapse:collapse;font-size:14px}
+.prof-table th,.prof-table td{border-bottom:1px solid var(--rule);padding:10px 8px;text-align:left;vertical-align:top}
+.prof-table select,.prof-table input{width:100%;min-width:140px}
+.prof-scroll{overflow-x:auto}
