@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError } from "./learning-rules";
 import type { Program, Submission } from "./store";
+import type { AiEvaluation, AiStatus } from "./ai-grading-rules";
 import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveActivityStaff, visiblePeople } from "./professionals";
@@ -131,14 +132,16 @@ export const requestLearningReview = createServerFn({ method: "POST" }).middlewa
 export const adminLearningData = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (!allowed) throw new Error("Acesso restrito à administração.");
-  const [programs, subs, profiles, enrollments, answers] = await Promise.all([
+  const [programs, subs, profiles, enrollments, answers, evals, job] = await Promise.all([
     context.supabase.from("learning_programs").select("content"), context.supabase.from("learning_submissions").select("*").order("submitted_at"),
     context.supabase.from("profiles").select("id,full_name"), context.supabase.from("commerce_enrollments").select("*"),
-    context.supabase.from("learning_answers").select("*"),
+    context.supabase.from("learning_answers").select("*"), context.supabase.from("learning_ai_evaluations").select(EVAL_COLUMNS),
+    context.supabase.from("learning_ai_job_state").select("paused_reason, paused_at").eq("id", "grading").maybeSingle(),
   ]);
-  for (const r of [programs, subs, profiles, enrollments, answers]) if (r.error) throw new Error("Não foi possível carregar as entregas.");
+  for (const r of [programs, subs, profiles, enrollments, answers, evals]) if (r.error) throw new Error("Não foi possível carregar as entregas.");
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).map(p => ({ ...p, activities: p.activities.map(a => ({ ...a, ...(answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content as unknown as Partial<typeof a> ?? {}) })) })),
-    submissions: (subs.data ?? []).map(s => submission(s, profiles.data?.find(p => p.id === s.user_id)?.full_name)),
+    submissions: (subs.data ?? []).map(s => submission(s, profiles.data?.find(p => p.id === s.user_id)?.full_name, evals.data?.find(e => e.submission_id === s.id))),
+    aiPaused: job.data?.paused_reason ?? null,
     enrollments: (enrollments.data ?? []).map(e => ({ programId: e.product_id, student: profiles.data?.find(p => p.id === e.user_id)?.full_name || e.user_id, userId: e.user_id, enrolledAt: e.enrolled_at })) };
 });
 export const gradeLearningSubmission = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])

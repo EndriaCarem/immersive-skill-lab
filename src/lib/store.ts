@@ -1,6 +1,7 @@
 import { useSyncExternalStore , useEffect, useState } from "react";
 import type { FileRef } from "./files";
 import type { ActivityStaff } from "./professionals";
+import type { AiEvaluation } from "./ai-grading-rules";
 export type { FileRef };
 
 export type Doc = { name: string; content: string };
@@ -72,6 +73,10 @@ export type Submission = {
   humanReviews?: string[];
   /** Set when the reviewer finishes the human review; unlocks the answer key. */
   reviewedAt?: string | undefined;
+  /** Attempt number assigned by the database (1 or 2). */
+  attempt?: number;
+  /** Automated rubric evaluation — kept separate from the human `grades`. */
+  ai?: AiEvaluation;
 };
 export type Enrollment = { programId: string; student: string; enrolledAt: string };
 export type Certificate = { code: string; programId: string; student: string; issuedAt: string; grade: number | null };
