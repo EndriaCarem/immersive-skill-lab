@@ -5,6 +5,7 @@ import { Rich, textToHtml } from "@/components/Rich";
 import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
 import { gradeLearningSubmission, learningFileUrl, processAiEvaluationNow, requeueAiEvaluation } from "@/lib/learning.functions";
 import { isWorking, issueMessage } from "@/lib/ai-grading-rules";
+import { initialGradeDraft, unscoredCriteria, type GradeDraft } from "@/lib/learning-rules";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -48,23 +49,26 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const [saving, setSaving] = useState(false);
   const [processing, setProcessing] = useState(false);
   const activity = program?.activities.find((a) => a.id === sub.activityId);
-  const [grades, setGrades] = useState<Grade[]>(
-    () => activity?.rubric.map((r) => sub.grades?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: 7, comment: "" }) ?? [],
-  );
+  const [grades, setGrades] = useState<GradeDraft[]>(() => (activity ? initialGradeDraft(activity.rubric, sub.grades) : []));
   const [comment, setComment] = useState(sub.teacherComment ?? "");
   const [view, setView] = useState<"entrega" | "demanda" | "gabarito">("entrega");
   const [focus, setFocus] = useState(0);
-  const mean = avg(grades.map((g) => g.score));
+  const missing = unscoredCriteria(grades);
+  const ready = grades.length > 0 && missing.length === 0;
+  const scored = grades.flatMap((g) => (g.score === null ? [] : [g.score]));
+  const mean = avg(scored);
   const idx = queue.findIndex((q) => q.id === sub.id);
   const next = idx >= 0 ? queue[idx + 1] : undefined;
   const prev = idx > 0 ? queue[idx - 1] : undefined;
 
-  const set = (i: number, patch: Partial<Grade>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  const set = (i: number, patch: Partial<GradeDraft>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
   const save = async (goNext: boolean) => {
     if (saving) return;
+    if (!ready) { toast.error(`Dê nota a todos os critérios antes de salvar (falta: ${missing.join(", ")}).`); return; }
+    const final: Grade[] = grades.map((g) => ({ ...g, score: g.score as number }));
     setSaving(true);
     try {
-      await grade({ data: { id: sub.id, grades, teacherComment: comment } });
+      await grade({ data: { id: sub.id, grades: final, teacherComment: comment } });
       await client.invalidateQueries({ queryKey: ["admin-learning"] });
       await client.invalidateQueries({ queryKey: ["learner-progress"] });
       toast.success("Correção salva", { description: `${sub.student} · nota ${fmt(mean)}` });
@@ -168,20 +172,20 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
         <section className="wb-right">
           <div className="wb-score">
             <span>Nota final</span>
-            <b>{fmt(mean)}</b>
+            <b>{ready ? fmt(mean) : "—"}</b>
           </div>
           {grades.map((g, i) => (
             <div key={g.criterion} className={`wb-crit ${focus === i ? "on" : ""}`} onClick={() => setFocus(i)}>
               <div className="wb-crit-top">
                 <b>{g.criterion}</b>
-                <span className="wb-val">{fmt(g.score)}</span>
+                <span className="wb-val">{g.score === null ? <span className="muted">Sem nota</span> : fmt(g.score)}</span>
               </div>
               <div className="wb-quick">
                 {QUICK.map((n) => (
                   <button key={n} className={g.score === n ? "on" : ""} onClick={() => set(i, { score: n })}>{String(n).replace(".", ",")}</button>
                 ))}
               </div>
-              <input type="range" min={0} max={10} step={0.5} value={g.score} onChange={(e) => set(i, { score: Number(e.target.value) })} />
+              <input type="range" min={0} max={10} step={0.5} value={g.score ?? 0} aria-label={`Nota de ${g.criterion}`} aria-valuetext={g.score === null ? "Sem nota" : fmt(g.score)} style={g.score === null ? { opacity: 0.45 } : undefined} onChange={(e) => set(i, { score: Number(e.target.value) })} />
               <input className="input" placeholder="O que a correção observou" value={g.comment} onChange={(e) => set(i, { comment: e.target.value })} />
               {focus === i && (
                 <div className="wb-snips">
@@ -201,6 +205,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
               <button key={s} onClick={() => setComment((c) => append(c, s))}>+ {s}</button>
             ))}
           </div>
+          {!ready && <p className="muted sm" role="status" style={{ margin: "10px 0" }}>Nenhuma nota vem preenchida: escolha a nota de cada critério para liberar o salvamento{missing.length ? ` (faltam ${missing.length})` : ""}.</p>}
           <p className="muted sm" style={{ margin: "10px 0" }}>Atalhos: ↑/↓ escolhe o critério · 1–9 dá a nota (0 = 10) · Ctrl+Enter salva e avança</p>
         </section>
       </div>
@@ -209,8 +214,8 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
         <button className="btn ghost sm" disabled={!prev} onClick={() => prev && onChange(prev)}>← Anterior</button>
         <button className="btn ghost sm" disabled={!next} onClick={() => next && onChange(next)}>Pular →</button>
         <span style={{ flex: 1 }} />
-        <Button className="btn ghost" disabled={saving} onClick={() => save(false)}>Salvar</Button>
-        <Button className="btn" disabled={saving} onClick={() => save(true)}>{saving ? "Salvando…" : next ? "Salvar e próxima" : "Salvar e fechar"}</Button>
+        <Button className="btn ghost" disabled={saving || !ready} onClick={() => save(false)}>Salvar</Button>
+        <Button className="btn" disabled={saving || !ready} onClick={() => save(true)}>{saving ? "Salvando…" : next ? "Salvar e próxima" : "Salvar e fechar"}</Button>
       </div>
     </div>
   );
