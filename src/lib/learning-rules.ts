@@ -12,6 +12,15 @@ export const gradingSchema = z.object({
   grades: z.array(z.object({ criterion: z.string().min(1), score: z.number().min(0).max(10), comment: z.string().max(5000) })).min(1),
   teacherComment: z.string().max(10000),
 });
+/** Reviewer draft: a criterion without an explicit choice has score null — never a preset value. */
+export type GradeDraft = { criterion: string; score: number | null; comment: string };
+export function initialGradeDraft(rubric: { criterion: string }[], saved?: { criterion: string; score: number; comment: string }[]): GradeDraft[] {
+  return rubric.map((r) => saved?.find((g) => g.criterion === r.criterion) ?? { criterion: r.criterion, score: null, comment: "" });
+}
+/** Criteria still without an explicit score; saving is allowed only when this is empty. */
+export function unscoredCriteria(draft: GradeDraft[]): string[] {
+  return draft.filter((g) => g.score === null || !Number.isFinite(g.score)).map((g) => g.criterion);
+}
 /** What the delivery upload actually accepts (mirrors deliverySchema and the file input). */
 export const UPLOAD_RULES_LABEL = "PDF, DOC ou DOCX · até 10 MB";
 /** An uploaded file must become a delivery within this window; older unlinked files are orphans. */
