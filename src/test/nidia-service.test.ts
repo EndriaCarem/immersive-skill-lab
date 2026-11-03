@@ -44,7 +44,9 @@ describe("Nidia service", () => {
   it("marks the question failed (not consumed) when the AI service errors", async () => {
     generateResponse.mockImplementation(async () => { throw new Error("network down"); });
     const updates: Update[] = [];
-    const out = await answerQuestion(fakeDb(updates) as never, "q1");
+    let out: unknown; let thrown: unknown;
+    try { out = await answerQuestion(fakeDb(updates) as never, "q1"); } catch (e) { thrown = e; }
+    console.log("DBG", JSON.stringify(out), String(thrown), JSON.stringify(updates));
     expect(out).toEqual({ ok: false, code: "service" });
     expect(updates.some((u) => u.patch["status"] === "failed")).toBe(true);
     expect(updates.some((u) => u.patch["status"] === "answered")).toBe(false);
