@@ -1896,6 +1896,11 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
 @media (max-width:640px){
   .ai-reading{flex-direction:column;gap:12px;padding:16px}
   .ai-attempts{display:flex;width:100%}.ai-attempts button{flex:1}
-  .rubric .crit{width:auto}
+  .ai-feedback .rubric thead{display:none}
+  .ai-feedback .rubric tr{display:grid;grid-template-columns:1fr auto;column-gap:12px;border-bottom:1px solid #F0F0F3}
+  .ai-feedback .rubric td{border-bottom:none;padding:14px 4px 6px}
+  .ai-feedback .rubric .crit{width:auto}
+  .ai-feedback .rubric .sc{width:auto}
+  .ai-feedback .rubric .cmt{grid-column:1/-1;padding-top:0;padding-bottom:16px}
 }
 @media (prefers-reduced-motion:reduce){.ai-settle,.ai-sheet i{animation:none}}

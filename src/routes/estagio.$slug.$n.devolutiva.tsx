@@ -91,7 +91,7 @@ function FeedbackPage() {
         <div className="ai-attempts" role="tablist" aria-label="Entregas desta atividade">
           {mine.map((s, i) => (
             <button key={s.id} role="tab" aria-selected={s.id === sub.id} className={s.id === sub.id ? "on" : ""} onClick={() => { setPicked(s.id); setOpen(null); }}>
-              {i + 1}ª entrega <span>{new Date(s.submittedAt).toLocaleDateString("pt-BR")}</span>
+              Entrega {i + 1} <span>{new Date(s.submittedAt).toLocaleDateString("pt-BR")}</span>
             </button>
           ))}
         </div>
@@ -125,6 +125,7 @@ function FeedbackPage() {
 
       {working(ai?.status) && <AiReading status={ai!.status} />}
 
+      <div className="ai-feedback">
       <table className="rubric">
         <thead>
           <tr>
@@ -170,6 +171,7 @@ function FeedbackPage() {
               ))}
         </tbody>
       </table>
+      </div>
       {done && ai.overallFeedback && (
         <div className="callout">
           <div className="k">Síntese da correção</div>
@@ -285,7 +287,7 @@ function AiReading({ status }: { status: AiStatus }) {
 
 function HumanReview({ sub, score }: { sub: Submission; score: number | null }) {
   return (
-    <section className="ai-human">
+    <section className="ai-human ai-feedback">
       <div className="ai-human-hd">
         <h3>Revisão humana</h3>
         {score != null && <span>Nota da revisão {pip(score)}</span>}
