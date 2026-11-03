@@ -9,12 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { adminGuard } from "@/lib/admin-guard";
 import { commerceHead } from "@/lib/commerce-schema";
 import { PHOTO_TYPES, photoError } from "@/lib/professionals";
+import { DemandSetup, type DemandTarget } from "@/components/DemandSetup";
 import type { Database } from "@/integrations/supabase/types";
 
 type Person = Database["public"]["Tables"]["learning_professionals"]["Row"];
 type Link_ = Database["public"]["Tables"]["learning_course_professionals"]["Row"];
 type Staff = Database["public"]["Tables"]["learning_activity_staff"]["Row"];
-type Course = { id: string; title: string; activities: { id: string; title: string }[] };
+type Course = { id: string; title: string; activities: { id: string; title: string; demandFrom: string; demandSubject: string }[] };
 
 const BUCKET = "professional-photos";
 
@@ -34,8 +35,8 @@ async function loadAdmin() {
       }
       const courses: Course[] = (programs.data ?? [])
         .map((p) => {
-          const c = p.content as { title?: string; activities?: { id: string; title: string }[] };
-          return { id: p.id, title: c.title ?? p.id, activities: (c.activities ?? []).map((a) => ({ id: a.id, title: a.title })) };
+          const c = p.content as { title?: string; activities?: { id: string; title: string; demandFrom?: string; demandSubject?: string }[] };
+          return { id: p.id, title: c.title ?? p.id, activities: (c.activities ?? []).map((a) => ({ id: a.id, title: a.title, demandFrom: a.demandFrom ?? "", demandSubject: a.demandSubject ?? "" })) };
         })
         .sort((a, b) => a.id.localeCompare(b.id));
       return { people: people.data as Person[], links: links.data as Link_[], staff: staff.data as Staff[], courses, urls };
@@ -91,7 +92,7 @@ function AdminProfessionals() {
         <div className="chips" role="tablist" style={{ margin: "16px 0" }}>
           {(["pessoas", "cursos", "atividades"] as Tab[]).map((t) => (
             <button key={t} role="tab" aria-selected={tab === t} className={`filter ${tab === t ? "on" : ""}`} onClick={() => setTab(t)}>
-              {t === "pessoas" ? "Cadastro" : t === "cursos" ? "Professores dos cursos" : "Supervisão das atividades"}
+              {t === "pessoas" ? "Cadastro" : t === "cursos" ? "Professores dos cursos" : "Supervisão e demandas"}
             </button>
           ))}
         </div>
@@ -325,11 +326,12 @@ function ActivityStaffEditor({ data, onSaved }: { data: Data; onSaved: () => voi
     Object.fromEntries(
       (course?.activities ?? []).map((a) => {
         const r = data.staff.find((s) => s.program_id === courseId && s.activity_id === a.id);
-        return [a.id, { supervisor_id: r?.supervisor_id ?? "", feedback_professional_id: r?.feedback_professional_id ?? "", demand_video_url: r?.demand_video_url ?? "" }];
+        return [a.id, { supervisor_id: r?.supervisor_id ?? "", feedback_professional_id: r?.feedback_professional_id ?? "" }];
       }),
     );
   const [rows, setRows] = useState(rowsFor);
   const [busy, setBusy] = useState(false);
+  const [demand, setDemand] = useState<DemandTarget | null>(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setRows(rowsFor()), [courseId, data.staff]);
   const linked = data.links.filter((l) => l.program_id === courseId);
@@ -337,15 +339,12 @@ function ActivityStaffEditor({ data, onSaved }: { data: Data; onSaved: () => voi
   const fallback = leadName ? `Professor do curso (${leadName})` : "Professor do curso (não definido)";
 
   async function save() {
-    const bad = Object.values(rows).find((r) => r.demand_video_url && !/^https:\/\//.test(r.demand_video_url.trim()));
-    if (bad) { toast.error("O link do vídeo precisa começar com https://"); return; }
     setBusy(true);
     const payload = Object.entries(rows).map(([activity_id, r]) => ({
       program_id: courseId,
       activity_id,
       supervisor_id: r.supervisor_id || null,
       feedback_professional_id: r.feedback_professional_id || null,
-      demand_video_url: r.demand_video_url.trim(),
     }));
     const { error } = await supabase.from("learning_activity_staff").upsert(payload);
     setBusy(false);
@@ -361,10 +360,14 @@ function ActivityStaffEditor({ data, onSaved }: { data: Data; onSaved: () => voi
       </select>
       <div className="prof-scroll">
         <table className="prof-table" style={{ marginTop: 14 }}>
-          <thead><tr><th>Atividade</th><th>Supervisor</th><th>Professor do feedback</th><th>Vídeo da demanda (https)</th></tr></thead>
+          <thead><tr><th>Atividade</th><th>Supervisor</th><th>Professor do feedback</th><th>Demanda</th></tr></thead>
           <tbody>
             {(course?.activities ?? []).map((a, i) => {
-              const r = rows[a.id] ?? { supervisor_id: "", feedback_professional_id: "", demand_video_url: "" };
+              const r = rows[a.id] ?? { supervisor_id: "", feedback_professional_id: "" };
+              const saved = data.staff.find((s) => s.program_id === courseId && s.activity_id === a.id);
+              const supId = saved?.supervisor_id || (linked.find((l) => l.is_lead) ?? linked[0])?.professional_id;
+              const sup = data.people.find((p) => p.id === supId && p.active && p.display_authorized);
+              const summary = [saved?.video_path || saved?.demand_video_url ? "vídeo" : "", saved?.mail_subject || saved?.mail_html ? "e-mail próprio" : ""].filter(Boolean).join(" · ") || "Texto do curso";
               const set = (patch: Partial<typeof r>) => setRows((x) => ({ ...x, [a.id]: { ...r, ...patch } }));
               return (
                 <tr key={a.id}>
@@ -382,7 +385,10 @@ function ActivityStaffEditor({ data, onSaved }: { data: Data; onSaved: () => voi
                     </select>
                   </td>
                   <td>
-                    <input className="wb-select" aria-label={`Vídeo da demanda da atividade ${i + 1}`} placeholder="Sem vídeo" value={r.demand_video_url} maxLength={500} onChange={(e) => set({ demand_video_url: e.target.value })} />
+                    <Button type="button" variant="outline" size="sm" aria-label={`Configurar a demanda da atividade ${i + 1}`} onClick={() => setDemand({ programId: courseId, activityId: a.id, title: a.title, index: i, contentFrom: a.demandFrom, contentSubject: a.demandSubject, supervisorName: sup?.full_name ?? null })}>
+                      Configurar
+                    </Button>
+                    <div className="muted sm" style={{ marginTop: 4 }}>{summary}</div>
                   </td>
                 </tr>
               );
@@ -390,8 +396,9 @@ function ActivityStaffEditor({ data, onSaved }: { data: Data; onSaved: () => voi
           </tbody>
         </table>
       </div>
-      <p className="muted sm">Sem escolha específica, a atividade usa o professor principal do curso. Sem link, a sala mostra que o vídeo ainda não foi publicado.</p>
+      <p className="muted sm">Sem escolha específica, a atividade usa o professor principal do curso. Sem vídeo, a sala mostra que ele ainda não foi publicado. Em “Configurar” ficam o vídeo, a capa, o e-mail simulado e os materiais da atividade.</p>
       <Button disabled={busy} onClick={save}>{busy ? "Salvando…" : "Salvar supervisão"}</Button>
+      {demand && <DemandSetup target={demand} row={data.staff.find((s) => s.program_id === demand.programId && s.activity_id === demand.activityId)} onClose={() => setDemand(null)} onSaved={onSaved} />}
     </section>
   );
 }

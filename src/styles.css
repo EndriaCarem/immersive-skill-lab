@@ -1909,3 +1909,61 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
   .ai-feedback .rubric .cmt{grid-column:1/-1;padding-top:0;padding-bottom:16px}
 }
 @media (prefers-reduced-motion:reduce){.ai-settle,.ai-sheet i{animation:none}}
+
+/* ===== Etapa 3 · Sala prática: e-mail de escritório, vídeo da demanda e biblioteca ===== */
+/* E-mail: same paper/ink pair in both themes, so the text is always legible on its own surface. */
+.mail.mail-office{background:var(--paper);color:var(--ink);padding:0;overflow:hidden}
+.mail-office .mail-head{position:relative;display:grid;gap:5px;padding:16px 22px 14px}
+.mail-office .mail-head:after{content:"";position:absolute;left:22px;right:22px;bottom:0;height:1px;background:var(--rule);transform-origin:left;animation:mail-rule .7s cubic-bezier(.2,.7,.2,1) both .1s}
+.mail-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:13px;line-height:1.4;color:var(--slate)}
+.mail-row>span{flex:none;width:68px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.mail-row b{color:var(--ink);font-weight:700;min-width:0;overflow-wrap:anywhere}
+.mail-row em{font-style:normal;color:var(--slate);min-width:0;overflow-wrap:anywhere}
+.mail-office .mail-body{padding:16px 22px 18px}
+.mail-office .mail-body,.mail-office .mail-body :is(p,li,strong,em,span,blockquote){color:var(--ink);opacity:1}
+.mail-office .mail-body p{margin:0 0 10px;font-size:14.5px;line-height:1.65}
+.mail-office .mail-body p:last-child{margin-bottom:0}
+.mail-attach{display:flex;gap:10px;align-items:flex-start;padding:12px 22px 16px;border-top:1px dashed var(--rule)}
+.mail-attach .k{flex:none;width:68px;padding-top:6px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.mail-attach>div{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.mail-clip{display:inline-flex;align-items:center;gap:6px;max-width:100%;border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:999px;padding:5px 12px 5px 10px;font:600 12.5px/1.3 var(--font-brand);cursor:pointer;overflow-wrap:anywhere;text-align:left}
+.mail-clip:before{content:"";flex:none;width:7px;height:11px;border:1.5px solid var(--plum-mid);border-radius:4px 4px 5px 5px}
+.mail-clip:hover{border-color:var(--plum-edge);background:var(--plum-tint)}
+.mail-clip.is-done:before{border-color:var(--ok)}
+.mail-clip.is-busy{opacity:.7;cursor:progress}
+@keyframes mail-rule{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:520px){.mail-row>span,.mail-attach .k{width:100%}.mail-attach{flex-direction:column;gap:6px}.mail-office .mail-head,.mail-office .mail-body,.mail-attach{padding-left:16px;padding-right:16px}.mail-office .mail-head:after{left:16px;right:16px}}
+
+/* Vídeo: a letterbox opening, proper to an audiovisual briefing; once, on arrival. */
+.fac-video.is-reveal .video{animation:fac-letterbox .9s cubic-bezier(.22,.7,.18,1) both}
+@keyframes fac-letterbox{from{clip-path:inset(14% 0 14% 0 round 9px);filter:saturate(.6)}to{clip-path:inset(0 0 0 0 round 9px);filter:none}}
+.fac-video-meta{display:grid;gap:4px;margin:-2px 0 10px}
+.fac-video-meta p{margin:0;font-size:12.5px;line-height:1.5;color:var(--slate)}
+.fac-duration{justify-self:start;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--plum-mid);font-variant-numeric:tabular-nums}
+.fac-tag.is-neutral em{font-size:12.5px}
+.fac-neutral-mark{display:block;width:40%;height:40%;border:1.5px solid var(--plum-edge);border-radius:50%}
+.fac-tag.is-neutral .fac-portrait{display:grid;place-items:center;background:var(--plum-tint)}
+
+/* Biblioteca: download feedback is a quiet underline that fills while the file is prepared. */
+.lib h4{margin-top:4px}
+.lib-k{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);margin:12px 0 6px}
+.lib-item{position:relative;overflow:hidden;align-items:flex-start}
+.lib-item .ic{margin-top:1px}
+.lib-text{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.lib-text b{font-weight:600;color:var(--ink);overflow-wrap:anywhere}
+.lib-text small{font-size:11.5px;color:var(--slate)}
+.lib-desc{font-size:12.5px;color:var(--slate);line-height:1.45}
+.lib-item .dl{flex:none;background:none;border:0;cursor:pointer;padding:2px 0;align-self:center}
+.lib-item .dl:focus-visible,.mail-clip:focus-visible,.drop:focus-visible{outline:2px solid var(--plum-mid);outline-offset:2px}
+.lib-item:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--plum-mid);transform:scaleX(0);transform-origin:left}
+.lib-item.is-busy:after{animation:lib-fetch 1.4s ease-in-out infinite}
+.lib-item.is-done:after{transform:scaleX(1);background:var(--ok);opacity:.55;transition:opacity 1.2s ease 1s}
+.lib-item.is-done .dl{color:var(--ok)}
+.lib-item.is-error .dl{color:var(--no)}
+@keyframes lib-fetch{0%{transform:scaleX(0);transform-origin:left}50%{transform:scaleX(1);transform-origin:left}50.1%{transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
+.lib-lock{font-size:12px;color:var(--slate);margin:10px 0 18px;padding-left:10px;border-left:2px solid var(--plum-edge)}
+@media (prefers-reduced-motion:reduce){
+  .mail-office .mail-head:after,.fac-video.is-reveal .video,.lib-item.is-busy:after{animation:none}
+  .lib-item.is-busy:after{transform:scaleX(.5)}
+  .lib-item.is-done:after{transition:none}
+}

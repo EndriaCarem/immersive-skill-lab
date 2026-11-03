@@ -2,16 +2,15 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { deliverActivity } from "@/lib/learning.functions";
 import { ATTEMPT_LIMIT_MESSAGE, UPLOAD_RULES_LABEL, attemptStatus, deliverySchema, pageGuidance } from "@/lib/learning-rules";
 import { ActivityVideo } from "@/components/FacultyMedia";
+import { DemandMail, MaterialLibrary } from "@/components/DemandRoom";
 import { learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
@@ -135,27 +134,18 @@ function DemandPage() {
   const rail = (
     <>
       <ActivityVideo
-        url={activity.staff?.demandVideoUrl ?? ""}
+        url={activity.staff?.video?.url ?? activity.staff?.demandVideoUrl ?? ""}
+        video={activity.staff?.video}
         person={activity.staff?.supervisor ?? null}
         label="Supervisão da atividade"
         emptyTitle="Vídeo da demanda ainda não publicado"
         emptyText="A instrução completa está no e-mail da demanda."
+        showNeutral={Boolean(activity.staff)}
       />
       <p className="muted sm">
         A demanda chega por vídeo ou por e-mail — como chegaria de verdade.
       </p>
-      <h4>Materiais</h4>
-      <div className="files">
-        {activity.attachments.map((d) => (
-          <div className="file" key={d.name}>
-            <span className="ic">DOC</span>
-            {d.name}
-            <button className="dl" onClick={() => downloadDoc(d)}>
-              Baixar
-            </button>
-          </div>
-        ))}
-      </div>
+      <MaterialLibrary activity={activity} />
       {activity.files?.length ? (
         <div style={{ marginTop: 8 }}>
           <FileList files={activity.files} />
@@ -199,12 +189,7 @@ function DemandPage() {
     <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
       <Steps current={2} done={1} />
       <div className="eyebrow">A demanda</div>
-      <div className="mail">
-        <div className="from">
-          <b>{activity.demandFrom}</b> · Assunto: {activity.demandSubject}
-        </div>
-        {activity.demandHtml ? <Rich html={activity.demandHtml} /> : <p>{activity.demandBody}</p>}
-      </div>
+      <DemandMail activity={activity} idx={idx} />
       <h4>Sua entrega</h4>
       <div className={`attempts${locked ? " is-full" : ""}`} aria-live="polite">
         <span className="pips" aria-hidden="true">
@@ -257,7 +242,14 @@ function DemandPage() {
             className="drop"
             role="button"
             tabIndex={0}
+            aria-label={file ? `Arquivo selecionado: ${file.name}. Pressione Enter para trocar.` : `Selecionar arquivo da entrega (${UPLOAD_RULES_LABEL})`}
             onClick={() => input.current?.click()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                input.current?.click();
+              }
+            }}
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
