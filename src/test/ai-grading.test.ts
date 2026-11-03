@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { strToU8, zipSync } from "fflate";
-import { deliveryStatusLabel, overallScore, parseEvaluation, validateRubric, type RubricItem } from "@/lib/ai-grading-rules";
+import { deliveryStatusLabel, overallScore, parseEvaluation, resumableEvaluations, validateRubric, type RubricItem } from "@/lib/ai-grading-rules";
 import { detectFormat, docxText, extractDocument } from "@/lib/document-text.server";
 
 const rubric: RubricItem[] = [
@@ -90,5 +90,23 @@ describe("status labels", () => {
   });
   it("never shows a grade while the evaluation is running", () => {
     expect(deliveryStatusLabel({ ai: { status: "evaluating" } }, fmt)).toBe("Entregue · em correção");
+  });
+});
+
+describe("grading resume from waiting requests", () => {
+  const subs = [
+    { id: "queued", ai: { status: "pending" as const } },
+    { id: "reading", ai: { status: "extracting" as const } },
+    { id: "done", ai: { status: "completed" as const } },
+    { id: "failed", ai: { status: "failed" as const } },
+    { id: "no-eval" },
+  ];
+  it("resumes only gradings that are still moving", () => {
+    expect(resumableEvaluations(subs, new Map(), 1_000_000)).toEqual(["queued", "reading"]);
+  });
+  it("asks again for the same delivery only after 60 seconds", () => {
+    const kicked = new Map([["queued", 1_000_000]]);
+    expect(resumableEvaluations(subs, kicked, 1_000_000 + 59_999)).toEqual(["reading"]);
+    expect(resumableEvaluations(subs, kicked, 1_000_000 + 60_000)).toEqual(["queued", "reading"]);
   });
 });

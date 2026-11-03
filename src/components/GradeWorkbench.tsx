@@ -145,7 +145,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
                           const r = await processNow({ data: { id } });
                           await client.invalidateQueries({ queryKey: ["admin-learning"] });
                           if (r.status === "completed") toast.success("Correção automatizada concluída.");
-                          else if (r.status === "not_claimed") toast.message("Esta correção já está em andamento. Atualize em alguns instantes.");
+                          else if (r.status === "not_claimed") toast.message("Esta correção já está em andamento ou aguardando nova tentativa. Atualize em alguns instantes.");
                           else toast.message("A correção automatizada não foi concluída. Veja o status atualizado.");
                         }
                         catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível reprocessar."); }
