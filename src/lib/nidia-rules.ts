@@ -60,9 +60,9 @@ export type NidiaContextInput = {
   program: Pick<Program, "title">;
   activity: Activity;
   index: number;
-  mail?: { subject?: string; html?: string; from?: string | null };
+  mail?: { subject?: string | undefined; html?: string | undefined; from?: string | null };
   materials: { title: string; docType: string; description: string; category: string }[];
-  teacherGuidance?: string;
+  teacherGuidance?: string | undefined;
 };
 
 /**
