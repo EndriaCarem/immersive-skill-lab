@@ -651,121 +651,6 @@ export type Database = {
           },
         ]
       }
-      learning_assistant_config: {
-        Row: {
-          default_question_limit: number
-          id: string
-          updated_at: string
-        }
-        Insert: {
-          default_question_limit?: number
-          id: string
-          updated_at?: string
-        }
-        Update: {
-          default_question_limit?: number
-          id?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      learning_assistant_questions: {
-        Row: {
-          activity_id: string
-          answer: string | null
-          answered_at: string | null
-          created_at: string
-          gateway_request_id: string | null
-          id: string
-          issue_code: string | null
-          lease_until: string
-          model: string | null
-          program_id: string
-          prompt_version: string | null
-          question: string
-          status: string
-          usage: Json | null
-          user_id: string
-        }
-        Insert: {
-          activity_id: string
-          answer?: string | null
-          answered_at?: string | null
-          created_at?: string
-          gateway_request_id?: string | null
-          id?: string
-          issue_code?: string | null
-          lease_until?: string
-          model?: string | null
-          program_id: string
-          prompt_version?: string | null
-          question: string
-          status?: string
-          usage?: Json | null
-          user_id: string
-        }
-        Update: {
-          activity_id?: string
-          answer?: string | null
-          answered_at?: string | null
-          created_at?: string
-          gateway_request_id?: string | null
-          id?: string
-          issue_code?: string | null
-          lease_until?: string
-          model?: string | null
-          program_id?: string
-          prompt_version?: string | null
-          question?: string
-          status?: string
-          usage?: Json | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "learning_assistant_questions_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "learning_programs"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      learning_assistant_settings: {
-        Row: {
-          activity_id: string
-          enabled: boolean
-          program_id: string
-          question_limit: number | null
-          teacher_guidance: string
-          updated_at: string
-        }
-        Insert: {
-          activity_id: string
-          enabled?: boolean
-          program_id: string
-          question_limit?: number | null
-          teacher_guidance?: string
-          updated_at?: string
-        }
-        Update: {
-          activity_id?: string
-          enabled?: boolean
-          program_id?: string
-          question_limit?: number | null
-          teacher_guidance?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "learning_assistant_settings_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "commerce_products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       learning_course_professionals: {
         Row: {
           is_lead: boolean
@@ -1165,17 +1050,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      learning_assistant_state: {
-        Args: { p_activity: string; p_program: string }
-        Returns: {
-          available: boolean
-          enabled: boolean
-          pending: boolean
-          question_limit: number
-          reason: string
-          used: number
-        }[]
-      }
       list_orphan_learner_files: {
         Args: { p_limit: number; p_min_age_minutes: number }
         Returns: {
@@ -1190,10 +1064,6 @@ export type Database = {
       requeue_learning_ai_evaluation: {
         Args: { p_evaluation: string }
         Returns: undefined
-      }
-      reserve_learning_assistant_question: {
-        Args: { p_activity: string; p_program: string; p_question: string }
-        Returns: string
       }
     }
     Enums: {
