@@ -18,10 +18,7 @@ type Course = { id: string; title: string; activities: { id: string; title: stri
 
 const BUCKET = "professional-photos";
 
-const opts = () =>
-  queryOptions({
-    queryKey: ["admin-professionals"],
-    queryFn: async () => {
+async function loadAdmin() {
       const [people, links, staff, programs] = await Promise.all([
         supabase.from("learning_professionals").select("*").order("full_name"),
         supabase.from("learning_course_professionals").select("*"),
@@ -42,8 +39,8 @@ const opts = () =>
         })
         .sort((a, b) => a.id.localeCompare(b.id));
       return { people: people.data as Person[], links: links.data as Link_[], staff: staff.data as Staff[], courses, urls };
-    },
-  });
+}
+const opts = () => queryOptions({ queryKey: ["admin-professionals"], queryFn: loadAdmin });
 
 export const Route = createFileRoute("/_authenticated/admin/professores")({
   beforeLoad: adminGuard,
@@ -251,7 +248,7 @@ function PersonForm({ form, setForm, urls, onSaved }: { form: Form; setForm: (f:
   );
 }
 
-type Data = ReturnType<typeof opts> extends { queryFn?: infer F } ? (F extends (...a: never[]) => Promise<infer R> ? R : never) : never;
+type Data = Awaited<ReturnType<typeof loadAdmin>>;
 
 function CourseLinks({ data, onSaved }: { data: Data; onSaved: () => void }) {
   const [courseId, setCourseId] = useState(data.courses[0]?.id ?? "");

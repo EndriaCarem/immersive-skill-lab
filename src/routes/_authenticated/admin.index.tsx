@@ -109,6 +109,9 @@ function Admin() {
         </Link>{" "}
         <Link to="/admin/webinars" className="btn ghost">
           Webinars
+        </Link>{" "}
+        <Link to="/admin/professores" className="btn ghost">
+          Professores
         </Link>
         <p className="muted sm">
           Entregas, matrículas e correções vinculadas às contas dos alunos. O editor de conteúdo permanece demonstrativo.
