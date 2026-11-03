@@ -85,6 +85,13 @@
       "when": 1793661948068,
       "tag": "0011_answer_key_locked_while_any_review_pending",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793665119765,
+      "tag": "0012_learning_professionals",
+      "breakpoints": true
     }
   ]
 }

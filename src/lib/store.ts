@@ -1,5 +1,6 @@
 import { useSyncExternalStore , useEffect, useState } from "react";
 import type { FileRef } from "./files";
+import type { ActivityStaff } from "./professionals";
 export type { FileRef };
 
 export type Doc = { name: string; content: string };
@@ -32,6 +33,8 @@ export type Activity = {
   answerHtml?: string;
   files?: FileRef[];
   answerFiles?: FileRef[];
+  /** Resolved faculty for the activity (Cloud learner data only). */
+  staff?: ActivityStaff;
 };
 export type Program = {
   id: string;

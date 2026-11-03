@@ -5,7 +5,8 @@ import { Steps } from "@/components/AppShell";
 import { downloadDoc } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
 import { deliverActivity } from "@/lib/learning.functions";
-import { ATTEMPT_LIMIT_MESSAGE, attemptStatus, deliverySchema } from "@/lib/learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, UPLOAD_RULES_LABEL, attemptStatus, deliverySchema, pageGuidance } from "@/lib/learning-rules";
+import { ActivityVideo } from "@/components/FacultyMedia";
 import { learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -133,10 +134,13 @@ function DemandPage() {
 
   const rail = (
     <>
-      <div className="video">
-        <div className="play" />
-        <div className="cap">{activity.demandVideoCaption}</div>
-      </div>
+      <ActivityVideo
+        url={activity.staff?.demandVideoUrl ?? ""}
+        person={activity.staff?.supervisor ?? null}
+        label="Supervisão da atividade"
+        emptyTitle="Vídeo da demanda ainda não publicado"
+        emptyText="A instrução completa está no e-mail da demanda."
+      />
       <p className="muted sm">
         A demanda chega por vídeo ou por e-mail — como chegaria de verdade.
       </p>
@@ -264,9 +268,10 @@ function DemandPage() {
             <small>
               {file
                 ? `${(file.size / 1024).toFixed(0)} KB · clique para trocar`
-                : activity.uploadHint}
+                : UPLOAD_RULES_LABEL}
             </small>
           </div>
+          {pageGuidance(activity.uploadHint) && <p className="muted sm upload-guidance">{pageGuidance(activity.uploadHint)}</p>}
           <input
             ref={input}
             type="file"

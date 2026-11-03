@@ -32,6 +32,7 @@ import { Route as WebinarsIndexRouteImport } from './routes/webinars.index'
 import { Route as WebinarsSlugRouteImport } from './routes/webinars.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
+import { Route as AuthenticatedAdminProfessoresRouteImport } from './routes/_authenticated/admin.professores'
 import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authenticated/admin.webinars'
 import { Route as ApiPublicAcessoRestritoRouteImport } from './routes/api/public/acesso-restrito'
 import { Route as ApiPublicMercadoPagoRouteImport } from './routes/api/public/mercado-pago'
@@ -156,6 +157,12 @@ const AuthenticatedAdminComercialRoute =
     path: '/admin/comercial',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminProfessoresRoute =
+  AuthenticatedAdminProfessoresRouteImport.update({
+    id: '/admin/professores',
+    path: '/admin/professores',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminWebinarsRoute =
   AuthenticatedAdminWebinarsRouteImport.update({
     id: '/admin/webinars',
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars/': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars': typeof WebinarsIndexRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/webinars/$slug': typeof WebinarsSlugRoute
   '/webinars/': typeof WebinarsIndexRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/_authenticated/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/_authenticated/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
   '/api/public/mercado-pago': typeof ApiPublicMercadoPagoRoute
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars/'
     | '/admin/comercial'
+    | '/admin/professores'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
     | '/api/public/mercado-pago'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars'
     | '/admin/comercial'
+    | '/admin/professores'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
     | '/api/public/mercado-pago'
@@ -386,6 +398,7 @@ export interface FileRouteTypes {
     | '/webinars/$slug'
     | '/webinars/'
     | '/_authenticated/admin/comercial'
+    | '/_authenticated/admin/professores'
     | '/_authenticated/admin/webinars'
     | '/api/public/acesso-restrito'
     | '/api/public/mercado-pago'
@@ -588,6 +601,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminComercialRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/professores': {
+      id: '/_authenticated/admin/professores'
+      path: '/admin/professores'
+      fullPath: '/admin/professores'
+      preLoaderRoute: typeof AuthenticatedAdminProfessoresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/webinars': {
       id: '/_authenticated/admin/webinars'
       path: '/admin/webinars'
@@ -651,6 +671,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
   AuthenticatedAdminComercialRoute: typeof AuthenticatedAdminComercialRoute
+  AuthenticatedAdminProfessoresRoute: typeof AuthenticatedAdminProfessoresRoute
   AuthenticatedAdminWebinarsRoute: typeof AuthenticatedAdminWebinarsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminProgramaIdRoute: typeof AuthenticatedAdminProgramaIdRoute
@@ -660,6 +681,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
   AuthenticatedAdminComercialRoute: AuthenticatedAdminComercialRoute,
+  AuthenticatedAdminProfessoresRoute: AuthenticatedAdminProfessoresRoute,
   AuthenticatedAdminWebinarsRoute: AuthenticatedAdminWebinarsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminProgramaIdRoute: AuthenticatedAdminProgramaIdRoute,

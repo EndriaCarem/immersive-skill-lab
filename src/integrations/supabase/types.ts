@@ -377,6 +377,55 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_activity_staff: {
+        Row: {
+          activity_id: string
+          demand_video_url: string
+          feedback_professional_id: string | null
+          program_id: string
+          supervisor_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          activity_id: string
+          demand_video_url?: string
+          feedback_professional_id?: string | null
+          program_id: string
+          supervisor_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activity_id?: string
+          demand_video_url?: string
+          feedback_professional_id?: string | null
+          program_id?: string
+          supervisor_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_activity_staff_feedback_professional_id_fkey"
+            columns: ["feedback_professional_id"]
+            isOneToOne: false
+            referencedRelation: "learning_professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_activity_staff_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_activity_staff_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "learning_professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_answers: {
         Row: {
           activity_id: string
@@ -399,6 +448,42 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "learning_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_course_professionals: {
+        Row: {
+          is_lead: boolean
+          position: number
+          professional_id: string
+          program_id: string
+        }
+        Insert: {
+          is_lead?: boolean
+          position?: number
+          professional_id: string
+          program_id: string
+        }
+        Update: {
+          is_lead?: boolean
+          position?: number
+          professional_id?: string
+          program_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_course_professionals_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "learning_professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_course_professionals_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_products"
             referencedColumns: ["id"]
           },
         ]
@@ -437,6 +522,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_professionals: {
+        Row: {
+          active: boolean
+          bio: string
+          created_at: string
+          display_authorized: boolean
+          full_name: string
+          id: string
+          photo_path: string | null
+          specialty: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          bio?: string
+          created_at?: string
+          display_authorized?: boolean
+          full_name: string
+          id?: string
+          photo_path?: string | null
+          specialty?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          bio?: string
+          created_at?: string
+          display_authorized?: boolean
+          full_name?: string
+          id?: string
+          photo_path?: string | null
+          specialty?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       learning_programs: {
         Row: {

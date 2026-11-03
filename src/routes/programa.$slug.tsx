@@ -8,6 +8,10 @@ import { Rich } from "@/components/Rich";
 import { Button } from "@/components/ui/button";
 import { FileList } from "@/components/FileList";
 import { useFileUrl } from "@/lib/files";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getCourseFaculty } from "@/lib/professionals.functions";
+import { Portrait } from "@/components/FacultyMedia";
 
 export const Route = createFileRoute("/programa/$slug")({
   head: () => ({
@@ -30,7 +34,15 @@ function ProgramPage() {
   const nav = useNavigate();
   const program = useStore((s) => s.programs.find((p) => p.slug === slug));
   const coverUrl = useFileUrl(program?.coverFile?.id);
+  const fetchFaculty = useServerFn(getCourseFaculty);
+  const faculty = useQuery({
+    queryKey: ["course-faculty", program?.id],
+    queryFn: () => fetchFaculty({ data: { programId: program!.id } }),
+    enabled: Boolean(program),
+    staleTime: 5 * 60_000,
+  });
   if (!program) return <NotFoundBlock />;
+  const [lead, ...others] = faculty.data ?? [];
   const start = () => nav({ to: "/checkout", search: { curso: slug } });
   const saving = program.fullPrice && program.price ? Math.round((1 - program.price / program.fullPrice) * 100) : 0;
   const practical = program.kind.toLowerCase().includes("prático");
@@ -61,6 +73,36 @@ function ProgramPage() {
             </p>
           )}
 
+
+          {lead ? (
+            <section className="fac-course" aria-labelledby="fac-course-h">
+              <h3 id="fac-course-h" style={{ fontSize: 24, marginTop: 44 }}>
+                {others.length ? "Quem conduz o curso" : "Professor do curso"}
+              </h3>
+              <article className="fac-lead">
+                <Portrait person={lead} size="lg" />
+                <div>
+                  <b>{lead.fullName}</b>
+                  {lead.title ? <span className="fac-role">{lead.title}</span> : null}
+                  {lead.specialty ? <span className="fac-spec">{lead.specialty}</span> : null}
+                  {lead.bio ? <p>{lead.bio}</p> : null}
+                </div>
+              </article>
+              {others.length ? (
+                <ul className="fac-others">
+                  {others.map((p) => (
+                    <li key={p.id}>
+                      <Portrait person={p} />
+                      <span>
+                        <b>{p.fullName}</b>
+                        {p.title ? <em>{p.title}</em> : null}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
 
           {program.files?.length ? (
             <>
