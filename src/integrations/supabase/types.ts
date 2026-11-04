@@ -517,6 +517,7 @@ export type Database = {
           extraction: Json | null
           gateway_request_id: string | null
           id: string
+          interruptions: number
           issue_code: string | null
           lease_token: string | null
           lease_until: string | null
@@ -546,6 +547,7 @@ export type Database = {
           extraction?: Json | null
           gateway_request_id?: string | null
           id?: string
+          interruptions?: number
           issue_code?: string | null
           lease_token?: string | null
           lease_until?: string | null
@@ -575,6 +577,7 @@ export type Database = {
           extraction?: Json | null
           gateway_request_id?: string | null
           id?: string
+          interruptions?: number
           issue_code?: string | null
           lease_token?: string | null
           lease_until?: string | null
@@ -1117,6 +1120,7 @@ export type Database = {
           extraction: Json | null
           gateway_request_id: string | null
           id: string
+          interruptions: number
           issue_code: string | null
           lease_token: string | null
           lease_until: string | null
@@ -1183,6 +1187,7 @@ export type Database = {
           name: string
         }[]
       }
+      recover_expired_ai_leases: { Args: never; Returns: number }
       request_learning_review: {
         Args: { p_submission: string }
         Returns: undefined

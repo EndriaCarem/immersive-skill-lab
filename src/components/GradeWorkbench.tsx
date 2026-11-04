@@ -138,7 +138,9 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
                     ? `concluída · nota ${fmt(sub.ai.overallScore)} (exibida ao aluno separadamente da correção humana)`
                     : sub.ai.status === "failed" || sub.ai.status === "needs_human_review"
                       ? `${sub.ai.status === "failed" ? "falhou" : "precisa de análise humana"} — ${issueMessage(sub.ai.issueCode)}`
-                      : "em processamento"}
+                      : sub.ai.issueCode === "interrupted"
+                        ? "interrompida — na fila para retomada (sem descontar tentativa)"
+                        : "em processamento"}
                   {(sub.ai.status === "failed" || sub.ai.status === "needs_human_review" || isWorking(sub.ai.status)) && (
                     <div style={{ marginTop: 8 }}>
                       <Button className="btn ghost sm" disabled={processing} onClick={async () => {

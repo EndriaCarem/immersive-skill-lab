@@ -89,9 +89,12 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
  */
 export const runMyEvaluation = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(x => z.object({ submissionId: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
-    const { data: row, error } = await context.supabase.from("learning_ai_evaluations").select("id, status, user_id").eq("submission_id", data.submissionId).maybeSingle();
+    const { data: row, error } = await context.supabase.from("learning_ai_evaluations").select("id, status, user_id, program_id").eq("submission_id", data.submissionId).maybeSingle();
     if (error || !row || row.user_id !== context.userId) throw new Error("Entrega não encontrada.");
     if (row.status === "completed" || row.status === "failed" || row.status === "needs_human_review") return { status: row.status };
+    const { data: enrolled } = await context.supabase.from("commerce_enrollments").select("id, expires_at")
+      .eq("user_id", context.userId).eq("product_id", row.program_id).eq("status", "active");
+    if (!(enrolled ?? []).some(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now())) throw new Error("Matrícula inativa para este curso.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { processEvaluations } = await import("./ai-grading.server");
     const [result] = await processEvaluations(supabaseAdmin, { limit: 1, only: row.id });

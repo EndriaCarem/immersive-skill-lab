@@ -31,6 +31,7 @@ export const ISSUE_MESSAGES: Record<string, string> = {
   invalid_output: "A correção automática não produziu um resultado válido. Sua entrega foi encaminhada para análise da equipe.",
   refused: "A correção automática não pôde avaliar este conteúdo. Sua entrega foi encaminhada para análise da equipe.",
   service_paused: "A correção automática está temporariamente pausada. Sua entrega continua na fila e será avaliada assim que for retomada.",
+  interrupted: "A correção foi interrompida antes de terminar. Ela continua na fila e será retomada automaticamente, sem novo envio.",
   processing_timeout: "A correção automática não foi concluída a tempo. A equipe foi avisada e pode reprocessar sua entrega.",
   service_error: "Houve uma falha técnica na correção automática. A equipe foi avisada e pode reprocessar sua entrega.",
   storage_error: "Não foi possível acessar o arquivo enviado. A equipe foi avisada e pode reprocessar sua entrega.",

@@ -3,7 +3,7 @@ import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 
 /** Scheduled maintenance: removes old learner uploads that never became a delivery.
  *  It does not grade: the scheduler's call is cut after a few seconds, shorter than one grading,
- *  so claiming work here would only burn attempts. Grading runs in requests that wait for it
+ *  so claiming work here would only burn attempts; it only releases interrupted leases. Grading runs in requests that wait for it
  *  (the learner's course pages and the admin "process now" action). */
 export const Route = createFileRoute("/api/public/jobs/ai-grading")({
   server: {
@@ -21,7 +21,11 @@ export const Route = createFileRoute("/api/public/jobs/ai-grading")({
           console.error("orphan cleanup", e instanceof Error ? e.message : e);
           orphans = { error: true };
         }
-        return Response.json({ processed: 0, results: [], orphans });
+        // Quick database step only: interrupted gradings go back to the queue (try refunded) so the
+        // learner's next visit or the admin panel resumes them. No grading happens here.
+        const recovered = await supabaseAdmin.rpc("recover_expired_ai_leases");
+        if (recovered.error) console.error("lease recovery", recovered.error.message);
+        return Response.json({ processed: 0, results: [], orphans, recovered: recovered.data ?? 0 });
       },
     },
   },
