@@ -12,6 +12,7 @@ import profGustavo from "@/assets/prof-gustavo.jpg.asset.json";
 import profJuliana from "@/assets/prof-juliana.png.asset.json";
 import profBruno from "@/assets/prof-bruno.jpg.asset.json";
 import profLeandro from "@/assets/prof-leandro-felix.png.asset.json";
+import profRenata from "@/assets/prof-renata-auler.png.asset.json";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -59,7 +60,8 @@ const PRACTICAL_TEACHERS: (Teacher | undefined)[] = [
 ];
 const THEORY_TEACHERS: (Teacher | undefined)[] = [
   { name: "Leandro Felix", photo: profLeandro.url, bio: "Sócio fundador do Felix & Menegassi Zotareli Advogados, com atuação em contencioso empresarial e arbitragem, especialmente em disputas societárias, contratuais e de construção, além de procedimentos perante órgãos reguladores. Atuou por 14 anos no Machado Meyer e também no escritório Quinn Emanuel, em Nova York. Possui LL.M. pela University of Chicago e é graduado em Direito pela Faculdade de Direito da Universidade de São Paulo (USP). Habilitado a advogar no Brasil e em Nova York, integra as listas de árbitros da CAM-AMCHAM, da ARBITRATO e do CAMES." },
-  undefined, undefined, undefined, undefined, undefined, undefined,
+  { name: "Renata Auler Monteiro", photo: profRenata.url, bio: "Sócia de Bermudes Advogados, com atuação na área de arbitragem e métodos consensuais de solução de conflitos. Foi associada internacional do escritório King & Spalding, em Nova York e Miami, e assistente de pesquisa do Professor George A. Bermann na Columbia Law School. Possui LL.M. pela Columbia Law School, pós-graduação em Arbitragem Comercial e Métodos Consensuais de Solução de Conflitos e graduação em Direito pela PUC-Rio. É membro da Comissão de Arbitragem e Mediação da ICC Brasil e foi presidente do Comitê de Jovens Arbitralistas do Centro Brasileiro de Mediação e Arbitragem (CJA/CBMA) entre 2016 e 2019." },
+  undefined, undefined, undefined, undefined, undefined,
   { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
 ];
 
