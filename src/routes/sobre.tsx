@@ -11,6 +11,7 @@ import profMaria from "@/assets/prof-maria.jpg.asset.json";
 import profGustavo from "@/assets/prof-gustavo.jpg.asset.json";
 import profJuliana from "@/assets/prof-juliana.png.asset.json";
 import profBruno from "@/assets/prof-bruno.jpg.asset.json";
+import profLeandro from "@/assets/prof-leandro-felix.png.asset.json";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -57,7 +58,8 @@ const PRACTICAL_TEACHERS: (Teacher | undefined)[] = [
   { name: "Maria Isabel Gori Montes", photo: profMaria.url, bio: "Sócia de Finkelstein Advogados, com atuação consultiva, contenciosa e em arbitragem. Possui experiência como árbitra única e coárbitra, além de atuar como secretária de tribunais arbitrais. É LL.M. e especialista em Direito Empresarial pela University of California, Berkeley, e possui formação avançada em arbitragem internacional pela Leiden University, em cooperação com a Corte Permanente de Arbitragem (PCA). É bacharel em Direito pela Universidade de São Paulo (USP). Atua como professora assistente do Curso de Extensão em Arbitragem da PUC-SP e professora convidada do Curso de Extensão em Direito Societário da mesma instituição." },
 ];
 const THEORY_TEACHERS: (Teacher | undefined)[] = [
-  undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+  { name: "Leandro Felix", photo: profLeandro.url, bio: "Sócio fundador do Felix & Menegassi Zotareli Advogados, com atuação em contencioso empresarial e arbitragem, especialmente em disputas societárias, contratuais e de construção, além de procedimentos perante órgãos reguladores. Atuou por 14 anos no Machado Meyer e também no escritório Quinn Emanuel, em Nova York. Possui LL.M. pela University of Chicago e é graduado em Direito pela Faculdade de Direito da Universidade de São Paulo (USP). Habilitado a advogar no Brasil e em Nova York, integra as listas de árbitros da CAM-AMCHAM, da ARBITRATO e do CAMES." },
+  undefined, undefined, undefined, undefined, undefined, undefined,
   { name: "Gustavo Favero Vaughn", photo: profGustavo.url, bio: "Sócio de Cesar Asfor Rocha Advogados, com atuação acadêmica e profissional ligada ao Direito Processual e à arbitragem. Mestre em Direito Processual pela Universidade de São Paulo (USP) e LL.M. pela Columbia Law School. É professor do IDP, auditor do Superior Tribunal de Justiça Desportiva (STJD) do Futebol, coordenador acadêmico do Canal Arbitragem e Alumni Advisor na The American Review of International Arbitration (ARIA)." },
 ];
 
