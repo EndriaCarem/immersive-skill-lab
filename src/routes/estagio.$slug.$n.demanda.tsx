@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { askNidia, nidiaState } from "@/lib/nidia.functions";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { useLearning } from "@/lib/learning";
@@ -46,16 +47,30 @@ function DemandPage() {
   const { program, activity, idx } = useActivity(slug, n);
   const [file, setFile] = useState<File | null>(null);
   const [ai, setAi] = useState<string[]>([]);
-  const [chat, setChat] = useState<{ me: boolean; t: string }[]>([
-    { me: true, t: "Como se estrutura a qualificação das partes num requerimento?" },
-    {
-      me: false,
-      t: "Vem antes dos fatos, em parágrafo corrido e não em lista: razão social completa, CNPJ, endereço e forma de representação.",
-    },
-  ]);
+  const [chat, setChat] = useState<{ me: boolean; t: string }[]>([]);
   const [ask, setAsk] = useState("");
-  const input = useRef<HTMLInputElement>(null);
   const learning = useLearning();
+  const [nidia, setNidia] = useState<{ available: boolean; reason: string | null; limit: number; used: number } | null>(null);
+  const [thinking, setThinking] = useState(false);
+  const loadNidia = useServerFn(nidiaState);
+  const askNidiaFn = useServerFn(askNidia);
+  const programId = program?.id;
+  const activityId = activity?.id;
+  useEffect(() => {
+    if (!programId || !activityId || !learning.user) return;
+    let live = true;
+    loadNidia({ data: { programId, activityId } })
+      .then((s) => {
+        if (!live) return;
+        setNidia(s);
+        setChat(s.history.flatMap((h) => [{ me: true, t: h.question }, { me: false, t: h.answer }]));
+      })
+      .catch(() => live && setNidia({ available: false, reason: "Não foi possível carregar a Nidia.", limit: 0, used: 0 }));
+    return () => {
+      live = false;
+    };
+  }, [programId, activityId, learning.user, loadNidia]);
+  const input = useRef<HTMLInputElement>(null);
   const deliver = useServerFn(deliverActivity);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
@@ -114,21 +129,23 @@ function DemandPage() {
       setSending(false);
     }
   };
-  const askAssistant = (q = ask) => {
-    if (!q.trim()) return;
-    const ask_ = q;
-    const delegating = /escrev|faz|redij|pronto|faça/i.test(ask_);
-    setChat((c) => [
-      ...c,
-      { me: true, t: ask_ },
-      {
-        me: false,
-        t: delegating
-          ? "Não. Redija a sua e me pergunte se ficou no padrão — eu comento a forma, não produzo o conteúdo."
-          : "Boa pergunta. Comece pela instrução da demanda e confira nos materiais anexos o que a sustenta. Quer que eu comente a estrutura depois que você escrever um rascunho?",
-      },
-    ]);
+  const remaining = nidia ? Math.max(0, nidia.limit - nidia.used) : 0;
+  const canAsk = Boolean(nidia?.available) && remaining > 0 && !thinking;
+  const askAssistant = async (q = ask) => {
+    const question = q.trim();
+    if (!question || !canAsk) return;
+    setThinking(true);
     setAsk("");
+    setChat((c) => [...c, { me: true, t: question }]);
+    try {
+      const r = await askNidiaFn({ data: { programId: program.id, activityId: activity.id, question } });
+      setChat((c) => [...c, { me: false, t: r.answer }]);
+      setNidia((s) => (s ? { ...s, used: s.used + 1 } : s));
+    } catch (e) {
+      setChat((c) => [...c, { me: false, t: e instanceof Error ? e.message : "A Nidia não conseguiu responder agora." }]);
+    } finally {
+      setThinking(false);
+    }
   };
 
   const rail = (
@@ -155,19 +172,30 @@ function DemandPage() {
         <span className="nidia-name">Nidia</span> · revisora de método
       </h4>
       <div className="assist">
-        <div className="hd">Disponível durante o exercício</div>
+        <div className="hd">
+          {!nidia
+            ? "Carregando…"
+            : !nidia.available
+              ? nidia.reason ?? "Indisponível nesta atividade"
+              : `${remaining} de ${nidia.limit} perguntas disponíveis nesta atividade`}
+        </div>
         {chat.map((m, i) => (
-          <div key={i} className={`m ${m.me ? "me" : "ai"}`}>
+          <div key={i} className={`m ${m.me ? "me" : "ai"}`} style={{ whiteSpace: "pre-wrap" }}>
             {m.t}
           </div>
         ))}
+        {thinking && (
+          <div className="m ai" aria-live="polite">
+            Nidia está pensando…
+          </div>
+        )}
         <div className="chips" style={{ marginTop: 10 }}>
           {[
             "Como estruturo os pedidos?",
             "Onde fundamento a competência?",
             "Meu parágrafo está no padrão?",
           ].map((q) => (
-            <button key={q} className="filter" onClick={() => askAssistant(q)}>
+            <button key={q} className="filter" disabled={!canAsk} onClick={() => askAssistant(q)}>
               {q}
             </button>
           ))}
@@ -177,6 +205,8 @@ function DemandPage() {
           style={{ marginTop: 10 }}
           placeholder="Pergunte sobre forma ou método…"
           value={ask}
+          maxLength={600}
+          disabled={!canAsk}
           onChange={(e) => setAsk(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && askAssistant()}
         />
