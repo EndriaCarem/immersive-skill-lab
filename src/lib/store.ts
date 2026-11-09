@@ -70,6 +70,9 @@ export type Submission = {
   fileSize: number;
   aiUse: string;
   submittedAt: string;
+  /** Set when the file could not be read: kept in history, but uses no attempt, grade or review. */
+  voidedAt?: string;
+  voidReason?: string;
   grades?: Grade[];
   teacherComment?: string;
   /** Timestamp of the human-review request (quota: 2 activities per course). */

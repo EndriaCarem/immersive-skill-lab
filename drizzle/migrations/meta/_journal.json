@@ -120,6 +120,13 @@
       "when": 1793803839811,
       "tag": "0016_recover_interrupted_ai_gradings",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794183476369,
+      "tag": "0017_read_failures_do_not_consume_attempts",
+      "breakpoints": true
     }
   ]
 }

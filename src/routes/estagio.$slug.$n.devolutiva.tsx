@@ -3,7 +3,7 @@ import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/Activit
 import { Steps } from "@/components/AppShell";
 import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
-import { activityReviewPending } from "@/lib/learning-rules";
+import { MIN_PASS_SCORE, activityReviewPending, activityStanding, aiScore, finalScore } from "@/lib/learning-rules";
 import { isTerminal, issueMessage, type AiStatus } from "@/lib/ai-grading-rules";
 import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -46,6 +46,8 @@ function FeedbackPage() {
   const submissions = learning.data?.submissions ?? [];
   const mine = program && activity ? submissions.filter((s) => s.programId === program.id && s.activityId === activity.id).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)) : [];
   const sub = mine.find((s) => s.id === picked) ?? mine.at(-1);
+  const voided = program && activity ? (learning.data?.voided ?? []).filter((s) => s.programId === program.id && s.activityId === activity.id).sort((a, b) => a.submittedAt.localeCompare(b.submittedAt)).at(-1) : undefined;
+  const voidedNotice = voided && (!mine.at(-1) || voided.submittedAt > mine.at(-1)!.submittedAt) ? voided : undefined;
   const status = sub?.ai?.status;
   const quota = reviewQuota({ submissions }, program?.id ?? "", learning.user?.id ?? "", activity?.id ?? "");
   const { refresh } = learning;
@@ -59,9 +61,18 @@ function FeedbackPage() {
   }, [status, sub?.ai, refresh]);
 
   if (!program || !activity) return <NotFoundBlock />;
+  const voidBox = voidedNotice && (
+    <div className="callout" role="alert">
+      <div className="k">Não conseguimos ler o seu arquivo</div>
+      <p>{issueMessage(voidedNotice.ai?.issueCode ?? voidedNotice.voidReason)}</p>
+      <p className="muted sm">Arquivo: {voidedNotice.fileName}. Você não perdeu nenhuma tentativa.</p>
+      <Link to="/estagio/$slug/$n/demanda" params={{ slug, n }} className="btn">Enviar novamente</Link>
+    </div>
+  );
   if (!sub)
     return (
       <ActivityLayout program={program} activity={activity} idx={idx}>
+        {voidBox}
         <h1>Envie sua entrega primeiro</h1>
         <p className="muted">A devolutiva aparece depois que você envia a sua peça.</p>
         <Link to="/estagio/$slug/$n/demanda" params={{ slug, n }} className="btn">
@@ -72,12 +83,15 @@ function FeedbackPage() {
   const ai = sub.ai;
   const done = ai?.status === "completed" && ai.overallScore !== undefined && ai.criteria;
   const humanScore = subScore(sub);
+  const shown = finalScore(sub);
+  const standing = activityStanding(mine, program.id, activity.id);
   return (
     <ActivityLayout program={program} activity={activity} idx={idx}>
       <Steps current={3} done={2} />
       <div className="eyebrow">
         Devolutiva · atividade {idx + 1} · {activity.shortTitle.toLowerCase()}
       </div>
+      {voidBox}
       <h1>Ficha de avaliação</h1>
       {mine.length > 1 && (
         <div className="ai-attempts" role="tablist" aria-label="Entregas desta atividade">
@@ -95,9 +109,9 @@ function FeedbackPage() {
       <div className="score-top">
         <div>
           <div className="lab">Nota da atividade</div>
-          {done ? (
-            <span className="ai-settle" key={ai.id}>
-              <span className="big">{fmt(ai.overallScore!)}</span>
+          {shown !== null ? (
+            <span className="ai-settle" key={`${ai?.id}-${humanScore ?? ""}`}>
+              <span className="big">{fmt(shown)}</span>
               <span className="of">/10</span>
             </span>
           ) : (
@@ -105,7 +119,9 @@ function FeedbackPage() {
           )}
         </div>
         <div className="side">
-          {done
+          {sub.grades?.length
+            ? aiScore(sub) !== null ? `Nota da revisão humana, que prevalece sobre a correção automatizada (${fmt(aiScore(sub)!)}).` : "Nota da revisão humana."
+            : done
             ? "Correção automatizada com IA, critério a critério, pela rubrica docente da atividade."
             : working(ai?.status)
               ? `Entrega ${sub.fileName} recebida. A correção pela rubrica está em andamento.`
@@ -115,6 +131,12 @@ function FeedbackPage() {
         </div>
       </div>
 
+      {standing.passed !== null && (
+        <p className="muted sm" role="status">
+          Nota mínima para o certificado: {fmt(MIN_PASS_SCORE)}.{" "}
+          {standing.passed ? "Atingida nesta atividade." : "Ainda não atingida nesta atividade; isso aparece no certificado, mas não bloqueia as próximas atividades."}
+        </p>
+      )}
       {working(ai?.status) && <AiReading status={ai!.status} />}
 
       <div className="ai-feedback">

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError, isFreshUpload } from "./learning-rules";
+import { ATTEMPT_LIMIT_MESSAGE, MAX_ATTEMPTS, answerKeyOpen, deliverySchema, gradingSchema, isAttemptLimitError, isFreshUpload, humanGradeError } from "./learning-rules";
 import type { Program, Submission } from "./store";
 import type { AiEvaluation, AiStatus } from "./ai-grading-rules";
 import type { Database } from "@/integrations/supabase/types";
@@ -58,7 +58,7 @@ function evaluation(row: EvalRow): AiEvaluation {
 function submission(row: Row, name?: string, ai?: EvalRow): Submission & { userId: string; filePath: string } {
   return { id: row.id, userId: row.user_id, student: name || row.user_id, programId: row.program_id,
     activityId: row.activity_id, fileName: row.file_name, fileSize: row.file_size, filePath: row.file_path,
-    aiUse: row.ai_use, submittedAt: row.submitted_at, ...(row.grades ? { grades: gradingSchema.shape.grades.parse(row.grades) } : {}),
+    aiUse: row.ai_use, submittedAt: row.submitted_at, ...(row.voided_at ? { voidedAt: row.voided_at, ...(row.void_reason ? { voidReason: row.void_reason } : {}) } : {}), ...(row.grades ? { grades: gradingSchema.shape.grades.parse(row.grades) } : {}),
     ...(row.teacher_comment !== null ? { teacherComment: row.teacher_comment } : {}), humanReviews: z.array(z.string()).parse(row.human_reviews), reviewedAt: row.reviewed_at ?? undefined,
     ...(row.attempt !== null ? { attempt: row.attempt } : {}), ...(ai ? { ai: evaluation(ai) } : {}) };
 }
@@ -74,14 +74,18 @@ export const learnerData = createServerFn({ method: "GET" }).middleware([require
   for (const r of [programs, subs, notes, enrollments, answers, evals]) if (r.error) throw new Error("Não foi possível carregar seu progresso.");
   const active = (enrollments.data ?? []).filter(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now());
   const staff = await loadStaff(context.supabase, active.map(e => e.product_id));
+  // Voided deliveries (unreadable files) are returned apart: they never count for attempts, progress, answer key or reviews.
+  const counted = (subs.data ?? []).filter(s => !s.voided_at);
+  const voided = (subs.data ?? []).filter(s => s.voided_at);
   return { programs: (programs.data ?? []).map(p => p.content as unknown as Program).filter(p => active.some(e => e.product_id === p.id)).map(p => ({ ...p, activities: p.activities.map(a => {
-    const open = answerKeyOpen((subs.data ?? []).map(s => ({ programId: s.program_id, activityId: s.activity_id, humanReviews: Array.isArray(s.human_reviews) ? (s.human_reviews as string[]) : [], reviewedAt: s.reviewed_at ?? undefined })), p.id, a.id);
+    const open = answerKeyOpen(counted.map(s => ({ programId: s.program_id, activityId: s.activity_id, humanReviews: Array.isArray(s.human_reviews) ? (s.human_reviews as string[]) : [], reviewedAt: s.reviewed_at ?? undefined })), p.id, a.id);
     const answer = answers.data?.find(r => r.program_id === p.id && r.activity_id === a.id)?.content;
     const withStaff = { ...a, staff: resolveActivityStaff(staff.links.filter(l => l.program_id === p.id), staff.rows.find(r => r.program_id === p.id && r.activity_id === a.id), staff.people, staff.media),
       materials: staff.materials.filter(m => m.program_id === p.id && m.activity_id === a.id).map(material) };
     return open && answer ? { ...withStaff, ...(answer as unknown as Partial<typeof a>) } : { ...withStaff, answerHtml: "", answerIntro: "", answerVideoUrl: "", answerFiles: [], guideDocs: [], referenceDoc: { name: "", content: "", description: "" } };
   }) })),
-    submissions: (subs.data ?? []).map(s => submission(s, undefined, evals.data?.find(e => e.submission_id === s.id))), notes: notes.data ?? [], enrollments: active };
+    submissions: counted.map(s => submission(s, undefined, evals.data?.find(e => e.submission_id === s.id))),
+    voided: voided.map(s => submission(s, undefined, evals.data?.find(e => e.submission_id === s.id))), notes: notes.data ?? [], enrollments: active };
 });
 /**
  * Lets the learner's open feedback page start grading of their own queued delivery right away.
@@ -126,7 +130,7 @@ export const deliverActivity = createServerFn({ method: "POST" }).middleware([re
     // Friendly early answer; the database trigger is the authoritative, concurrency-safe check.
     const { count, error: countError } = await context.supabase.from("learning_submissions")
       .select("id", { count: "exact", head: true })
-      .eq("user_id", context.userId).eq("program_id", data.programId).eq("activity_id", data.activityId);
+      .eq("user_id", context.userId).eq("program_id", data.programId).eq("activity_id", data.activityId).is("voided_at", null);
     if (countError) throw new Error("Não foi possível verificar suas tentativas. Tente novamente.");
     if ((count ?? 0) >= MAX_ATTEMPTS) { await discard(); throw new Error(ATTEMPT_LIMIT_MESSAGE); }
     const { data: files, error: listError } = await storage.list(parts.join("/"), { search: file });
@@ -180,6 +184,14 @@ export const gradeLearningSubmission = createServerFn({ method: "POST" }).middle
   .inputValidator(x => gradingSchema.parse(x)).handler(async ({ data, context }) => {
     const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
     if (!allowed) throw new Error("Acesso restrito à administração.");
+    const [{ data: target }, { data: ai }] = await Promise.all([
+      context.supabase.from("learning_submissions").select("voided_at").eq("id", data.id).maybeSingle(),
+      context.supabase.from("learning_ai_evaluations").select("status, overall_score").eq("submission_id", data.id).maybeSingle(),
+    ]);
+    if (!target) throw new Error("Entrega não encontrada.");
+    if (target.voided_at) throw new Error("Esta entrega não pôde ser lida e não conta como tentativa; não recebe nota.");
+    const floorError = humanGradeError(data.grades.map(g => g.score), ai?.status === "completed" && ai.overall_score !== null ? Number(ai.overall_score) : null);
+    if (floorError) throw new Error(floorError);
     const { data: row, error } = await context.supabase.from("learning_submissions").update({ grades: data.grades,
       teacher_comment: data.teacherComment, reviewer_id: context.userId, reviewed_at: new Date().toISOString(),
     }).eq("id", data.id).select("*").single();

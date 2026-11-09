@@ -5,7 +5,7 @@ import { Rich, textToHtml } from "@/components/Rich";
 import { avg, fmt, type Grade, type Submission, type Program } from "@/lib/store";
 import { gradeLearningSubmission, learningFileUrl, processAiEvaluationNow, requeueAiEvaluation } from "@/lib/learning.functions";
 import { isWorking, issueMessage } from "@/lib/ai-grading-rules";
-import { initialGradeDraft, unscoredCriteria, type GradeDraft } from "@/lib/learning-rules";
+import { aiScore, humanGradeError, initialGradeDraft, unscoredCriteria, type GradeDraft } from "@/lib/learning-rules";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -54,8 +54,10 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const [view, setView] = useState<"entrega" | "demanda" | "gabarito">("entrega");
   const [focus, setFocus] = useState(0);
   const missing = unscoredCriteria(grades);
-  const ready = grades.length > 0 && missing.length === 0;
   const scored = grades.flatMap((g) => (g.score === null ? [] : [g.score]));
+  const floor = aiScore(sub);
+  const floorError = missing.length === 0 ? humanGradeError(scored, floor) : null;
+  const ready = grades.length > 0 && missing.length === 0 && !floorError && !sub.voidedAt;
   const mean = avg(scored);
   const idx = queue.findIndex((q) => q.id === sub.id);
   const next = idx >= 0 ? queue[idx + 1] : undefined;
@@ -64,6 +66,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
   const set = (i: number, patch: Partial<GradeDraft>) => setGrades((gs) => gs.map((g, j) => (j === i ? { ...g, ...patch } : g)));
   const save = async (goNext: boolean) => {
     if (saving) return;
+    if (floorError) { toast.error(floorError); return; }
     if (!ready) { toast.error(`Dê nota a todos os critérios antes de salvar (falta: ${missing.join(", ")}).`); return; }
     const final: Grade[] = grades.map((g) => ({ ...g, score: g.score as number }));
     setSaving(true);
@@ -135,7 +138,7 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
                 <div className="wb-ai">
                   <b>Correção automatizada:</b>{" "}
                   {sub.ai.status === "completed" && sub.ai.overallScore !== undefined
-                    ? `concluída · nota ${fmt(sub.ai.overallScore)} (exibida ao aluno separadamente da correção humana)`
+                    ? `concluída · nota ${fmt(sub.ai.overallScore)} · a revisão humana substitui esta nota e só pode mantê-la ou aumentá-la`
                     : sub.ai.status === "failed" || sub.ai.status === "needs_human_review"
                       ? `${sub.ai.status === "failed" ? "falhou" : "precisa de análise humana"} — ${issueMessage(sub.ai.issueCode)}`
                       : sub.ai.issueCode === "interrupted"
@@ -207,7 +210,10 @@ function Body({ sub, queue, programs, onChange, onClose }: { sub: Submission; qu
               <button key={s} onClick={() => setComment((c) => append(c, s))}>+ {s}</button>
             ))}
           </div>
-          {!ready && <p className="muted sm" role="status" style={{ margin: "10px 0" }}>Nenhuma nota vem preenchida: escolha a nota de cada critério para liberar o salvamento{missing.length ? ` (faltam ${missing.length})` : ""}.</p>}
+          {sub.voidedAt && <p className="muted sm" role="status" style={{ margin: "10px 0" }}>O arquivo desta entrega não pôde ser lido. Ela não conta como tentativa e não recebe nota; o aluno pode enviar de novo.</p>}
+          {floor !== null && <p className="muted sm" style={{ margin: "10px 0" }}>Nota mínima desta revisão: {fmt(floor)} (nota da IA). A revisão pode manter ou aumentar, nunca reduzir.</p>}
+          {floorError && <p className="muted sm" role="alert" style={{ margin: "10px 0" }}>{floorError}</p>}
+          {!ready && !floorError && !sub.voidedAt && <p className="muted sm" role="status" style={{ margin: "10px 0" }}>Nenhuma nota vem preenchida: escolha a nota de cada critério para liberar o salvamento{missing.length ? ` (faltam ${missing.length})` : ""}.</p>}
           <p className="muted sm" style={{ margin: "10px 0" }}>Atalhos: ↑/↓ escolhe o critério · 1–9 dá a nota (0 = 10) · Ctrl+Enter salva e avança</p>
         </section>
       </div>

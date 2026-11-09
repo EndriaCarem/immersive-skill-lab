@@ -922,6 +922,8 @@ export type Database = {
           submitted_at: string
           teacher_comment: string | null
           user_id: string
+          void_reason: string | null
+          voided_at: string | null
         }
         Insert: {
           activity_id: string
@@ -939,6 +941,8 @@ export type Database = {
           submitted_at?: string
           teacher_comment?: string | null
           user_id?: string
+          void_reason?: string | null
+          voided_at?: string | null
         }
         Update: {
           activity_id?: string
@@ -956,6 +960,8 @@ export type Database = {
           submitted_at?: string
           teacher_comment?: string | null
           user_id?: string
+          void_reason?: string | null
+          voided_at?: string | null
         }
         Relationships: [
           {

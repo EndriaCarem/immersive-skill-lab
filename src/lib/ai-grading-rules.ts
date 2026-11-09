@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Activity } from "./store";
 
 /** Bumped whenever the grading instructions change, so every evaluation records which prompt produced it. */
-export const PROMPT_VERSION = "empiria-rubrica-v1";
+export const PROMPT_VERSION = "empiria-rubrica-v2";
 export const GRADING_MODEL = "openai/gpt-6-astra";
 export const MAX_TRIES = 3;
 /** Text sent to the model is capped to keep cost and latency bounded; longer documents are flagged as truncated. */
@@ -22,11 +22,11 @@ export type AiEvaluation = {
 /** Learner-safe explanation for each non-success code. Never exposes provider or stack details. */
 export const ISSUE_MESSAGES: Record<string, string> = {
   rubric_missing: "A rubrica desta atividade ainda não está completa. Sua entrega foi encaminhada para análise da equipe.",
-  doc_legacy: "Arquivos .DOC antigos não podem ser lidos automaticamente. Sua entrega foi encaminhada para análise da equipe.",
-  pdf_no_text: "Não foi possível ler o texto deste PDF (parece digitalizado). Sua entrega foi encaminhada para análise da equipe.",
-  file_unreadable: "O arquivo não pôde ser aberto (corrompido ou protegido). Sua entrega foi encaminhada para análise da equipe.",
-  format_mismatch: "O conteúdo do arquivo não corresponde ao formato informado. Sua entrega foi encaminhada para análise da equipe.",
-  empty_document: "O documento parece estar vazio. Sua entrega foi encaminhada para análise da equipe.",
+  doc_legacy: "Arquivos .DOC antigos não podem ser lidos automaticamente. Esta entrega não contou como tentativa e não recebeu nota: salve em PDF e envie novamente.",
+  pdf_no_text: "Não conseguimos ler este PDF (páginas digitalizadas ilegíveis ou arquivo grande demais). Esta entrega não contou como tentativa e não recebeu nota: salve em PDF e envie novamente.",
+  file_unreadable: "O arquivo não pôde ser aberto (corrompido ou protegido por senha). Esta entrega não contou como tentativa e não recebeu nota: salve em PDF e envie novamente.",
+  format_mismatch: "O conteúdo do arquivo não corresponde ao formato informado. Esta entrega não contou como tentativa e não recebeu nota: salve em PDF e envie novamente.",
+  empty_document: "O documento parece estar vazio. Esta entrega não contou como tentativa e não recebeu nota: salve em PDF e envie novamente.",
   not_evaluable: "A correção automática não conseguiu avaliar esta entrega com segurança. Ela foi encaminhada para análise da equipe.",
   invalid_output: "A correção automática não produziu um resultado válido. Sua entrega foi encaminhada para análise da equipe.",
   refused: "A correção automática não pôde avaliar este conteúdo. Sua entrega foi encaminhada para análise da equipe.",
@@ -36,6 +36,8 @@ export const ISSUE_MESSAGES: Record<string, string> = {
   service_error: "Houve uma falha técnica na correção automática. A equipe foi avisada e pode reprocessar sua entrega.",
   storage_error: "Não foi possível acessar o arquivo enviado. A equipe foi avisada e pode reprocessar sua entrega.",
 };
+/** Read failures void the delivery: it stays in history but uses no attempt, grade or review. */
+export const READ_FAILURE_CODES = ["doc_legacy", "pdf_no_text", "file_unreadable", "format_mismatch", "empty_document"] as const;
 export const issueMessage = (code?: string) => (code && ISSUE_MESSAGES[code]) || ISSUE_MESSAGES["service_error"]!;
 
 type RawCriterion = { criterion?: unknown; description?: unknown; weight?: unknown };

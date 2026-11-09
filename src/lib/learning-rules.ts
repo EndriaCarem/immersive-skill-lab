@@ -72,4 +72,30 @@ export function learningProgress(program: Program, submissions: Submission[]) {
   const done = program.activities.filter(a => currentSubmission(submissions, program.id, a.id)).length;
   const next = program.activities.findIndex(a => !currentSubmission(submissions, program.id, a.id));
   return { done, total: program.activities.length, next: next < 0 ? Math.max(0, program.activities.length - 1) : next };
+}/** Minimum final grade for an activity to count as approved on the certificate. It never locks later activities. */
+export const MIN_PASS_SCORE = 5;
+const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+type Graded = Pick<Submission, "grades"> & { ai?: { status: string; overallScore?: number } };
+/** The AI grade, when a completed evaluation exists. */
+export function aiScore(s: Graded) {
+  return s.ai?.status === "completed" && typeof s.ai.overallScore === "number" ? s.ai.overallScore : null;
+}
+/** Human review prevails over the AI grade; without it, the AI grade is the delivery's grade. */
+export function finalScore(s: Graded) {
+  const human = s.grades?.length ? mean(s.grades.map(g => g.score)) : null;
+  return human ?? aiScore(s);
+}
+/** A human review may confirm or raise the AI grade, never lower it. Returns an error message, or null when allowed. */
+export function humanGradeError(scores: number[], ai: number | null) {
+  const human = mean(scores);
+  if (ai === null || human === null) return null;
+  if (human + 1e-6 >= ai) return null;
+  return `A revisão humana não pode reduzir a nota da IA (${ai.toFixed(1).replace(".", ",")}). Ajuste os critérios para manter ou aumentar a nota.`;
+}
+/** Certificate standing for one activity: best final grade among the counted deliveries. */
+export function activityStanding(submissions: (Graded & Pick<Submission, "programId" | "activityId">)[], programId: string, activityId: string) {
+  const scores = submissions.filter(s => s.programId === programId && s.activityId === activityId).map(finalScore).filter((n): n is number => n !== null);
+  if (!scores.length) return { score: null, passed: null as boolean | null };
+  const best = Math.max(...scores);
+  return { score: best, passed: best + 1e-6 >= MIN_PASS_SCORE };
 }
