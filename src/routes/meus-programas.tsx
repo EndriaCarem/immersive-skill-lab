@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell } from "@/components/AppShell";
@@ -9,6 +9,9 @@ import { useLearning } from "@/lib/learning";
 import { learningProgress, currentSubmission } from "@/lib/learning-rules";
 import { fmt } from "@/lib/store";
 import { deliveryStatusLabel } from "@/lib/ai-grading-rules";
+import { certificateStanding } from "@/lib/completion-rules";
+import { issueRealCertificate } from "@/lib/completion.functions";
+import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/meus-programas")({
   head: () => commerceHead("Meus programas", "Acompanhe suas matrículas da Empiria."),
   component: Portal,
@@ -19,6 +22,15 @@ function Portal() {
   const fetch = useServerFn(accountData);
   const [data, setData] = useState<Awaited<ReturnType<typeof accountData>> | null>(null);
   const [error, setError] = useState("");
+  const issue = useServerFn(issueRealCertificate);
+  const navigate = useNavigate();
+  const [issuing, setIssuing] = useState(false);
+  async function certificate(programId: string) {
+    setIssuing(true); setError("");
+    try { const code = await issue({ data: { programId } }); await navigate({ to: "/certificado/$code", params: { code } }); }
+    catch (e) { setError(e instanceof Error ? e.message : "Não foi possível emitir o certificado."); }
+    finally { setIssuing(false); }
+  }
   useEffect(() => {
     setData(null);
     if (!user) return;
@@ -69,13 +81,14 @@ function Portal() {
                   </>
                 )}
                 {data.enrollments
-                  .filter((e) => e.status === "active")
+                  .filter((e) => e.status === "active" && (!e.expires_at || new Date(e.expires_at).getTime() > Date.now()))
                   .map((e) => (
                     <article className="order-row" key={e.id}>
                       <h3>{e.commerce_products?.title}</h3>
                       <span className="sig ok">Matrícula ativa</span>
                       <p className="muted sm">
                         Matriculado em {new Date(e.enrolled_at).toLocaleDateString("pt-BR")}
+                        {e.expires_at && <> · Acesso até {new Date(e.expires_at).toLocaleDateString("pt-BR")}</>}
                       </p>
                       {(() => {
                         const program = learning.data?.programs.find(p => p.id === e.product_id);
@@ -90,6 +103,7 @@ function Portal() {
                               {sub && <> · <Link to="/estagio/$slug/$n/devolutiva" params={{ slug: program.slug, n: String(i + 1) }}>Ver devolutiva</Link></>}
                             </li>;
                           })}</ul>
+                          {certificateStanding(program, learning.data?.submissions ?? []).eligible ? <Button className="btn ghost" disabled={issuing} onClick={() => void certificate(program.id)}>{issuing ? "Emitindo…" : "Emitir certificado"}</Button> : <p className="muted sm">Certificado: nota mínima 5 em cada atividade e revisões concluídas. As próximas atividades continuam disponíveis conforme suas entregas.</p>}
                         </>;
                       })()}
                     </article>

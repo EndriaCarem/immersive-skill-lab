@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
-import { fmt, latestSubmission, subScore, useStore } from "@/lib/store";
+import { fmt } from "@/lib/store";
+import { verifyCertificate } from "@/lib/completion.functions";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
 import { ScoreChip } from "@/components/ReviewWindow";
 import logo from "@/assets/empiria-logo.png.asset.json";
 
 export const Route = createFileRoute("/certificado/$code")({
+  loader: ({ params }) => verifyCertificate({ data: { code: params.code } }),
   head: ({ params }) => ({
     meta: [
       { title: `Certificado ${params.code} — Empiria` },
@@ -21,15 +25,13 @@ export const Route = createFileRoute("/certificado/$code")({
 
 function CertPage() {
   const { code } = Route.useParams();
-  const cert = useStore((s) => s.certificates.find((c) => c.code === code));
-  const program = useStore((s) => s.programs.find((p) => p.id === cert?.programId));
-  const rows = useStore((s) =>
-    program && cert ? program.activities.map((a) => ({ a, sc: subScore(latestSubmission(s, program.id, a.id, cert.student)) })) : [],
-  );
+  const cert = Route.useLoaderData();
+  const parsed = z.array(z.object({ activityId: z.string(), title: z.string(), score: z.number(), passed: z.boolean() })).safeParse(cert?.activities);
+  const rows = parsed.success ? parsed.data : [];
   const [url, setUrl] = useState("");
   useEffect(() => setUrl(window.location.href), []);
 
-  if (!cert || !program)
+  if (!cert)
     return (
       <AppShell>
         <div className="cert-wrap">
@@ -44,8 +46,8 @@ function CertPage() {
         </div>
       </AppShell>
     );
-  const issued = new Date(cert.issuedAt);
-  const name = `${program.kind} — ${program.title}`;
+  const issued = new Date(cert.issued_at);
+  const name = cert.program_title;
   const linkedinAdd =
     "https://www.linkedin.com/profile/add?" +
     new URLSearchParams({
@@ -67,26 +69,20 @@ function CertPage() {
           <div className="k">Certificado de conclusão</div>
           <h2>{name}</h2>
           <div className="who">
-            Conferido a <b style={{ color: "var(--ink)" }}>{cert.student}</b> · {program.activities.length} atividades práticas com avaliação individual por critério
+            Conferido a <b style={{ color: "var(--ink)" }}>{cert.student_name}</b> · {rows.length} atividades com avaliação individual por critério
           </div>
           <div className="grade">{fmt(cert.grade)}</div>
           <div className="glab">Nota final</div>
           <table className="rubric" style={{ margin: "18px 0", textAlign: "left" }}>
             <thead><tr><th>Atividade</th><th className="sc">Nota</th></tr></thead>
             <tbody>
-              {rows.map(({ a, sc }, i) => (
-                <tr key={a.id}><td>{i + 1}. {a.shortTitle}</td><td className="sc">{sc == null ? <span className="muted">—</span> : <ScoreChip n={Math.round(sc * 10) / 10} />}</td></tr>
+              {rows.map((row, i) => (
+                <tr key={row.activityId}><td>{i + 1}. {row.title}</td><td className="sc"><ScoreChip n={Math.round(row.score * 10) / 10} /></td></tr>
               ))}
             </tbody>
           </table>
           <p className="muted sm">Certificado de curso livre. Não é certificado de estágio nem de presença: cada nota vem de uma peça corrigida por critério.</p>
-          <div className="skills">
-            {program.skills.map((s) => (
-              <span key={s} className="chip">
-                {s}
-              </span>
-            ))}
-          </div>
+          <p className="muted sm">Nota mínima 5 em cada atividade · melhor entrega válida · revisões humanas concluídas.</p>
           <div className="code">
             Verificação pública · código <b>{cert.code}</b> · emitido em {issued.toLocaleDateString("pt-BR")}
           </div>
@@ -98,9 +94,9 @@ function CertPage() {
           <a className="btn ghost" href={linkedinShare} target="_blank" rel="noreferrer">
             Compartilhar no LinkedIn
           </a>
-          <button className="btn ghost" onClick={() => navigator.clipboard?.writeText(url)}>
+          <Button className="btn ghost" onClick={() => navigator.clipboard?.writeText(url)}>
             Copiar link de verificação
-          </button>
+          </Button>
         </div>
       </div>
     </AppShell>

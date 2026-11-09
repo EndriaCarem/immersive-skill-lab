@@ -8,6 +8,7 @@ import { adminCommerce, saveCoupon, publishTerms, saveProduct } from "@/lib/comm
 import { adminGuard } from "@/lib/admin-guard";
 import { commerceHead, statusLabel, couponSchema } from "@/lib/commerce-schema";
 import { brl, useStore } from "@/lib/store";
+import { configureTestAccess, publishPlatformTerms } from "@/lib/completion.functions";
 const options = () =>
   queryOptions({ queryKey: ["admin-commerce"], queryFn: () => adminCommerce() });
 export const Route = createFileRoute("/_authenticated/admin/comercial")({
@@ -27,6 +28,8 @@ function Commercial() {
   const couponFn = useServerFn(saveCoupon);
   const termsFn = useServerFn(publishTerms);
   const productFn = useServerFn(saveProduct);
+  const platformTermsFn = useServerFn(publishPlatformTerms);
+  const accessFn = useServerFn(configureTestAccess);
   const [tab, setTab] = useState("orders");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -97,6 +100,7 @@ function Commercial() {
               ["products", "Produtos"],
               ["coupons", "Cupons"],
               ["terms", "Termos"],
+              ["access", "Turmas de teste"],
             ] as const
           ).map(([v, l]) => (
             <Button key={v} className={tab === v ? "btn" : "btn ghost"} onClick={() => setTab(v)}>
@@ -282,6 +286,16 @@ function Commercial() {
         )}
         {tab === "terms" && (
           <>
+            <form className="commerce-form" onSubmit={e => {
+              e.preventDefault(); const f = new FormData(e.currentTarget);
+              if (!window.confirm("Publicar o texto aprovado dos termos da plataforma para novos cadastros?")) return;
+              void perform(() => platformTermsFn({ data: { version: String(f.get("version")), body: String(f.get("body")) } }));
+            }}>
+              <h2>Termos da plataforma · cadastro</h2>
+              <label className="field">Versão<input name="version" required maxLength={40} /></label>
+              <label className="field">Texto aprovado<textarea name="body" required minLength={50} maxLength={50000} rows={10} /></label>
+              <Button className="btn" disabled={busy}>Publicar versão</Button>
+            </form>
             <form
               className="commerce-form"
               onSubmit={(e) => {
@@ -321,6 +335,20 @@ function Commercial() {
             ))}
           </>
         )}
+        {tab === "access" && <>
+          <h2>Turmas de teste · seis meses</h2>
+          {data.enrollments.filter(e => e.status === "active" && data.orders.some(o => o.id === e.order_id && o.status === "free" && o.total_cents === 0)).map(e => <form className="order-row" key={e.id} onSubmit={event => {
+            event.preventDefault(); const f = new FormData(event.currentTarget);
+            if (f.get("test") !== "on" || !window.confirm("Confirmar seis meses desde a matrícula para esta conta de teste autorizada?")) return;
+            void perform(() => accessFn({ data: { enrollmentId: e.id, confirmedTest: true, reason: String(f.get("reason")) } }));
+          }}>
+            <h3>{data.profiles.find(p => p.id === e.user_id)?.full_name ?? "Aluno"} · {data.products.find(p => p.id === e.product_id)?.title}</h3>
+            <p className="muted sm">Matrícula: {new Date(e.enrolled_at).toLocaleDateString("pt-BR")} · {e.expires_at ? `Acesso até ${new Date(e.expires_at).toLocaleDateString("pt-BR")}` : "Sem vencimento definido"}</p>
+            <label className="field">Autorização / turma<input name="reason" required minLength={5} maxLength={500} /></label>
+            <label className="consent-field"><input type="checkbox" name="test" required /><span>Confirmo que esta matrícula pertence à turma de teste autorizada.</span></label>
+            <Button className="btn ghost" disabled={busy}>Definir seis meses</Button>
+          </form>)}
+        </>}
       </main>
     </AppShell>
   );

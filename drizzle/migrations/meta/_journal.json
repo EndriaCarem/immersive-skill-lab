@@ -134,6 +134,20 @@
       "when": 1794185793250,
       "tag": "0018_admin_activity_rubric",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794224389062,
+      "tag": "0019_completion_certificates_and_account_terms",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1794224596855,
+      "tag": "0020_personal_material_originals_private",
+      "breakpoints": true
     }
   ]
 }

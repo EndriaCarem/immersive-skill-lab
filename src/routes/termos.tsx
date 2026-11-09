@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { SiteShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { useServerFn } from "@tanstack/react-start";
+import { platformTerms } from "@/lib/completion.functions";
 
 export const Route = createFileRoute("/termos")({
   head: () => ({
@@ -20,6 +22,9 @@ export const Route = createFileRoute("/termos")({
 
 function Terms() {
   const [terms, setTerms] = useState<Tables<"commerce_terms"> | null | undefined>(undefined);
+  const [platform, setPlatform] = useState<Awaited<ReturnType<typeof platformTerms>>>(null);
+  const readPlatform = useServerFn(platformTerms);
+  useEffect(() => { void readPlatform().then(setPlatform).catch(() => undefined); }, [readPlatform]);
   useEffect(() => {
     supabase.from("commerce_terms").select("*").eq("published", true).order("created_at", { ascending: false }).limit(1)
       .then(({ data }) => setTerms(data?.[0] ?? null));
@@ -29,6 +34,9 @@ function Terms() {
       <main className="wrap legal-page">
         <span className="pillbadge soft">✦ Termos</span>
         <h1 className="display" style={{ textAlign: "left" }}>Termos de uso e matrícula</h1>
+        <h2>Termos da plataforma</h2>
+        {platform ? <><p className="legal-note">Versão {platform.version}</p><div className="legal-body">{platform.body}</div></> : <p className="legal-note">Termos da plataforma aguardando texto aprovado.</p>}
+        <h2>Contrato e termos de matrícula</h2>
         {terms === undefined ? <p className="muted">Carregando…</p> : terms ? (
           <>
             <p className="legal-note">Versão {terms.version} · publicada em {new Date(terms.created_at).toLocaleDateString("pt-BR")}</p>

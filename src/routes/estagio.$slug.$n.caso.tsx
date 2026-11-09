@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc } from "@/lib/store";
+import { downloadPersonalDoc } from "@/lib/personal-download";
+import { useAccount } from "@/lib/account";
 import { Rich } from "@/components/Rich";
 import { FileList } from "@/components/FileList";
 
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/estagio/$slug/$n/caso")({
 });
 
 function CasePage() {
+  const { user } = useAccount();
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
   if (!program || !activity) return <NotFoundBlock />;
@@ -32,7 +34,7 @@ function CasePage() {
       {activity.files?.length ? (
         <>
           <h4>Arquivos do caso</h4>
-          <FileList files={activity.files} />
+          <FileList files={activity.files} personalName={String(user?.user_metadata?.['full_name'] ?? user?.email ?? "")} />
         </>
       ) : null}
       {activity.attachments.length > 0 && (
@@ -43,7 +45,7 @@ function CasePage() {
               <div className="file" key={d.name}>
                 <span className="ic">DOC</span>
                 {d.name}
-                <button className="dl" onClick={() => downloadDoc(d)}>
+                <button className="dl" onClick={() => downloadPersonalDoc(d, String(user?.user_metadata?.['full_name'] ?? user?.email ?? ""))}>
                   Baixar
                 </button>
               </div>

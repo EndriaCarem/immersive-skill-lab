@@ -1,8 +1,8 @@
 import { Download, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { downloadFile, fileKind, fmtSize, type FileRef } from "@/lib/files";
+import { downloadFile, getFile, fileKind, fmtSize, type FileRef } from "@/lib/files";
 
-export function FileList({ files, onDelete }: { files: FileRef[]; onDelete?: (f: FileRef) => void }) {
+export function FileList({ files, onDelete, personalName }: { files: FileRef[]; onDelete?: (f: FileRef) => void; personalName?: string }) {
   if (!files.length) return null;
   return (
     <div style={{ display: "grid", gap: 8 }}>
@@ -20,6 +20,18 @@ export function FileList({ files, onDelete }: { files: FileRef[]; onDelete?: (f:
               className="ibtn"
               aria-label={`Baixar ${f.name}`}
               onClick={async () => {
+                if (personalName) {
+                  try {
+                    const blob = await getFile(f.id);
+                    if (!blob) { toast.error("Arquivo indisponível neste navegador"); return; }
+                    const { personalizeMaterial } = await import("@/lib/material-personalization");
+                    const copy = await personalizeMaterial(new Uint8Array(await blob.arrayBuffer()), f.name, personalName);
+                    const url = URL.createObjectURL(new Blob([new Uint8Array(copy.bytes)], { type: copy.type }));
+                    const a = document.createElement("a"); a.href = url; a.download = copy.fileName; a.click();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  } catch { toast.error("Não foi possível preparar a cópia identificada."); }
+                  return;
+                }
                 if (!(await downloadFile(f))) toast.error("Arquivo indisponível neste navegador");
               }}
             >

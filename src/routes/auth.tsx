@@ -11,6 +11,8 @@ import { ArrowLeft, ArrowRight, Mail, LockKeyhole, Eye, EyeOff } from "lucide-re
 import { authErrorKind } from "@/lib/auth-errors";
 import logo from "@/assets/empiria-logo.png.asset.json";
 import workspace from "@/assets/auth-workspace.jpg";
+import { platformTerms } from "@/lib/completion.functions";
+import { signupSchema } from "@/lib/completion-rules";
 export const Route = createFileRoute("/auth")({
   head: () => commerceHead("Entrar", "Acesse sua conta de aluno da Empiria."),
   component: Auth,
@@ -20,6 +22,10 @@ function Auth() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [terms, setTerms] = useState<Awaited<ReturnType<typeof platformTerms>>>(null);
+  const [consent, setConsent] = useState(false);
+  const readTerms = useServerFn(platformTerms);
+  useEffect(() => { if (mode === "signup") void readTerms().then(setTerms).catch(() => setMessage("Não foi possível carregar os termos.")); }, [mode, readTerms]);
   const hydrated = useHydrated();
   const nav = useNavigate();
   useEffect(() => {
@@ -45,6 +51,7 @@ function Auth() {
     setMode(next);
     setMessage("");
     setShowPassword(false);
+    setConsent(false);
   }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -71,16 +78,12 @@ function Auth() {
           "Se houver uma conta para este e-mail, você receberá o link para redefinir a senha.",
         );
       } else if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: window.location.origin,
-            data: { full_name: String(form.get("name") ?? "").trim() },
-          },
-        });
+        if (!terms || !consent) { setMessage("Leia e aceite os termos publicados para criar sua conta."); return; }
+        const input = signupSchema.parse({ email, password, name: String(form.get("name") ?? "").trim(), termsId: terms.id, consent: true, origin: window.location.origin });
+        const { data: result, error } = await supabase.auth.signUp({ email: input.email, password: input.password,
+          options: { emailRedirectTo: window.location.origin, data: { full_name: input.name, platform_terms_id: input.termsId } } });
         if (error) throw error;
-        if (data.session) await enterAccount();
+        if (result.session) await enterAccount();
         else await nav({ to: "/confirmar-cadastro", replace: true });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -156,7 +159,11 @@ function Auth() {
             </label>
           )}
           {mode === "login" && <div className="auth-clean-recovery"><Button type="button" variant="link" onClick={() => changeMode("reset")}>Esqueci minha senha</Button></div>}
-          <Button type="submit" className="btn auth-clean-submit" disabled={busy || !hydrated}>
+          {mode === "signup" && (terms ? <>
+            <details className="terms-text"><summary>Termos da plataforma · versão {terms.version}</summary><p>{terms.body}</p></details>
+            <label className="consent-field"><input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} /><span>Li e aceito os termos da plataforma.</span></label>
+          </> : <p className="muted sm">O cadastro aguarda a publicação dos termos aprovados da plataforma.</p>)}
+          <Button type="submit" className="btn auth-clean-submit" disabled={busy || !hydrated || (mode === "signup" && (!terms || !consent))}>
             {busy
               ? "Aguarde…"
               : mode === "signup"

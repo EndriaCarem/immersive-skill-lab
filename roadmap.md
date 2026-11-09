@@ -31,6 +31,15 @@
 - [ ] Configurar notificações Mercado Pago — aguardando publicação do endereço e chave de assinatura.
 - [ ] Ativar confirmação por Resend — aguardando credenciais e autorização de Diego.
 # Marco 2 (7 etapas, uma por vez com aprovação)
+- [x] Integrar certificado real com nota mínima 5 por atividade, melhor entrega e sem bloquear progressão; emissão/RPC verificadas em banco isolado.
+- [x] Preparar aceite persistente e atômico de termos no cadastro, separado dos termos de matrícula; sem inventar texto jurídico.
+- [x] Disponibilizar configuração administrativa de acesso de seis meses desde a matrícula, apenas para turmas gratuitas de teste autorizadas; nenhuma matrícula existente alterada.
+- [x] Identificar cópias PDF/imagem/texto/DOCX e impedir leitura direta de originais de materiais; outros formatos Office entregues em pacote identificado, sem marca dentro do arquivo.
+- [x] Verificar regressões: 150 testes comuns + 9 de banco isolado; cadastro/documentos em desktop e 390px com contorno exclusivo de teste para erro de preâmbulo da prévia.
+- [ ] Homologar emissão/download/configuração pelas telas com conta de teste autorizada — não há sessão própria disponível; não usar alunos reais.
+- [ ] Publicar ajustes — aguardando autorização explícita.
+- [ ] Publicar textos aprovados dos termos da plataforma e contrato — aguardando textos jurídicos; cadastro novo na versão preparada fica bloqueado até termos publicados.
+- [ ] Marca dentro de DOC/XLS/XLSX/PPT/PPTX — requer decisão sobre conversão/fornecedor; por ora pacote identificado preserva arquivos editáveis sem alegar marca interna.
 - [x] Preparar cadastro administrativo real de rubricas com descrição/peso e reutilizar configuração de demandas (e-mail, vídeo e materiais), sem inventar conteúdo docente.
 - [x] Validar preenchimento no painel autenticado em computador/celular e gravação/permissões em banco isolado; preservar entregas e avaliações existentes.
 - [ ] Cadastrar e homologar conteúdo definitivo — aguardando rubricas, vídeos e materiais aprovados das professoras; nenhum conteúdo fictício foi gravado nos cursos reais.

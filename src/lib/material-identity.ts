@@ -1,0 +1,2 @@
+/** Plain identity text shared by personal downloads, with no document library in the client graph. */
+export const materialIdentity = (name: string) => `Empiria - Uso pessoal de ${name.trim().replace(/[\r\n]+/g, " ").slice(0, 100)}`;

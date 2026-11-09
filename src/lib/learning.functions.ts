@@ -227,12 +227,22 @@ export const learningFileUrl = createServerFn({ method: "POST" }).middleware([re
     if (!browserBase) throw new Error("Armazenamento indisponível.");
     return new URL(url.pathname + url.search, browserBase).href;
   });
-/** Short-lived download link for a pre-delivery material. RLS (active enrollment) decides access to row and file. */
+/** Personalized copy only: authorize material row through enrollment RLS before reading the private original. */
 export const activityMaterialUrl = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(x => z.object({ id: z.string().uuid() }).parse(x)).handler(async ({ data, context }) => {
-    const { data: row } = await context.supabase.from("learning_activity_materials").select("file_path, file_name").eq("id", data.id).maybeSingle();
+    const { data: row } = await context.supabase.from("learning_activity_materials").select("file_path, file_name, program_id").eq("id", data.id).maybeSingle();
     if (!row) throw new Error("Material indisponível.");
-    const { data: link, error } = await context.supabase.storage.from("activity-media").createSignedUrl(row.file_path, 300, { download: row.file_name });
-    if (error || !link) throw new Error("Não foi possível baixar o material.");
-    return browserUrl(link.signedUrl);
+    // An administrator can see all material rows; an ordinary learner still needs active course access.
+    const { data: enrollments } = await context.supabase.from("commerce_enrollments").select("expires_at").eq("user_id", context.userId).eq("product_id", row.program_id).eq("status", "active");
+    const { data: admin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!admin && !(enrollments ?? []).some(e => !e.expires_at || new Date(e.expires_at).getTime() > Date.now())) throw new Error("Matrícula inativa.");
+    const { data: profile } = await context.supabase.from("profiles").select("full_name").eq("id", context.userId).maybeSingle();
+    if (!profile?.full_name) throw new Error("Preencha seu nome na conta para baixar o material.");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: blob, error } = await supabaseAdmin.storage.from("activity-media").download(row.file_path);
+    if (error || !blob) throw new Error("Não foi possível baixar o material.");
+    const { personalizeMaterial } = await import("./material-personalization");
+    const result = await personalizeMaterial(new Uint8Array(await blob.arrayBuffer()), row.file_name, profile.full_name);
+    const { strFromU8 } = await import("fflate");
+    return { base64: btoa(strFromU8(result.bytes, true)), fileName: result.fileName, type: result.type };
   });

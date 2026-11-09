@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_legal_acceptances: {
+        Row: {
+          accepted_at: string
+          id: string
+          terms_id: string
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          id?: string
+          terms_id: string
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          id?: string
+          terms_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_legal_acceptances_terms_id_fkey"
+            columns: ["terms_id"]
+            isOneToOne: false
+            referencedRelation: "platform_terms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commerce_coupons: {
         Row: {
           active: boolean
@@ -769,6 +798,50 @@ export type Database = {
           },
         ]
       }
+      learning_certificates: {
+        Row: {
+          activities: Json
+          code: string
+          grade: number
+          id: string
+          issued_at: string
+          program_id: string
+          program_title: string
+          student_name: string
+          user_id: string
+        }
+        Insert: {
+          activities: Json
+          code?: string
+          grade: number
+          id?: string
+          issued_at?: string
+          program_id: string
+          program_title: string
+          student_name: string
+          user_id: string
+        }
+        Update: {
+          activities?: Json
+          code?: string
+          grade?: number
+          id?: string
+          issued_at?: string
+          program_id?: string
+          program_title?: string
+          student_name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_certificates_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "learning_programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_course_professionals: {
         Row: {
           is_lead: boolean
@@ -973,6 +1046,68 @@ export type Database = {
           },
         ]
       }
+      learning_test_access_log: {
+        Row: {
+          created_at: string
+          enrollment_id: string
+          expires_at: string
+          granted_by: string
+          id: string
+          previous_expiry: string | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          enrollment_id: string
+          expires_at: string
+          granted_by: string
+          id?: string
+          previous_expiry?: string | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          enrollment_id?: string
+          expires_at?: string
+          granted_by?: string
+          id?: string
+          previous_expiry?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_test_access_log_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "commerce_enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_terms: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          published: boolean
+          version: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          version: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          published?: boolean
+          version?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           full_name: string
@@ -1153,6 +1288,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      configure_learning_test_access: {
+        Args: { p_enrollment: string; p_reason: string }
+        Returns: string
+      }
       create_commerce_order: {
         Args: {
           p_coupon: string
@@ -1174,6 +1313,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      issue_learning_certificate: {
+        Args: { p_program: string; p_user: string }
+        Returns: string
       }
       learning_assistant_state: {
         Args: { p_activity: string; p_program: string }
@@ -1214,6 +1357,17 @@ export type Database = {
           p_updated_at: string
         }
         Returns: string
+      }
+      verify_learning_certificate: {
+        Args: { p_code: string }
+        Returns: {
+          activities: Json
+          code: string
+          grade: number
+          issued_at: string
+          program_title: string
+          student_name: string
+        }[]
       }
     }
     Enums: {

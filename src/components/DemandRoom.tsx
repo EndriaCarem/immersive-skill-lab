@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Rich } from "@/components/Rich";
-import { downloadDoc, type Activity, type Doc } from "@/lib/store";
+import { type Activity, type Doc } from "@/lib/store";
+import { downloadPersonalDoc } from "@/lib/personal-download";
+import { useAccount } from "@/lib/account";
 import { MATERIAL_CATEGORIES, demandMail, materialGroups, type ActivityMaterial } from "@/lib/activity-room";
 import { activityMaterialUrl } from "@/lib/learning.functions";
 import { fmtSize } from "@/lib/files";
@@ -11,6 +13,7 @@ const extLabel = (name: string) => (name.split(".").pop() ?? "DOC").slice(0, 4).
 
 /** One download action with honest feedback: preparing → downloaded (or a clear failure). */
 function useDownload() {
+  const { user } = useAccount();
   const sign = useServerFn(activityMaterialUrl);
   const [state, setState] = useState<Record<string, State>>({});
   const set = (k: string, s: State) => setState((x) => ({ ...x, [k]: s }));
@@ -18,18 +21,22 @@ function useDownload() {
     if (state[m.id] === "busy") return;
     set(m.id, "busy");
     try {
-      const url = await sign({ data: { id: m.id } });
+      const copy = await sign({ data: { id: m.id } });
+      const bytes = Uint8Array.from(atob(copy.base64), c => c.charCodeAt(0));
+      const url = URL.createObjectURL(new Blob([bytes], { type: copy.type }));
       const a = document.createElement("a");
       a.href = url;
+      a.download = copy.fileName;
       a.rel = "noopener";
       a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
       set(m.id, "done");
     } catch {
       set(m.id, "error");
     }
   };
   const doc = (d: Doc) => {
-    downloadDoc(d);
+    downloadPersonalDoc(d, String(user?.user_metadata?.['full_name'] ?? user?.email ?? ""));
     set(`doc:${d.name}`, "done");
   };
   return { state, material, doc };

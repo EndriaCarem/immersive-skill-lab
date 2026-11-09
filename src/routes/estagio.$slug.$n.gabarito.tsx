@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityVideo } from "@/components/FacultyMedia";
 import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
-import { downloadDoc } from "@/lib/store";
+import { downloadPersonalDoc } from "@/lib/personal-download";
+import { useAccount } from "@/lib/account";
 import { useLearning } from "@/lib/learning";
 import { activityReviewPending, currentSubmission } from "@/lib/learning-rules";
 import { Rich } from "@/components/Rich";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/estagio/$slug/$n/gabarito")({
 });
 
 function AnswerPage() {
+  const { user } = useAccount();
   const { slug, n } = Route.useParams();
   const { program, activity, idx } = useActivity(slug, n);
   const learning = useLearning();
@@ -67,14 +69,14 @@ function AnswerPage() {
       ) : null}
       {activity.answerFiles?.length ? (
         <div style={{ marginBottom: 14 }}>
-          <FileList files={activity.answerFiles} />
+          <FileList files={activity.answerFiles} personalName={String(user?.user_metadata?.['full_name'] ?? user?.email ?? "")} />
         </div>
       ) : null}
       <div className="files">
         <div className="file">
           <span className="ic">DOC</span>
           {activity.referenceDoc.name}
-          <button className="dl" onClick={() => downloadDoc(activity.referenceDoc)}>
+          <button className="dl" onClick={() => downloadPersonalDoc(activity.referenceDoc, String(user?.user_metadata?.['full_name'] ?? user?.email ?? ""))}>
             Baixar
           </button>
         </div>
@@ -88,7 +90,7 @@ function AnswerPage() {
               <div className="file" key={d.name}>
                 <span className="ic">DOC</span>
                 {d.name}
-                <button className="dl" onClick={() => downloadDoc(d)}>
+                <button className="dl" onClick={() => downloadPersonalDoc(d, String(user?.user_metadata?.['full_name'] ?? user?.email ?? ""))}>
                   Abrir
                 </button>
               </div>
