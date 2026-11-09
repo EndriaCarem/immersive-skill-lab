@@ -33,6 +33,7 @@ function fakeDb(row: Row) {
       if (name === "learning_ai_job_state") return { data: { paused_reason: null }, error: null };
       if (name === "learning_submissions") return { data: { file_path: "u/p1/f.docx", file_name: "peca.docx", ai_use: "Não usei" }, error: null };
       if (name === "learning_programs") return { data: { content: { id: "p1", activities: [{ id: "a1", title: "Atividade 1", demandBody: "Redija a manifestação.", rubric: RUBRIC }] } }, error: null };
+      if (name === "learning_activity_staff") return { data: { mail_subject: "Pedido atualizado da supervisão", mail_html: "<p>Analise as alternativas de estratégia do cliente.</p>" }, error: null };
       if (name === "learning_ai_evaluations" && patch) {
         if (filters["id"] !== row.id || filters["lease_token"] !== row.lease_token) return { data: [], error: null };
         Object.assign(row, patch); writes.push(patch);
@@ -102,5 +103,13 @@ describe("AI grading worker", () => {
     expect(await processEvaluations(db, { limit: 1, only: row.id })).toEqual([]);
     expect(gateway.generateResponse).not.toHaveBeenCalled();
     expect(row.overall_score).toBe(8.1);
+  });
+  it("grades against the same administrator-authored email shown to the learner", async () => {
+    gateway.generateResponse.mockResolvedValue(answer([8, 8, 8]));
+    const { db } = fakeDb(pending());
+    await processEvaluations(db, { limit: 1 });
+    const request = gateway.generateResponse.mock.calls[0]?.[0];
+    expect(request.input[0].content).toContain("Pedido atualizado da supervisão");
+    expect(request.input[0].content).toContain("Analise as alternativas de estratégia do cliente.");
   });
 });

@@ -103,7 +103,13 @@ async function processOne(db: Db, row: EvalRow): Promise<string> {
     return "failed";
   }
   const program = prog.data.content as unknown as Program;
-  const activity = program.activities?.find(a => a.id === row.activity_id);
+  const sourceActivity = program.activities?.find(a => a.id === row.activity_id);
+  const mail = await db.from("learning_activity_staff").select("mail_subject, mail_html").eq("program_id", row.program_id).eq("activity_id", row.activity_id).maybeSingle();
+  if (mail.error) {
+    await settle(db, row, { ...release, status: "pending", issue_code: "service_error", next_attempt_at: new Date(Date.now() + retryDelayMs(row.tries)).toISOString() });
+    return "pending";
+  }
+  const activity = sourceActivity ? { ...sourceActivity, demandSubject: mail.data?.mail_subject || sourceActivity.demandSubject, demandHtml: mail.data?.mail_html || sourceActivity.demandHtml || "" } : undefined;
   const rubric = activity ? validateRubric(activity, program.id) : { ok: false as const, reason: "Atividade não encontrada." };
   if (!activity || !rubric.ok) {
     log("rubric_invalid", { evaluation: row.id, reason: rubric.ok ? "" : rubric.reason });

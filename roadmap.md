@@ -31,8 +31,9 @@
 - [ ] Configurar notificações Mercado Pago — aguardando publicação do endereço e chave de assinatura.
 - [ ] Ativar confirmação por Resend — aguardando credenciais e autorização de Diego.
 # Marco 2 (7 etapas, uma por vez com aprovação)
-- [ ] Preparar cadastro administrativo real de rubricas com descrição/peso e reutilizar configuração de demandas (e-mail, vídeo e materiais), sem inventar conteúdo docente.
-- [ ] Validar cadastro, persistência, permissões e apresentação em computador/celular; preservar entregas e avaliações existentes.
+- [x] Preparar cadastro administrativo real de rubricas com descrição/peso e reutilizar configuração de demandas (e-mail, vídeo e materiais), sem inventar conteúdo docente.
+- [x] Validar preenchimento no painel autenticado em computador/celular e gravação/permissões em banco isolado; preservar entregas e avaliações existentes.
+- [ ] Cadastrar e homologar conteúdo definitivo — aguardando rubricas, vídeos e materiais aprovados das professoras; nenhum conteúdo fictício foi gravado nos cursos reais.
 - [x] Etapa 1 — Limite de 2 entregas por atividade.
 - [x] Ajustes da sala prática e cadastro de professores (contraste, envio, progresso, vínculos, vídeo).
 - [ ] Cadastrar os professores reais pelo painel — aguardando fotos e autorização de exibição de cada um.
