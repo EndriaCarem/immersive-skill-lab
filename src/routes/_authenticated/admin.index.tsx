@@ -112,7 +112,8 @@ function Admin() {
         </Link>{" "}
         <Link to="/admin/professores" className="btn ghost">
           Professores
-        </Link>
+        </Link>{" "}
+        <Link to="/admin/atividades" className="btn ghost">Conteúdo das atividades</Link>
         <p className="muted sm">
           Entregas, matrículas e correções vinculadas às contas dos alunos. O editor de conteúdo permanece demonstrativo.
         </p>

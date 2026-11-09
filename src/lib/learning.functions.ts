@@ -7,8 +7,27 @@ import type { AiEvaluation, AiStatus } from "./ai-grading-rules";
 import type { Database } from "@/integrations/supabase/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveActivityStaff, visiblePeople } from "./professionals";
+import { saveRubricSchema } from "./activity-content";
 
 type MaterialRow = Database["public"]["Tables"]["learning_activity_materials"]["Row"];
+export const adminActivityContent = createServerFn({ method: "GET" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+  if (!allowed) throw new Error("Acesso restrito à administração.");
+  const [programs, staff] = await Promise.all([
+    context.supabase.from("learning_programs").select("id, content, updated_at").order("id"),
+    context.supabase.from("learning_activity_staff").select("*"),
+  ]);
+  if (programs.error || staff.error) throw new Error("Não foi possível carregar as atividades.");
+  return { programs: (programs.data ?? []).map(p => ({ program: p.content as unknown as Program, updatedAt: p.updated_at })), staff: staff.data ?? [] };
+});
+export const saveActivityRubric = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator((x: unknown) => saveRubricSchema.parse(x)).handler(async ({ data, context }) => {
+    const { data: updatedAt, error } = await context.supabase.rpc("save_activity_rubric", {
+      p_program: data.programId, p_activity: data.activityId, p_updated_at: data.updatedAt, p_criteria: data.criteria,
+    });
+    if (error) throw new Error(error.message);
+    return { updatedAt };
+  });
 /** Signed URLs come back on the server's storage host; rewrite them to the browser-facing one. */
 function browserUrl(signed: string) {
   const base = import.meta.env['VITE_SUPABASE_URL'];

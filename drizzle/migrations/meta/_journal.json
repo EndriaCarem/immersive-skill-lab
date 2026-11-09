@@ -127,6 +127,13 @@
       "when": 1794183476369,
       "tag": "0017_read_failures_do_not_consume_attempts",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794185793250,
+      "tag": "0018_admin_activity_rubric",
+      "breakpoints": true
     }
   ]
 }

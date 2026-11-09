@@ -1206,6 +1206,15 @@ export type Database = {
         Args: { p_activity: string; p_program: string; p_question: string }
         Returns: string
       }
+      save_activity_rubric: {
+        Args: {
+          p_activity: string
+          p_criteria: Json
+          p_program: string
+          p_updated_at: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "student" | "reviewer" | "admin"

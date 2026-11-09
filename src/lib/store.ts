@@ -6,7 +6,7 @@ import type { AiEvaluation } from "./ai-grading-rules";
 export type { FileRef };
 
 export type Doc = { name: string; content: string };
-export type Criterion = { criterion: string };
+export type Criterion = { criterion: string; description?: string; weight?: number };
 export type Activity = {
   id: string;
   title: string;
