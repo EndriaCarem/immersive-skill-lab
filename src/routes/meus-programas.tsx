@@ -84,7 +84,7 @@ function Portal() {
                   .filter((e) => e.status === "active" && (!e.expires_at || new Date(e.expires_at).getTime() > Date.now()))
                   .map((e) => (
                     <article className="order-row" key={e.id}>
-                      <h3>{e.commerce_products?.title}</h3>
+                      <h3>{e.commerce_products?.title ?? learning.data?.programs.find(p => p.id === e.product_id)?.title ?? "Curso matriculado"}</h3>
                       <span className="sig ok">Matrícula ativa</span>
                       <p className="muted sm">
                         Matriculado em {new Date(e.enrolled_at).toLocaleDateString("pt-BR")}

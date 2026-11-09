@@ -165,7 +165,7 @@ function DemandPage() {
       <MaterialLibrary activity={activity} />
       {activity.files?.length ? (
         <div style={{ marginTop: 8 }}>
-          <FileList files={activity.files} />
+          <FileList files={activity.files} personalName={String(learning.user?.user_metadata?.['full_name'] ?? learning.user?.email ?? "")} />
         </div>
       ) : null}
       <h4>

@@ -31,6 +31,7 @@
 - [ ] Configurar notificações Mercado Pago — aguardando publicação do endereço e chave de assinatura.
 - [ ] Ativar confirmação por Resend — aguardando credenciais e autorização de Diego.
 # Marco 2 (7 etapas, uma por vez com aprovação)
+- [ ] Conclusão autorizada em 09/11: identificar XLSX/PPTX internamente, homologar com conta temporária isolada e publicar após conferências; apagar os dados temporários.
 - [x] Integrar certificado real com nota mínima 5 por atividade, melhor entrega e sem bloquear progressão; emissão/RPC verificadas em banco isolado.
 - [x] Preparar aceite persistente e atômico de termos no cadastro, separado dos termos de matrícula; sem inventar texto jurídico.
 - [x] Disponibilizar configuração administrativa de acesso de seis meses desde a matrícula, apenas para turmas gratuitas de teste autorizadas; nenhuma matrícula existente alterada.

@@ -29,4 +29,29 @@ describe("personal learner copies", () => {
     expect(Array.from(files["modelo.doc"] ?? [])).toEqual(Array.from(bytes));
     expect(strFromU8(files["IDENTIFICACAO.txt"] ?? new Uint8Array())).toContain("Aluna Teste");
   });
+  it("identifies every XLSX sheet and preserves formulas and existing footer", async () => {
+    const sheet = '<worksheet><sheetData><row r="1"><c r="A1"><f>SUM(B1:B2)</f></c></row></sheetData><headerFooter><oddFooter>Original</oddFooter></headerFooter><drawing r:id="rId1"/></worksheet>';
+    const original = zipSync({ "xl/workbook.xml": strToU8('<workbook/>'), "xl/worksheets/sheet1.xml": strToU8(sheet), "xl/worksheets/sheet2.xml": strToU8('<worksheet><sheetData/><drawing r:id="rId1"/></worksheet>') });
+    const result = await personalizeMaterial(original, "modelo.xlsx", "Aluna & Teste");
+    const files = unzipSync(result.bytes);
+    for (const path of ["xl/worksheets/sheet1.xml", "xl/worksheets/sheet2.xml"]) expect(strFromU8(files[path] ?? new Uint8Array())).toContain("Aluna &amp;&amp; Teste");
+    expect(strFromU8(files["xl/worksheets/sheet1.xml"] ?? new Uint8Array())).toContain('<f>SUM(B1:B2)</f>');
+    expect(strFromU8(files["xl/worksheets/sheet1.xml"] ?? new Uint8Array())).toContain('Original');
+    expect(strFromU8(files["xl/worksheets/sheet2.xml"] ?? new Uint8Array()).indexOf('</headerFooter>')).toBeLessThan(strFromU8(files["xl/worksheets/sheet2.xml"] ?? new Uint8Array()).indexOf('<drawing'));
+    expect(strFromU8(unzipSync(original)["xl/worksheets/sheet1.xml"] ?? new Uint8Array())).toBe(sheet);
+  });
+  it("identifies every PPTX slide outside original content and keeps original unchanged", async () => {
+    const slide = '<p:sld><p:cSld><p:spTree><p:sp><p:nvSpPr><p:cNvPr id="2"/></p:nvSpPr><p:txBody><a:p><a:r><a:t>Original</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>';
+    const original = zipSync({ "ppt/presentation.xml": strToU8('<p:presentation><p:sldSz cx="9144000" cy="6858000"/></p:presentation>'), "ppt/slides/slide1.xml": strToU8(slide), "ppt/slides/slide2.xml": strToU8(slide) });
+    const files = unzipSync((await personalizeMaterial(original, "aulas.pptx", "Aluna Teste")).bytes);
+    expect(strFromU8(files["ppt/presentation.xml"] ?? new Uint8Array())).toContain('cy="7158000"');
+    for (const path of ["ppt/slides/slide1.xml", "ppt/slides/slide2.xml"]) {
+      const xml = strFromU8(files[path] ?? new Uint8Array());
+      expect(xml).toContain('Uso pessoal de Aluna Teste'); expect(xml).toContain('y="6858000"'); expect(xml).toContain('<a:t>Original</a:t>');
+    }
+    expect(strFromU8(unzipSync(original)["ppt/slides/slide1.xml"] ?? new Uint8Array())).toBe(slide);
+  });
+  it("refuses malformed modern Office documents rather than returning unmarked originals", async () => {
+    for (const ext of ["xlsx", "pptx"]) await expect(personalizeMaterial(zipSync({}), `arquivo.${ext}`, "Aluna Teste")).rejects.toThrow(/inválida/);
+  });
 });
