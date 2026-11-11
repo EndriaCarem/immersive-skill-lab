@@ -13,7 +13,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileList } from "@/components/FileList";
-import { MessageCircle, X, Send, UploadCloud } from "lucide-react";
+import { X, Send, UploadCloud } from "lucide-react";
+import { NidiaCompanion } from "@/components/NidiaCompanion";
+import nidiaCharacter from "@/assets/nidia-companion.png";
 
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
   head: () => ({
@@ -175,7 +177,7 @@ function DemandPage() {
 
   return (
     <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
-      {chatOpen ? <div className="assist learner-chat-panel" role="dialog" aria-label="Conversa com Nídia"><header className="learner-chat-heading"><span><MessageCircle size={17} /> NÍDIA</span><Button variant="ghost" size="icon" aria-label="Fechar conversa" onClick={() => setChatOpen(false)}><X size={18} /></Button></header>
+      {chatOpen ? <div className="assist learner-chat-panel nidia-chat-animated" role="dialog" aria-label="Conversa com Nídia" onKeyDown={(event) => { if (event.key === "Escape") setChatOpen(false); }}><header className="learner-chat-heading"><span><img className="nidia-chat-avatar" src={nidiaCharacter} alt="" width={512} height={512} /> NÍDIA</span><Button variant="ghost" size="icon" aria-label="Fechar conversa" onClick={() => setChatOpen(false)}><X size={18} /></Button></header>
         <div className="hd">
           {!nidia
             ? "Carregando…"
@@ -214,7 +216,7 @@ function DemandPage() {
           onKeyDown={(e) => e.key === "Enter" && askAssistant()}
         /><Button size="icon" aria-label="Enviar pergunta" disabled={!canAsk || !ask.trim()} onClick={() => void askAssistant()}><Send size={17} /></Button></div>
         <div className="foot">Orienta linguagem, estrutura, formatação e método de pesquisa.</div>
-      </div> : <Button className="learner-chat-launcher" onClick={() => setChatOpen(true)}><MessageCircle size={20} /> Nídia</Button>}
+      </div> : <NidiaCompanion onOpen={() => setChatOpen(true)} />}
       <Steps current={2} done={1} />
       <div className="eyebrow">A demanda</div>
       <DemandMail activity={activity} idx={idx} />

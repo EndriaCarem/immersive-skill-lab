@@ -2065,3 +2065,23 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 @media(max-width:540px){.learner-shell{padding:0 10px;margin-top:18px}.learner-shell>.frame{border-radius:10px}.learner-portal{padding:26px 18px}.learner-portal-heading h1{font-size:28px}.learner-course-grid{grid-template-columns:minmax(0,1fr);gap:22px}.learner-course-card-body{padding:22px}.learner-course-card-body h2{min-height:0}.learner-shell .pane{padding:22px 18px}.learner-shell .proghead{padding:20px 18px;flex-wrap:wrap}.learner-shell .progress{width:100%;max-width:none;text-align:left;margin:0}.learner-shell .body>.rail{grid-template-columns:minmax(0,1fr);padding:20px 18px}.learner-shell .learner-chat-launcher{right:16px;bottom:16px}.learner-shell .learner-chat-panel{right:16px;bottom:16px}.learner-shell .mail-body{padding:20px}.learner-shell .score-top{padding:22px}.learner-shell .rubric td{padding:14px 10px}.learner-nav a{font-size:11px;gap:6px}.learner-sidebar{padding:12px}.learner-shell .pane>h1{font-size:27px}}
 @media(prefers-reduced-motion:reduce){.learner-course-card{transition:none}.learner-course-card:hover{transform:none}}
 @media(max-width:800px){.learner-workspace{align-content:start}.learner-sidebar{align-self:start}}
+
+/* Nídia: a floating companion, never a separate authorization or chat flow. */
+:root{--nidia-status:oklch(0.72 0.14 155);--nidia-character-shadow:0 8px 10px color-mix(in oklch,var(--learner-rail) 18%,transparent)}
+.nidia-companion{position:fixed;right:24px;bottom:20px;z-index:60;display:flex;flex-direction:column;gap:0;width:128px;height:174px;padding:0;border:0;border-radius:0;background:transparent;color:var(--learner-rail-ink);overflow:visible;isolation:isolate}
+.nidia-companion:hover,.nidia-companion:focus-visible{background:transparent}
+.nidia-companion img{display:block;width:128px;height:142px;object-fit:contain;filter:drop-shadow(var(--nidia-character-shadow));animation:nidia-float 4s ease-in-out infinite;transition:filter .25s}
+.nidia-companion:hover img{animation:nidia-wave .8s ease-in-out infinite alternate}
+.nidia-companion-name{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--learner-rail);border:1px solid var(--learner-rail-muted);color:var(--learner-rail-ink);border-radius:16px;padding:5px 15px;font:700 13px/1.4 var(--font-brand);box-shadow:var(--learner-shadow)}
+.nidia-companion-name i{width:6px;height:6px;flex:none;border-radius:50%;background:var(--nidia-status)}
+.nidia-companion-greeting{position:absolute;right:8px;bottom:178px;background:var(--paper);color:var(--ink);border:1px solid var(--edge);border-radius:8px;padding:9px 12px;font:600 12px/1.4 var(--font-brand);white-space:nowrap;box-shadow:var(--learner-shadow);opacity:0;transform:translateY(8px);transition:opacity .2s,transform .2s;pointer-events:none}
+.nidia-companion:hover .nidia-companion-greeting,.nidia-companion:focus-visible .nidia-companion-greeting{opacity:1;transform:translateY(0)}
+.nidia-chat-animated{transform-origin:bottom right;animation:nidia-chat-open .45s cubic-bezier(.16,1,.3,1) both}
+.nidia-chat-avatar{width:38px;height:40px;object-fit:cover;object-position:top;background:var(--learner-rail-active);border-radius:50%}
+.nidia-chat-animated .m{animation:nidia-message-in .3s ease-out both}
+@keyframes nidia-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-9px) rotate(2deg)}}
+@keyframes nidia-wave{from{transform:translateY(-5px) rotate(-3deg)}to{transform:translateY(-9px) rotate(3deg)}}
+@keyframes nidia-chat-open{from{opacity:0;transform:translateY(24px) scale(.88)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes nidia-message-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:540px){.nidia-companion{right:12px;bottom:14px;width:100px;height:142px}.nidia-companion img{width:100px;height:112px}.nidia-companion-greeting{bottom:146px}.nidia-companion-name{font-size:12px;padding:4px 12px}}
+@media(prefers-reduced-motion:reduce){.nidia-companion img,.nidia-companion:hover img,.nidia-chat-animated,.nidia-chat-animated .m{animation:none}.nidia-companion-greeting{transition:none}}
