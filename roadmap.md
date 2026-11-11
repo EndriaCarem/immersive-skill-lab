@@ -1,4 +1,5 @@
 # Design da área do aluno · referência em vídeo
+- [x] Renovar Meus programas, Minha conta e Minhas compras com visual compartilhado; páginas autenticadas conferidas em 1280px e 390px sem transbordamento; 19 testes aprovados, sem alterar dados ou regras.
 - [x] Refinar portal, navegação, sala de atividade e devolutiva sem alterar regras, conteúdo ou registros.
 - [x] Reapresentar o chat existente como janela flutuante, preservando limites e respostas atuais.
 - [x] Conferir portal sem sessão em computador/celular e temas; 41 testes de regressão aprovados.

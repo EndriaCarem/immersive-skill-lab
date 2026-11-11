@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { AppShell } from "@/components/AppShell";
+import { LearnerShell } from "@/components/LearnerShell";
+import { ShoppingBag, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { accountOptions } from "./minha-conta";
 import { cancelOrder } from "@/lib/commerce.functions";
@@ -58,16 +59,10 @@ function Purchases() {
     }
   }
   return (
-    <AppShell>
-      <main className="account-page">
-        <div className="eyebrow">Conta e matrícula</div>
-        <h1>Minhas compras</h1>
-        <nav className="commerce-actions">
-          <Link to="/minha-conta">Configurações da conta</Link>
-          <Link to="/cursos" className="btn ghost">
-            Explorar cursos
-          </Link>
-        </nav>
+    <LearnerShell>
+      <main className="account-page learner-portal learner-purchases">
+        <header className="learner-portal-heading"><div><div className="eyebrow">Conta e matrícula</div><h1>Minhas compras</h1><p className="muted">Seus pedidos e matrículas.</p></div><span className="learner-heading-icon"><ShoppingBag size={30} aria-hidden="true" /></span></header>
+        <div className="learner-section-heading"><h2>Histórico de pedidos</h2><Link to="/cursos">Explorar cursos <ArrowUpRight size={16} /></Link></div>
         <p role="status">{message}</p>
         <div className="integration-notice"><b>Pagamentos via Mercado Pago</b><p>Pix e boleto podem levar alguns minutos para confirmar. A matrícula é liberada assim que o pagamento é aprovado.</p></div>
         {!data.orders.length && <p className="muted">Você ainda não tem pedidos. Encontre seu próximo curso no catálogo.</p>}
@@ -143,6 +138,6 @@ function Purchases() {
           ))}
         </div>
       </main>
-    </AppShell>
+    </LearnerShell>
   );
 }

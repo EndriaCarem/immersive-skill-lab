@@ -1990,15 +1990,15 @@ html:has(.cq-shell),html:has(.cq-shell) body,.cq-shell{color-scheme:only light !
 .learner-sidebar-signature span{display:block;font:400 13px var(--font-doc);color:var(--learner-rail-muted);margin-top:7px}
 .learner-content{min-width:0}
 .learner-portal{padding:42px 36px}
-.learner-portal-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:26px;border-bottom:1px solid var(--edge);padding-bottom:22px}
+.learner-portal-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin:-42px -36px 30px;padding:36px;background:var(--paper);border-bottom:1px solid var(--edge)}
 .learner-portal-heading>svg{color:var(--plum-mid);flex:none}
 .learner-portal-heading h1{margin-bottom:10px;font-size:34px}
 .learner-portal-heading p{margin:0;font-size:14px}
 .learner-portal .commerce-actions{margin-bottom:26px}
-.learner-course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.learner-course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:stretch}
 .learner-course-card{background:var(--paper);border:1px solid var(--edge);border-radius:8px;overflow:hidden;transition:border-color .2s,transform .2s}
 .learner-course-card:hover{border-color:var(--plum-mid);transform:translateY(-2px)}
-.learner-course-cover{height:156px;position:relative;overflow:hidden;background:var(--plum-tint)}
+.learner-course-cover{height:200px;position:relative;overflow:hidden;background:var(--plum-tint)}
 .learner-course-cover img{width:100%;height:100%;object-fit:cover}
 .learner-course-cover .sig{position:absolute;bottom:12px;left:16px;display:inline-flex;gap:5px;align-items:center}
 .learner-course-card-body{padding:24px}
@@ -2065,6 +2065,37 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 @media(max-width:540px){.learner-shell{padding:0 10px;margin-top:18px}.learner-shell>.frame{border-radius:10px}.learner-portal{padding:26px 18px}.learner-portal-heading h1{font-size:28px}.learner-course-grid{grid-template-columns:minmax(0,1fr);gap:22px}.learner-course-card-body{padding:22px}.learner-course-card-body h2{min-height:0}.learner-shell .pane{padding:22px 18px}.learner-shell .proghead{padding:20px 18px;flex-wrap:wrap}.learner-shell .progress{width:100%;max-width:none;text-align:left;margin:0}.learner-shell .body>.rail{grid-template-columns:minmax(0,1fr);padding:20px 18px}.learner-shell .learner-chat-launcher{right:16px;bottom:16px}.learner-shell .learner-chat-panel{right:16px;bottom:16px}.learner-shell .mail-body{padding:20px}.learner-shell .score-top{padding:22px}.learner-shell .rubric td{padding:14px 10px}.learner-nav a{font-size:11px;gap:6px}.learner-sidebar{padding:12px}.learner-shell .pane>h1{font-size:27px}}
 @media(prefers-reduced-motion:reduce){.learner-course-card{transition:none}.learner-course-card:hover{transform:none}}
 @media(max-width:800px){.learner-workspace{align-content:start}.learner-sidebar{align-self:start}}
+
+/* Shared account presentation: no commerce or learner state changes. */
+.learner-heading-icon{width:64px;height:64px;display:grid;place-items:center;flex:none;border:1px solid var(--edge);border-radius:8px;background:var(--plum-tint);color:var(--plum-mid)}
+.learner-section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 24px}
+.learner-section-heading h2{display:flex;align-items:center;gap:10px;margin:0;font:700 20px/1.4 var(--font-brand);color:var(--ink)}
+.learner-section-heading>a{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--plum-mid);text-decoration:none}
+.learner-account-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:36px;align-items:start}
+.learner-profile-summary{display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:6px 30px 24px 0;border-right:1px solid var(--edge);min-width:0}
+.learner-profile-avatar{width:72px;height:72px;display:grid;place-items:center;border-radius:50%;background:var(--learner-rail);color:var(--learner-rail-ink);font:700 30px var(--font-brand)}
+.learner-profile-summary>strong{font:700 21px/1.4 var(--font-brand);overflow-wrap:anywhere;color:var(--ink)}
+.learner-profile-caption{display:flex;align-items:center;gap:7px;color:var(--slate);font-size:12px}
+.learner-account-links{display:grid;gap:12px;margin-top:22px;width:100%}
+.learner-account-links>a{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--plum-mid);text-decoration:none}
+.learner-account-links>button{justify-content:flex-start;padding:8px 0;font-size:13px;color:var(--slate);white-space:normal}
+.learner-profile-fields{min-width:0}
+.learner-profile-fields h2{margin:0 0 22px;font:700 22px/1.4 var(--font-brand);color:var(--ink)}
+.learner-profile-fields .commerce-form{margin:0;max-width:none;gap:24px}
+.learner-profile-fields .field{font-size:13px;gap:9px}
+.learner-profile-fields input{min-height:48px;border-radius:6px}
+.learner-profile-fields input:focus{outline:2px solid var(--plum-mid);outline-offset:2px}
+.learner-form-footer{display:flex;align-items:center;flex-wrap:wrap;gap:16px;border-top:1px solid var(--edge);padding-top:24px;margin-top:8px}
+.learner-form-footer .btn{display:flex;align-items:center;gap:10px}
+.learner-form-footer p{margin:0;font-size:13px;color:var(--slate);overflow-wrap:anywhere}
+.learner-purchases .integration-notice{background:transparent;border:0;border-left:3px solid var(--plum-mid);border-radius:0;padding:4px 0 4px 16px;margin:0 0 26px;color:var(--ink)}
+.learner-purchases .integration-notice p{margin:5px 0 0;color:var(--slate);font-size:13px}
+.learner-purchases .order-list{display:grid;gap:18px}
+.learner-purchases .order-row{border-radius:8px;background:var(--paper);border:1px solid var(--edge);padding:24px}
+.learner-purchases .order-row h3{font-family:var(--font-brand);line-height:1.4;margin-top:8px}
+@media(max-width:1150px){.learner-portal-heading{margin:-30px -24px 26px;padding:28px 24px}.learner-account-layout{grid-template-columns:180px minmax(0,1fr);gap:24px}.learner-profile-summary{padding-right:20px}}
+@media(max-width:650px){.learner-account-layout{grid-template-columns:minmax(0,1fr);gap:28px}.learner-profile-summary{border-right:0;border-bottom:1px solid var(--edge);padding:0 0 24px}.learner-account-links{margin-top:4px}.learner-profile-fields .interest-fields{grid-template-columns:minmax(0,1fr)}.learner-section-heading{flex-wrap:wrap;gap:10px}.learner-heading-icon{width:48px;height:48px}.learner-heading-icon svg{width:25px}.learner-portal-heading h1{font-size:28px}.learner-form-footer .btn{width:100%}}
+@media(max-width:540px){.learner-portal-heading{margin:-26px -18px 24px;padding:26px 18px;gap:12px}.learner-section-heading h2{font-size:19px}.learner-purchases .order-row{padding:18px}}
 
 /* Nídia: a floating companion, never a separate authorization or chat flow. */
 :root{--nidia-status:oklch(0.72 0.14 155);--nidia-character-shadow:0 8px 10px color-mix(in oklch,var(--learner-rail) 18%,transparent)}

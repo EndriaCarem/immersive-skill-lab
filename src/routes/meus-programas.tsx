@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { LearnerShell } from "@/components/LearnerShell";
-import { ArrowRight, CalendarDays, BookOpen, CheckCheck } from "lucide-react";
+import { ArrowRight, CalendarDays, BookOpen, CheckCheck, GraduationCap } from "lucide-react";
 import practicalCover from "@/assets/cover-pratico.jpg";
 import theoreticalCover from "@/assets/cover-teorico.jpg";
 import { useAccount } from "@/lib/account";
@@ -52,8 +52,8 @@ function Portal() {
   return (
     <LearnerShell>
       <main className="account-page learner-portal">
-        <header className="learner-portal-heading"><div><div className="eyebrow">Portal do aluno · Empiria</div>
-        <h1>Meus programas</h1><p className="muted">{user ? `Olá, ${String(user.user_metadata?.["full_name"] ?? "").split(" ")[0] || "bem-vindo"}. Bom ter você por aqui.` : "Seu próximo passo começa aqui."}</p></div><BookOpen size={30} aria-hidden="true" /></header>
+        <header className="learner-portal-heading"><div><div className="eyebrow">Seu aprendizado</div>
+        <h1>Meus programas</h1><p className="muted">{user ? `Olá, ${String(user.user_metadata?.["full_name"] ?? "").split(" ")[0] || "bem-vindo"}. Bom ter você por aqui.` : "Seu próximo passo começa aqui."}</p></div><span className="learner-heading-icon"><GraduationCap size={32} aria-hidden="true" /></span></header>
         {!ready ? (
           <p>Carregando…</p>
         ) : !user ? (
@@ -65,16 +65,13 @@ function Portal() {
           </>
         ) : (
           <>
-            <nav className="commerce-actions">
-              <Link to="/minha-conta">Minha conta</Link>
-              <Link to="/compras">Minhas compras</Link>
-            </nav>
             {error ? (
               <p role="alert">{error}</p>
             ) : !data ? (
               <p>Carregando matrículas…</p>
             ) : (
               <>
+                <div className="learner-section-heading"><h2><BookOpen size={19} /> Seus cursos</h2><Link to="/cursos">Explorar cursos <ArrowRight size={16} /></Link></div>
                 {!data.enrollments.some((e) => e.status === "active") && (
                   <>
                     <p className="muted">Você ainda não tem matrículas ativas.</p>

@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { AppShell } from "@/components/AppShell";
+import { LearnerShell } from "@/components/LearnerShell";
+import { UserRound, Save, LogOut, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { accountData, saveProfile } from "@/lib/commerce.functions";
 import { commerceHead } from "@/lib/commerce-schema";
@@ -48,26 +49,27 @@ function Account() {
     await nav({ to: "/auth", replace: true });
   }
   return (
-    <AppShell>
-      <main className="account-page">
-        <div className="eyebrow">Sua conta</div>
-        <h1>Configurações da conta</h1>
-        <nav className="commerce-actions">
-          <Link to="/compras" className="btn ghost">
-            Minhas compras
-          </Link>
-          <Link to="/meus-programas" className="btn ghost">
-            Meus programas
-          </Link>
+    <LearnerShell>
+      <main className="account-page learner-portal learner-account">
+        <header className="learner-portal-heading"><div><div className="eyebrow">Seu perfil</div><h1>Minha conta</h1><p className="muted">Seus dados pessoais.</p></div><span className="learner-heading-icon"><UserRound size={30} aria-hidden="true" /></span></header>
+        <div className="learner-account-layout">
+        <aside className="learner-profile-summary">
+          <span className="learner-profile-avatar" aria-hidden="true">{data.profile?.full_name?.trim().slice(0, 1).toLocaleUpperCase("pt-BR") || <UserRound size={28} />}</span>
+          <strong>{data.profile?.full_name || "Sua conta Empiria"}</strong>
+          <span className="learner-profile-caption"><ShieldCheck size={16} /> Conta Empiria</span>
+          <nav className="learner-account-links" aria-label="Ações da conta">
           {data.roles.some((x) => x.role === "admin") && (
-            <Link to="/admin/comercial" className="btn ghost">
-              Administração comercial
+            <Link to="/admin/comercial">
+              Administração comercial <ArrowUpRight size={16} />
             </Link>
           )}
-          <Button variant="link" onClick={logout}>
-            Sair
+          <Button variant="ghost" onClick={logout}>
+            <LogOut size={16} /> Sair da conta
           </Button>
-        </nav>
+          </nav>
+        </aside>
+        <section className="learner-profile-fields" aria-labelledby="profile-fields-title">
+        <h2 id="profile-fields-title">Dados pessoais</h2>
         <form className="commerce-form" onSubmit={submit}>
           <label className="field">
             Nome completo
@@ -95,12 +97,13 @@ function Account() {
               <input name="tax_id" defaultValue={data.profile?.tax_id} maxLength={25} />
             </label>
           </div>
-          <Button className="btn" disabled={busy}>
-            Salvar dados
-          </Button>
-          <p role="status">{message}</p>
+          <div className="learner-form-footer"><Button className="btn" disabled={busy}>
+            <Save size={16} /> {busy ? "Salvando…" : "Salvar dados"}
+          </Button><p role="status">{message}</p></div>
         </form>
+        </section>
+        </div>
       </main>
-    </AppShell>
+    </LearnerShell>
   );
 }
