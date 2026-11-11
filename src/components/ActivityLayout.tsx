@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppShell } from "./AppShell";
+import { LearnerShell } from "./LearnerShell";
 import { fmt, type Activity, type Program } from "@/lib/store";
 import { deliveryStatusLabel } from "@/lib/ai-grading-rules";
 import { useLearning } from "@/lib/learning";
@@ -82,7 +83,7 @@ export function ActivityLayout({
   const done = learningProgress(program, data?.submissions ?? []).done;
   const pct = program.activities.length ? (done / program.activities.length) * 100 : 0;
   return (
-    <AppShell>
+    <LearnerShell sidebar={<><div className="learner-sidebar-label">{program.title}</div><ActivityRail program={program} current={idx} /></>}>
       <div className="proghead">
         <div>
           <div className="eyebrow">
@@ -101,11 +102,11 @@ export function ActivityLayout({
           </div>
         </div>
       </div>
-      <div className="body">
-        <aside className="rail">{rail ?? <ActivityRail program={program} current={idx} />}</aside>
+      <div className={`body${rail ? "" : " solo"}`}>
+        {rail && <aside className="rail">{rail}</aside>}
         <main className="pane">{children}<LearningNotes program={program} activity={activity} /></main>
       </div>
-    </AppShell>
+    </LearnerShell>
   );
 }
 

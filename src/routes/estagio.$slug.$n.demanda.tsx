@@ -13,6 +13,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { FileList } from "@/components/FileList";
+import { MessageCircle, X, Send, UploadCloud } from "lucide-react";
 
 export const Route = createFileRoute("/estagio/$slug/$n/demanda")({
   head: () => ({
@@ -49,6 +50,7 @@ function DemandPage() {
   const [ai, setAi] = useState<string[]>([]);
   const [chat, setChat] = useState<{ me: boolean; t: string }[]>([]);
   const [ask, setAsk] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
   const learning = useLearning();
   const [nidia, setNidia] = useState<{ available: boolean; reason: string | null; limit: number; used: number } | null>(null);
   const [thinking, setThinking] = useState(false);
@@ -168,10 +170,12 @@ function DemandPage() {
           <FileList files={activity.files} personalName={String(learning.user?.user_metadata?.['full_name'] ?? learning.user?.email ?? "")} />
         </div>
       ) : null}
-      <h4>
-        <span className="nidia-name">Nidia</span> · revisora de método
-      </h4>
-      <div className="assist">
+    </>
+  );
+
+  return (
+    <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
+      {chatOpen ? <div className="assist learner-chat-panel" role="dialog" aria-label="Conversa com Nídia"><header className="learner-chat-heading"><span><MessageCircle size={17} /> NÍDIA</span><Button variant="ghost" size="icon" aria-label="Fechar conversa" onClick={() => setChatOpen(false)}><X size={18} /></Button></header>
         <div className="hd">
           {!nidia
             ? "Carregando…"
@@ -189,34 +193,28 @@ function DemandPage() {
             Nidia está pensando…
           </div>
         )}
-        <div className="chips" style={{ marginTop: 10 }}>
+        <div className="chips">
           {[
             "Como estruturo os pedidos?",
             "Onde fundamento a competência?",
             "Meu parágrafo está no padrão?",
           ].map((q) => (
-            <button key={q} className="filter" disabled={!canAsk} onClick={() => askAssistant(q)}>
+            <Button key={q} variant="ghost" className="filter" disabled={!canAsk} onClick={() => askAssistant(q)}>
               {q}
-            </button>
+            </Button>
           ))}
         </div>
-        <input
+        <div className="learner-chat-compose"><input
           className="input"
-          style={{ marginTop: 10 }}
           placeholder="Pergunte sobre forma ou método…"
           value={ask}
           maxLength={600}
           disabled={!canAsk}
           onChange={(e) => setAsk(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && askAssistant()}
-        />
+        /><Button size="icon" aria-label="Enviar pergunta" disabled={!canAsk || !ask.trim()} onClick={() => void askAssistant()}><Send size={17} /></Button></div>
         <div className="foot">Orienta linguagem, estrutura, formatação e método de pesquisa.</div>
-      </div>
-    </>
-  );
-
-  return (
-    <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
+      </div> : <Button className="learner-chat-launcher" onClick={() => setChatOpen(true)}><MessageCircle size={20} /> Nídia</Button>}
       <Steps current={2} done={1} />
       <div className="eyebrow">A demanda</div>
       <DemandMail activity={activity} idx={idx} />
@@ -286,6 +284,7 @@ function DemandPage() {
               setFile(e.dataTransfer.files[0] ?? null);
             }}
           >
+            <UploadCloud size={30} aria-hidden="true" />
             {file ? `Arquivo selecionado: ${file.name}` : "Arraste o arquivo ou selecione"}
             <small>
               {file

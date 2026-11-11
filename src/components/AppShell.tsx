@@ -232,10 +232,10 @@ export function SiteShell({ children, minimalFooter = false, hideNav = false }: 
 }
 
 /** App screens (activity flow, portal, admin): same nav, content in a rounded frame. */
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <SiteShell>
-      <div className="apppage">
+      <div className={`apppage ${className}`}>
         <div className="frame">{children}</div>
       </div>
     </SiteShell>

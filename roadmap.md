@@ -1,3 +1,9 @@
+# Design da área do aluno · referência em vídeo
+- [x] Refinar portal, navegação, sala de atividade e devolutiva sem alterar regras, conteúdo ou registros.
+- [x] Reapresentar o chat existente como janela flutuante, preservando limites e respostas atuais.
+- [x] Conferir portal sem sessão em computador/celular e temas; 41 testes de regressão aprovados.
+- [ ] Conferir visual com matrícula e chat pelas telas — aguardando login na prévia; não foi possível obter sessão do solicitante.
+
 # Progresso do aluno
 - [x] Vincular atividades, entregas, arquivos e notas às contas reais no Cloud, sem importar registros demonstrativos.
 - [x] Integrar portal do aluno e fila de correção com dados compartilhados e acesso por matrícula.
