@@ -68,7 +68,7 @@ function DemandPage() {
         setNidia(s);
         setChat(s.history.flatMap((h) => [{ me: true, t: h.question }, { me: false, t: h.answer }]));
       })
-      .catch(() => live && setNidia({ available: false, reason: "Não foi possível carregar a Nidia.", limit: 0, used: 0 }));
+      .catch(() => live && setNidia({ available: false, reason: "Não foi possível carregar o assistente.", limit: 0, used: 0 }));
     return () => {
       live = false;
     };
@@ -145,7 +145,7 @@ function DemandPage() {
       setChat((c) => [...c, { me: false, t: r.answer }]);
       setNidia((s) => (s ? { ...s, used: s.used + 1 } : s));
     } catch (e) {
-      setChat((c) => [...c, { me: false, t: e instanceof Error ? e.message : "A Nidia não conseguiu responder agora." }]);
+      setChat((c) => [...c, { me: false, t: e instanceof Error ? e.message : "O assistente não conseguiu responder agora." }]);
     } finally {
       setThinking(false);
     }
@@ -176,7 +176,7 @@ function DemandPage() {
 
   return (
     <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
-      {chatOpen ? <div className="assist learner-chat-panel nidia-chat-animated" role="dialog" aria-label="Conversa com Nídia" onKeyDown={(event) => { if (event.key === "Escape") setChatOpen(false); }}><header className="learner-chat-heading"><span><Bot size={24} aria-hidden="true" /> NÍDIA</span><Button variant="ghost" size="icon" aria-label="Fechar conversa" onClick={() => setChatOpen(false)}><X size={18} /></Button></header>
+      {chatOpen ? <div className="assist learner-chat-panel nidia-chat-animated" role="dialog" aria-label="Conversa com assistente" onKeyDown={(event) => { if (event.key === "Escape") setChatOpen(false); }}><header className="learner-chat-heading"><span><Bot size={24} aria-hidden="true" /> Assistente</span><Button variant="ghost" size="icon" aria-label="Fechar conversa" onClick={() => setChatOpen(false)}><X size={18} /></Button></header>
         <div className="hd">
           {!nidia
             ? "Carregando…"
@@ -191,7 +191,7 @@ function DemandPage() {
         ))}
         {thinking && (
           <div className="m ai" aria-live="polite">
-            Nidia está pensando…
+            Pensando…
           </div>
         )}
         <div className="chips">
