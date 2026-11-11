@@ -16,7 +16,6 @@ export function LearnerShell({ children, sidebar }: { children: ReactNode; sideb
         </nav>
         {sidebar && <div className="learner-course-nav">{sidebar}</div>}
         <Link className="learner-catalog-link" to="/cursos">Explorar cursos <ArrowUpRight size={16} /></Link>
-        <div className="learner-sidebar-signature">EMPIRIA<span>Conhecimento em prática.</span></div>
       </aside>
       <div className="learner-content">{children}</div>
     </div>
