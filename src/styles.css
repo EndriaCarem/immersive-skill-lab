@@ -1236,7 +1236,7 @@ html,body{overflow-x:clip}
 html.dark .auth-brand img{filter:brightness(0) invert(.9)}
 html.dark .auth-scene .auth-brand img{filter:none}
 html.dark .auth-scene-copy p{color:var(--auth-photo-ink)}
-html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:var(--on-plum)}
+html.dark .auth-clean-switch button,html.dark .auth-clean-recovery button{color:var(--plum-mid)}
 @media(max-width:1100px){.auth-scene{padding:40px 32px}.auth-scene-copy{margin-top:70px}.auth-scene-copy h2{font-size:34px}.auth-panel{padding:24px 32px}.auth-scene-footer{left:32px}}
 @media(max-width:760px){.auth-clean{grid-template-columns:minmax(0,1fr)}.auth-scene{display:none}.auth-panel{min-height:100dvh;padding:20px 24px}.auth-clean-content{padding:32px 0}.auth-form-brand{margin-bottom:32px}.auth-clean-content h1{font-size:26px}.auth-clean-switch{font-size:12px}}
 
