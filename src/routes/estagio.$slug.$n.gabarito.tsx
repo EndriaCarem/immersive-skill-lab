@@ -63,7 +63,8 @@ function AnswerPage() {
       <div className="eyebrow">Atividade {idx + 1} · liberado após sua entrega</div>
       <h1>Gabarito comentado</h1>
       {activity.answerHtml ? (
-        <div className="panel">
+        <div className="panel answer-key">
+          {/<mark/i.test(activity.answerHtml) && <p className="answer-key-legend"><mark>Trechos marcados</mark> são os pontos que a correção mais espera ver na sua peça.</p>}
           <Rich html={activity.answerHtml} />
         </div>
       ) : null}

@@ -2116,3 +2116,15 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 @keyframes nidia-message-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:540px){.nidia-companion{right:12px;bottom:14px}.nidia-companion-name{font-size:12px;padding:4px 12px}}
 @media(prefers-reduced-motion:reduce){.nidia-companion-robot,.nidia-companion:hover .nidia-companion-robot,.nidia-chat-animated,.nidia-chat-animated .m{animation:none}.nidia-companion-greeting{transition:none}}
+
+/* Activity adjustments (meeting 10/11) */
+.demand-case{border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:10px 0 14px;background:var(--card)}
+.demand-case summary{cursor:pointer;font-weight:600}
+.demand-case[open] summary{margin-bottom:8px}
+.demand-docs{margin-bottom:14px}
+.feedback-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0}
+.answer-key mark,.rich mark,.rte mark{background:color-mix(in oklab,var(--accent) 45%,transparent);color:inherit;padding:0 .15em;border-radius:3px}
+.answer-key-legend{font-size:.9rem;color:var(--muted-foreground);margin-bottom:10px}
+.assistant-limit{align-items:center;margin-top:6px}
+.assistant-limit select{margin-left:6px}
+.people-table{overflow-x:auto;margin-top:14px}

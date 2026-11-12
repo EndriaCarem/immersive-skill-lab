@@ -1,0 +1,4 @@
+ALTER TABLE public.learning_assistant_config DROP CONSTRAINT learning_assistant_config_default_question_limit_check;
+ALTER TABLE public.learning_assistant_config ADD CONSTRAINT learning_assistant_config_default_question_limit_check CHECK (default_question_limit BETWEEN 3 AND 10);
+ALTER TABLE public.learning_assistant_settings DROP CONSTRAINT learning_assistant_settings_question_limit_check;
+ALTER TABLE public.learning_assistant_settings ADD CONSTRAINT learning_assistant_settings_question_limit_check CHECK (question_limit IS NULL OR question_limit BETWEEN 3 AND 10);

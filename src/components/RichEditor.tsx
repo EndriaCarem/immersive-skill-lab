@@ -1,11 +1,13 @@
 import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import Highlight from "@tiptap/extension-highlight";
 import { useEffect, useRef, useState } from "react";
 import {
   Bold,
   Eye,
   Heading2,
+  Highlighter,
   Heading3,
   Italic,
   Link2,
@@ -38,7 +40,7 @@ export function RichEditor({
   const lastEmitted = useRef(value);
   const editor = useEditor({
     immediatelyRender: false,
-    extensions: [StarterKit.configure({ link: { openOnClick: false, HTMLAttributes: { target: "_blank", rel: "noopener noreferrer" } } }), Placeholder.configure({ placeholder })],
+    extensions: [StarterKit.configure({ link: { openOnClick: false, HTMLAttributes: { target: "_blank", rel: "noopener noreferrer" } } }), Placeholder.configure({ placeholder }), Highlight],
     content: value,
     onUpdate: ({ editor }) => {
       const html = editor.isEmpty ? "" : editor.getHTML();
@@ -62,6 +64,7 @@ export function RichEditor({
             b: e.isActive("bold"),
             i: e.isActive("italic"),
             u: e.isActive("underline"),
+            m: e.isActive("highlight"),
             h2: e.isActive("heading", { level: 2 }),
             h3: e.isActive("heading", { level: 3 }),
             ul: e.isActive("bulletList"),
@@ -101,6 +104,9 @@ export function RichEditor({
         </B>
         <B title="Sublinhado" on={st?.u} fn={() => c().toggleUnderline().run()}>
           <U size={15} />
+        </B>
+        <B title="Marcar trecho (destaque do gabarito)" on={st?.m} fn={() => c().toggleHighlight().run()}>
+          <Highlighter size={15} />
         </B>
         <span className="sep" />
         <B title="Parágrafo" on={st?.p && !st?.q} fn={() => c().setParagraph().run()}>

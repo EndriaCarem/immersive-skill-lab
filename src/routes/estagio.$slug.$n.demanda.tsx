@@ -12,6 +12,8 @@ import { learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Rich } from "@/components/Rich";
+import { Link } from "@tanstack/react-router";
 import { FileList } from "@/components/FileList";
 import { Bot, X, Send, UploadCloud } from "lucide-react";
 import { NidiaCompanion } from "@/components/NidiaCompanion";
@@ -218,32 +220,13 @@ function DemandPage() {
       </div> : <NidiaCompanion onOpen={() => setChatOpen(true)} />}
       <Steps current={2} done={1} />
       <div className="eyebrow">A demanda</div>
+      <details className="demand-case" open={idx === 0}>
+        <summary>Relembre o caso</summary>
+        {activity.caseHtml ? <Rich html={activity.caseHtml} /> : activity.caseParagraphs.map((p, i) => <p key={i}>{p}</p>)}
+        <Link to="/estagio/$slug/$n/caso" params={{ slug, n }} className="sm">Ver o caso completo</Link>
+      </details>
       <DemandMail activity={activity} idx={idx} />
       <h4>Sua entrega</h4>
-      <div className={`attempts${locked ? " is-full" : ""}`} aria-live="polite">
-        <span className="pips" aria-hidden="true">
-          {Array.from({ length: attempts.max }, (_, i) => (
-            <i key={i} className={i < attempts.used ? "on" : ""} />
-          ))}
-        </span>
-        <span>
-          {!known ? (
-            "Verificando suas tentativas…"
-          ) : attempts.used === 0 ? (
-            <>
-              Você tem <b>2 tentativas</b> disponíveis.
-            </>
-          ) : attempts.used === 1 ? (
-            <>
-              <b>1 de 2</b> tentativas utilizadas. Resta uma última oportunidade de envio.
-            </>
-          ) : (
-            <>
-              <b>Limite de 2 tentativas atingido.</b> Suas entregas continuam disponíveis abaixo.
-            </>
-          )}
-        </span>
-      </div>
       {mine.length > 0 && (
         <div className="files attempt-files">
           {mine.map((s, i) => (
@@ -318,6 +301,30 @@ function DemandPage() {
           </div>
         </>
       )}
+      <div className={`attempts${locked ? " is-full" : ""}`} aria-live="polite">
+        <span className="pips" aria-hidden="true">
+          {Array.from({ length: attempts.max }, (_, i) => (
+            <i key={i} className={i < attempts.used ? "on" : ""} />
+          ))}
+        </span>
+        <span>
+          {!known ? (
+            "Verificando suas tentativas…"
+          ) : attempts.used === 0 ? (
+            <>
+              Você tem <b>2 tentativas</b> disponíveis.
+            </>
+          ) : attempts.used === 1 ? (
+            <>
+              <b>1 de 2</b> tentativas utilizadas. Resta uma última oportunidade de envio.
+            </>
+          ) : (
+            <>
+              <b>Limite de 2 tentativas atingido.</b> Suas entregas continuam disponíveis abaixo.
+            </>
+          )}
+        </span>
+      </div>
       {error && (
         <p role="alert" className="attempt-error">
           {error}

@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { assistantLimits, saveAssistantLimit } from "@/lib/admin-people.functions";
+import { ASSISTANT_LIMIT_MAX, ASSISTANT_LIMIT_MIN } from "@/lib/admin-people";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -51,6 +54,7 @@ function Activities() {
             <Button variant="outline" onClick={() => setRubric(a)}>Editar rubrica</Button>
             <Button variant="outline" onClick={() => setDemand({ programId: courseId, activityId: a.id, title: a.title, index: i, contentFrom: a.demandFrom, contentSubject: a.demandSubject, supervisorName: null })}>E-mail, vídeo e materiais</Button>
           </div>
+          <AssistantLimit programId={courseId} activityId={a.id} />
           {staff?.mail_subject && <p className="muted sm">Assunto: {staff.mail_subject}</p>}
         </div>
       </section>;
@@ -93,4 +97,28 @@ function RubricEditor({ activity, programId, updatedAt, close, saved }: { activi
     {error && <p role="alert" className="attempt-error">{error}</p>}
     <div className="wb-modal-actions"><Button variant="ghost" disabled={busy} onClick={close}>Cancelar</Button><Button disabled={busy} onClick={submit}>{busy ? "Salvando…" : "Salvar rubrica"}</Button></div>
   </div></div>;
+}
+function AssistantLimit({ programId, activityId }: { programId: string; activityId: string }) {
+  const client = useQueryClient();
+  const { data } = useQuery({ queryKey: ["assistant-limits"], queryFn: () => assistantLimits() });
+  const save = useServerFn(saveAssistantLimit);
+  const [busy, setBusy] = useState(false);
+  if (!data) return null;
+  const row = data.rows.find(r => r.program_id === programId && r.activity_id === activityId);
+  const limit = Math.min(ASSISTANT_LIMIT_MAX, Math.max(ASSISTANT_LIMIT_MIN, row?.question_limit ?? data.defaultLimit));
+  const enabled = row?.enabled ?? true;
+  const put = async (next: { limit: number; enabled: boolean }) => {
+    setBusy(true);
+    try { await save({ data: { programId, activityId, ...next } }); await client.invalidateQueries({ queryKey: ["assistant-limits"] }); toast.success("Assistente atualizado."); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Não foi possível salvar."); }
+    finally { setBusy(false); }
+  };
+  return <div className="chips assistant-limit">
+    <label className="muted sm">Perguntas ao assistente
+      <select className="wb-select" value={limit} disabled={busy} onChange={e => void put({ limit: Number(e.target.value), enabled })}>
+        {Array.from({ length: ASSISTANT_LIMIT_MAX - ASSISTANT_LIMIT_MIN + 1 }, (_, i) => i + ASSISTANT_LIMIT_MIN).map(n => <option key={n} value={n}>{n}</option>)}
+      </select>
+    </label>
+    <label className="muted sm"><input type="checkbox" checked={enabled} disabled={busy} onChange={e => void put({ limit, enabled: e.target.checked })} /> Assistente ativo</label>
+  </div>;
 }

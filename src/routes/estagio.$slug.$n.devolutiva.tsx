@@ -3,7 +3,7 @@ import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/Activit
 import { Steps } from "@/components/AppShell";
 import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
-import { MIN_PASS_SCORE, activityReviewPending, activityStanding, aiScore, finalScore } from "@/lib/learning-rules";
+import { attemptStatus, MIN_PASS_SCORE, activityReviewPending, activityStanding, aiScore, finalScore } from "@/lib/learning-rules";
 import { isTerminal, issueMessage, type AiStatus } from "@/lib/ai-grading-rules";
 import { requestLearningReview, learningFileUrl } from "@/lib/learning.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -85,6 +85,17 @@ function FeedbackPage() {
   const humanScore = subScore(sub);
   const shown = finalScore(sub);
   const standing = activityStanding(mine, program.id, activity.id);
+  const attempts = attemptStatus(mine, program.id, activity.id);
+  const reviewPending = activityReviewPending(submissions, program.id, activity.id);
+  const next = program.activities[idx + 1];
+  const actions = (
+    <div className="feedback-actions">
+      {!attempts.reached && <Link to="/estagio/$slug/$n/demanda" params={{ slug, n }} className="btn ghost">Refazer entrega ({attempts.max - attempts.used} restante)</Link>}
+      {quota.status === "none" && quota.canRequest && <a href="#correcao-humana" className="btn ghost">Pedir revisão humana</a>}
+      {reviewPending ? <span className="lockline">Gabarito liberado após a revisão</span> : <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn ghost">Ver gabarito</Link>}
+      {next && <Link to="/estagio/$slug/$n/caso" params={{ slug, n: String(idx + 2) }} className="btn">Próxima atividade</Link>}
+    </div>
+  );
   return (
     <ActivityLayout program={program} activity={activity} idx={idx}>
       <Steps current={3} done={2} />
@@ -137,6 +148,7 @@ function FeedbackPage() {
           {standing.passed ? "Atingida nesta atividade." : "Ainda não atingida nesta atividade; isso aparece no certificado, mas não bloqueia as próximas atividades."}
         </p>
       )}
+      {actions}
       {working(ai?.status) && <AiReading status={ai!.status} />}
 
       <div className="ai-feedback">
@@ -230,7 +242,7 @@ function FeedbackPage() {
         ))}
         {done && ai.ethicsNote && <p className="ai-ethics"><b>Orientação da correção:</b> {ai.ethicsNote} <span>Esta orientação não altera a nota.</span></p>}
       </div>
-      <div className="callout">
+      <div className="callout" id="correcao-humana">
         <div className="k">Correção humana</div>
         <p>
           Discorda de algum critério? Um sênior relê a peça. Você pode pedir correção humana em até {quota.max} atividades

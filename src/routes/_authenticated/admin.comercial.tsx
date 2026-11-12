@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -8,6 +8,8 @@ import { adminCommerce, saveCoupon, publishTerms, saveProduct } from "@/lib/comm
 import { adminGuard } from "@/lib/admin-guard";
 import { commerceHead, statusLabel, couponSchema } from "@/lib/commerce-schema";
 import { brl, useStore } from "@/lib/store";
+import { adminPeople } from "@/lib/admin-people.functions";
+import { toCsv, withoutPurchase } from "@/lib/admin-people";
 import { configureTestAccess, publishPlatformTerms } from "@/lib/completion.functions";
 const options = () =>
   queryOptions({ queryKey: ["admin-commerce"], queryFn: () => adminCommerce() });
@@ -95,6 +97,7 @@ function Commercial() {
               ["coupons", "Cupons"],
               ["terms", "Termos"],
               ["access", "Turmas de teste"],
+              ["people", "Alunos e contatos"],
             ] as const
           ).map(([v, l]) => (
             <Button key={v} className={tab === v ? "btn" : "btn ghost"} onClick={() => setTab(v)}>
@@ -329,6 +332,7 @@ function Commercial() {
             ))}
           </>
         )}
+        {tab === "people" && <PeopleTab />}
         {tab === "access" && <>
           <h2>Turmas de teste · seis meses</h2>
           {data.enrollments.filter(e => e.status === "active" && data.orders.some(o => o.id === e.order_id && o.status === "free" && o.total_cents === 0)).map(e => <form className="order-row" key={e.id} onSubmit={event => {
@@ -346,4 +350,35 @@ function Commercial() {
       </main>
     </AppShell>
   );
+}
+
+const peopleOptions = () => queryOptions({ queryKey: ["admin-people"], queryFn: () => adminPeople() });
+const day = (d: string) => new Date(d).toLocaleDateString("pt-BR");
+function download(name: string, csv: string) {
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const a = document.createElement("a"); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
+}
+function PeopleTab() {
+  const { data } = useQuery(peopleOptions());
+  const [view, setView] = useState<"all" | "nobuy" | "leads">("all");
+  if (!data) return <p className="muted">Carregando contatos…</p>;
+  const nobuy = withoutPurchase(data.people, data.orders);
+  const rows = view === "nobuy" ? nobuy : data.people;
+  const stamp = new Date().toISOString().slice(0, 10);
+  const exportPeople = () => download(`empiria-${view === "nobuy" ? "cadastros-sem-compra" : "alunos"}-${stamp}.csv`, toCsv(["Nome", "Email", "Telefone", "Cadastro", "Cursos", "Origem"], rows.map(p => ({ Nome: p.name, Email: p.email, Telefone: p.phone, Cadastro: day(p.created_at), Cursos: p.courses.join(", "), Origem: p.source }))));
+  const exportLeads = () => download(`empiria-leads-${stamp}.csv`, toCsv(["Nome", "Email", "Telefone", "Data", "Interesse", "Origem", "Página", "Aceita marketing"], data.leads.map(l => ({ Nome: l.name, Email: l.email, Telefone: l.phone, Data: day(l.created_at), Interesse: l.interest, Origem: l.source, "Página": l.campaign_path ?? "", "Aceita marketing": l.marketing_opt_in ? "Sim" : "Não" }))));
+  return <>
+    <h2>Alunos e contatos</h2>
+    <p className="muted sm">Planilha pronta para abrir no Excel ou importar na RD Station.</p>
+    <nav className="commerce-actions">
+      <Button className={view === "all" ? "btn" : "btn ghost"} onClick={() => setView("all")}>Contas ({data.people.length})</Button>
+      <Button className={view === "nobuy" ? "btn" : "btn ghost"} onClick={() => setView("nobuy")}>Cadastro sem compra ({nobuy.length})</Button>
+      <Button className={view === "leads" ? "btn" : "btn ghost"} onClick={() => setView("leads")}>Formulários de interesse ({data.leads.length})</Button>
+    </nav>
+    <Button className="btn" onClick={view === "leads" ? exportLeads : exportPeople}>Baixar planilha</Button>
+    <div className="people-table"><table className="rubric"><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>{view === "leads" ? "Interesse" : "Cursos"}</th><th>Data</th></tr></thead><tbody>
+      {view === "leads" ? data.leads.map((l, i) => <tr key={i}><td>{l.name}</td><td>{l.email}</td><td>{l.phone}</td><td>{l.interest}</td><td>{day(l.created_at)}</td></tr>)
+        : rows.map(p => <tr key={p.id}><td>{p.name || "—"}</td><td>{p.email}</td><td>{p.phone || "—"}</td><td>{p.courses.join(", ") || "Sem matrícula"}</td><td>{day(p.created_at)}</td></tr>)}
+    </tbody></table></div>
+  </>;
 }
