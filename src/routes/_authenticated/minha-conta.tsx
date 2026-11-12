@@ -59,8 +59,8 @@ function Account() {
           <span className="learner-profile-caption"><ShieldCheck size={16} /> Conta Empiria</span>
           <nav className="learner-account-links" aria-label="Ações da conta">
           {data.roles.some((x) => x.role === "admin") && (
-            <Link to="/admin/comercial">
-              Administração comercial <ArrowUpRight size={16} />
+            <Link to="/admin" className="btn learner-admin-cta">
+              Ir para a administração <ArrowUpRight size={16} />
             </Link>
           )}
           <Button variant="ghost" onClick={logout}>

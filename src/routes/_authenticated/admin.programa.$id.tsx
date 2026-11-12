@@ -237,6 +237,7 @@ function Editor() {
     <AppShell>
       <div className="proghead" style={{ flexWrap: "wrap", gap: 14 }}>
         <div style={{ minWidth: 0 }}>
+          <Link to="/admin" className="btn ghost" style={{ marginBottom: 8 }}>← Painel</Link>
           <div className="crumbs">
             <Link to="/admin">Administração</Link> › <b>Editor de curso</b>
           </div>

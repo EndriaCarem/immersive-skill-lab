@@ -102,6 +102,7 @@ function Admin() {
   return (
     <AppShell>
       <main className="pane">
+        <Link to="/minha-conta" className="btn ghost">← Voltar para minha conta</Link>
         <div className="eyebrow">Painel executivo</div>
         <h1>Administração</h1>
         <Link to="/admin/comercial" className="btn ghost">

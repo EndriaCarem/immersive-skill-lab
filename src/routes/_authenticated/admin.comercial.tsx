@@ -64,7 +64,7 @@ function Commercial() {
       <main className="account-page commercial-page">
         <div className="eyebrow">Administração</div>
         <h1>Operação comercial</h1>
-        <Link to="/admin">Editor e simulações</Link>
+        <Link to="/admin" className="btn ghost">← Painel</Link>
         <div className="kpis">
           <div className="kpi">
             <small>Recebido</small>
