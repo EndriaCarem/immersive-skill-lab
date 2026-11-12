@@ -68,17 +68,14 @@ function Purchases() {
         {!data.orders.length && <p className="muted">Você ainda não tem pedidos. Encontre seu próximo curso no catálogo.</p>}
         <div className="order-list">
           {data.orders.map((o) => (
-            <article className="order-row" key={o.id}>
-              <header>
-                <div>
-                  <span className="muted sm">
-                    {new Date(o.created_at).toLocaleDateString("pt-BR")} · Pedido {o.id.slice(0, 8)}
-                  </span>
-                  <h3>{o.commerce_order_items.map((i) => i.title).join(" + ")}</h3>
+            <article className="order-row po-card" key={o.id}>
+              <header className="po-hd">
+                <div className="po-main">
+                  <div className="po-title"><h3>{o.commerce_order_items.map((i) => i.title).join(" + ")}</h3><span className={`po-status s-${o.status}`}>{statusLabel[o.status] ?? o.status}</span></div>
+                  <div className="po-meta"><span>{new Date(o.created_at).toLocaleDateString("pt-BR")}</span><span>Pedido #{o.id.slice(0, 8)}</span><span>Termos aceitos em {new Date(o.terms_accepted_at).toLocaleDateString("pt-BR")}</span></div>
                 </div>
-                <b>{brl(o.total_cents / 100)}</b>
+                <div className="po-total"><small>Total</small><b>{o.total_cents ? brl(o.total_cents / 100) : "Gratuito"}</b></div>
               </header>
-              <span className="sig mid">{statusLabel[o.status] ?? o.status}</span>
               {o.status === "awaiting_integration" && (
                 <p className="muted sm">
                   Aguardando pagamento.
@@ -96,14 +93,12 @@ function Purchases() {
               {paying === o.id && (
                 <PaymentPanel orderId={o.id} totalCents={o.total_cents} initialMethod={(["pix", "boleto", "card"] as const).find((m) => m === o.payment_method) ?? "pix"} onChange={() => void queryClient.invalidateQueries({ queryKey: ["account"] })} />
               )}
-              <p className="muted sm">
-                Termos aceitos em {new Date(o.terms_accepted_at).toLocaleString("pt-BR")}
-              </p>
               {!["cancelled", "refunded", "cancellation_requested", "rejected"].includes(
                 o.status,
               ) && (
                 <Button
-                  className="btn ghost"
+                  variant="ghost"
+                  className="po-cancel"
                   onClick={() => {
                     setSelected(o.id);
                     setReason("");
