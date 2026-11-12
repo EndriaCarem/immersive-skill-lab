@@ -2267,3 +2267,4 @@ button.adm-kpi:hover{transform:translateY(-2px);border-color:var(--plum-mid)}
 .ac-ft{background:var(--canvas);border-top:1px solid var(--edge);padding:12px 22px}
 .ac-ft .assistant-limit{margin:0;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 @media(max-width:900px){.ac-tiles{grid-template-columns:minmax(0,1fr)}.ac-tile{border-right:0;border-bottom:1px solid var(--edge)}.ac-tile:last-child{border-bottom:0}.ac-checks{padding-left:22px}}
+.learner-portal-heading>svg,.learner-portal-heading>.learner-heading-icon,.learner-portal-heading>span:last-child:has(svg){display:none}
