@@ -56,7 +56,6 @@ function Account() {
         <aside className="learner-profile-summary">
           <span className="learner-profile-avatar" aria-hidden="true">{data.profile?.full_name?.trim().slice(0, 1).toLocaleUpperCase("pt-BR") || <UserRound size={28} />}</span>
           <strong>{data.profile?.full_name || "Sua conta Empiria"}</strong>
-          <span className="learner-profile-caption"><ShieldCheck size={16} /> Conta Empiria</span>
           <nav className="learner-account-links" aria-label="Ações da conta">
           <Button variant="ghost" onClick={logout}>
             <LogOut size={16} /> Sair da conta
