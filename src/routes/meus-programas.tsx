@@ -97,13 +97,15 @@ function Portal() {
                         return <>
                           <div className="learner-progress-label"><span>{progress.done} de {progress.total} atividades entregues</span><b>{Math.round(progress.total ? progress.done / progress.total * 100 : 0)}%</b></div><progress className="learner-progress" value={progress.done} max={progress.total || 1} aria-label="Progresso do curso" />
                           <Link className="btn" to="/estagio/$slug/$n/caso" params={{ slug: program.slug, n: String(progress.next + 1) }}>{progress.done ? "Continuar programa" : "Iniciar programa"}<ArrowRight size={17} /></Link>
-                          <details className="learner-activity-history"><summary>Atividades e devolutivas</summary><ul className="clean">{program.activities.map((a, i) => {
+                          <details className="learner-activity-history"><summary><span>Atividades e devolutivas</span><em>{program.activities.filter(a => currentSubmission(learning.data?.submissions ?? [], program.id, a.id)).length}/{program.activities.length}</em></summary><ol className="lah-list">{program.activities.map((a, i) => {
                             const sub = currentSubmission(learning.data?.submissions ?? [], program.id, a.id);
-                            return <li key={a.id}>{a.shortTitle} — {sub ? deliveryStatusLabel(sub, fmt) : "Não entregue"}
-                              {sub && <> · <Link to="/estagio/$slug/$n/devolutiva" params={{ slug: program.slug, n: String(i + 1) }}>Ver devolutiva</Link></>}
+                            return <li key={a.id} className={sub ? "done" : ""}>
+                              <span className="lah-num">{sub ? "✓" : i + 1}</span>
+                              <span className="lah-txt"><b>{a.shortTitle}</b><small>{sub ? deliveryStatusLabel(sub, fmt) : "Não entregue"}</small></span>
+                              {sub && <Link className="lah-link" to="/estagio/$slug/$n/devolutiva" params={{ slug: program.slug, n: String(i + 1) }}>Devolutiva →</Link>}
                             </li>;
-                          })}</ul></details>
-                          {certificateStanding(program, learning.data?.submissions ?? []).eligible ? <Button className="btn ghost" disabled={issuing} onClick={() => void certificate(program.id)}>{issuing ? "Emitindo…" : "Emitir certificado"}</Button> : <p className="muted sm">Certificado: nota mínima 5 em cada atividade e revisões concluídas. As próximas atividades continuam disponíveis conforme suas entregas.</p>}
+                          })}</ol></details>
+                          {certificateStanding(program, learning.data?.submissions ?? []).eligible ? <Button className="btn ghost" disabled={issuing} onClick={() => void certificate(program.id)}>{issuing ? "Emitindo…" : "Emitir certificado"}</Button> : <p className="lah-cert">Certificado: nota mínima 5 em cada atividade e revisões concluídas. As próximas atividades continuam disponíveis conforme suas entregas.</p>}
                         </>;
                       })()}
                     </div></article>
