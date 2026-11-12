@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
+import { ActivityLayout, BackStep, NextActivityButton, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { fmt, reviewQuota, subScore, type Submission } from "@/lib/store";
 import { useLearning } from "@/lib/learning";
@@ -87,17 +87,18 @@ function FeedbackPage() {
   const standing = activityStanding(mine, program.id, activity.id);
   const attempts = attemptStatus(mine, program.id, activity.id);
   const reviewPending = activityReviewPending(submissions, program.id, activity.id);
-  const next = program.activities[idx + 1];
   const actions = (
     <div className="feedback-actions">
       {!attempts.reached && <Link to="/estagio/$slug/$n/demanda" params={{ slug, n }} className="btn ghost">Refazer entrega ({attempts.max - attempts.used} restante)</Link>}
       {quota.status === "none" && quota.canRequest && <a href="#correcao-humana" className="btn ghost">Pedir revisão humana</a>}
       {reviewPending ? <span className="lockline">Gabarito liberado após a revisão</span> : <Link to="/estagio/$slug/$n/gabarito" params={{ slug, n }} className="btn ghost">Ver gabarito</Link>}
-      {next && <Link to="/estagio/$slug/$n/caso" params={{ slug, n: String(idx + 2) }} className="btn">Próxima atividade</Link>}
+      <Button className="btn ghost" onClick={() => window.print()}>Baixar devolutiva (PDF)</Button>
+      <NextActivityButton program={program} idx={idx} />
     </div>
   );
   return (
-    <ActivityLayout program={program} activity={activity} idx={idx}>
+    <ActivityLayout program={program} activity={activity} idx={idx} hideActivities>
+      <BackStep step={3} slug={slug} n={n} />
       <Steps current={3} done={2} />
       <div className="eyebrow">
         Devolutiva · atividade {idx + 1} · {activity.shortTitle.toLowerCase()}

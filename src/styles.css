@@ -2131,3 +2131,6 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 .learner-admin-link{display:flex;align-items:center;gap:10px;margin:14px 0 4px;padding:12px 14px;border-radius:8px;background:var(--lavender,#B28CBD);color:#3B2249;font-weight:700;text-decoration:none}
 .learner-admin-link:hover{filter:brightness(1.06)}
 .learner-account-links .learner-admin-cta{display:inline-flex;gap:8px;align-items:center;justify-content:center;width:100%}
+.step-back{margin-bottom:14px;display:inline-flex}
+.next-locked{opacity:.55;cursor:not-allowed;pointer-events:none}
+@media print{.learner-sidebar,.site-nav,footer,.feedback-actions,.step-back,.nidia-companion{display:none!important}}

@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { askNidia, nidiaState } from "@/lib/nidia.functions";
-import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
+import { ActivityLayout, BackStep, NextActivityButton, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { useLearning } from "@/lib/learning";
 import { deliverActivity } from "@/lib/learning.functions";
@@ -218,6 +218,7 @@ function DemandPage() {
         /><Button size="icon" aria-label="Enviar pergunta" disabled={!canAsk || !ask.trim()} onClick={() => void askAssistant()}><Send size={17} /></Button></div>
         <div className="foot">Orienta linguagem, estrutura, formatação e método de pesquisa.</div>
       </div> : <NidiaCompanion onOpen={() => setChatOpen(true)} />}
+      <BackStep step={2} slug={slug} n={n} />
       <Steps current={2} done={1} />
       <div className="eyebrow">A demanda</div>
       <details className="demand-case" open={idx === 0}>

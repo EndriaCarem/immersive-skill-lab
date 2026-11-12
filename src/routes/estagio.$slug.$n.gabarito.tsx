@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ActivityVideo } from "@/components/FacultyMedia";
-import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
+import { ActivityLayout, BackStep, NextActivityButton, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { downloadPersonalDoc } from "@/lib/personal-download";
 import { useAccount } from "@/lib/account";
@@ -59,6 +59,7 @@ function AnswerPage() {
   );
   return (
     <ActivityLayout program={program} activity={activity} idx={idx} rail={rail}>
+      <BackStep step={4} slug={slug} n={n} />
       <Steps current={4} done={3} />
       <div className="eyebrow">Atividade {idx + 1} · liberado após sua entrega</div>
       <h1>Gabarito comentado</h1>
@@ -99,29 +100,16 @@ function AnswerPage() {
           </div>
         </>
       )}
-      {next ? (
-        <>
-          <div className="callout">
-            <div className="k">Sua próxima atividade</div>
-            <p>
-              {next.title} — {next.duration}.
-            </p>
-          </div>
-          <Link to="/estagio/$slug/$n/caso" params={{ slug, n: String(idx + 2) }} className="btn">
-            Ir para a atividade {idx + 2}
-          </Link>
-        </>
-      ) : (
-        <>
-          <div className="callout">
-            <div className="k">Programa concluído</div>
-            <p>Você entregou todas as atividades. Acompanhe as correções no portal do aluno.</p>
-          </div>
-          <Link to="/meus-programas" className="btn">
-            Ir para meus programas
-          </Link>
-        </>
+      {next && (
+        <div className="callout">
+          <div className="k">Sua próxima atividade</div>
+          <p>{next.title} — {next.duration}.</p>
+        </div>
       )}
+      <div className="feedback-actions">
+        <Link to="/estagio/$slug/$n/devolutiva" params={{ slug, n }} className="btn ghost">Ver minha devolutiva</Link>
+        <NextActivityButton program={program} idx={idx} />
+      </div>
     </ActivityLayout>
   );
 }

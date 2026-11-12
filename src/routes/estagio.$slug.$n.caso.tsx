@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ActivityLayout, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
+import { ActivityLayout, BackStep, NextActivityButton, NotFoundBlock, useActivity } from "@/components/ActivityLayout";
 import { Steps } from "@/components/AppShell";
 import { downloadPersonalDoc } from "@/lib/personal-download";
 import { useAccount } from "@/lib/account";
@@ -27,6 +27,7 @@ function CasePage() {
   if (!program || !activity) return <NotFoundBlock />;
   return (
     <ActivityLayout program={program} activity={activity} idx={idx}>
+      <BackStep step={1} slug={slug} n={n} />
       <Steps current={1} done={0} />
       <div className="eyebrow">O caso</div>
       <h1>O caso</h1>

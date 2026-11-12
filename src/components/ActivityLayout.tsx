@@ -72,18 +72,20 @@ export function ActivityLayout({
   idx,
   rail,
   children,
+  hideActivities = false,
 }: {
   program: Program;
   activity: Activity;
   idx: number;
   rail?: ReactNode;
   children: ReactNode;
+  hideActivities?: boolean;
 }) {
   const { data } = useLearning();
   const done = learningProgress(program, data?.submissions ?? []).done;
   const pct = program.activities.length ? (done / program.activities.length) * 100 : 0;
   return (
-    <LearnerShell sidebar={<><div className="learner-sidebar-label">{program.title}</div><ActivityRail program={program} current={idx} /></>}>
+    <LearnerShell sidebar={hideActivities ? undefined : <><div className="learner-sidebar-label">{program.title}</div><ActivityRail program={program} current={idx} /></>}>
       <div className="proghead">
         <div>
           <div className="eyebrow">
@@ -127,4 +129,23 @@ function LearningNotes({ program, activity }: { program: Program; activity: Acti
       finally { setSaving(false); }
     }}>{saving ? "Salvando…" : "Salvar anotação"}</Button>
   </section>;
+}
+
+const STEP_PATHS = ["/estagio/$slug/$n/caso", "/estagio/$slug/$n/demanda", "/estagio/$slug/$n/devolutiva", "/estagio/$slug/$n/gabarito"] as const;
+const STEP_NAMES = ["o caso", "a demanda", "a devolutiva", "o gabarito"];
+/** "Voltar" to the previous step of the same activity (step 1 returns to Meus programas). */
+export function BackStep({ step, slug, n }: { step: 1 | 2 | 3 | 4; slug: string; n: string }) {
+  if (step === 1) return <Link to="/meus-programas" className="btn ghost step-back">← Voltar para meus programas</Link>;
+  return <Link to={STEP_PATHS[step - 2]!} params={{ slug, n }} className="btn ghost step-back">← Voltar para {STEP_NAMES[step - 2]}</Link>;
+}
+
+/** Next-activity button that tells the learner whether it is already released. */
+export function NextActivityButton({ program, idx }: { program: Program; idx: number }) {
+  const { data } = useLearning();
+  const next = program.activities[idx + 1];
+  if (!next) return <Link to="/meus-programas" className="btn">Programa concluído · ir para meus programas</Link>;
+  const open = canOpenActivity(program, data?.submissions ?? [], idx + 1);
+  return open
+    ? <Link to="/estagio/$slug/$n/caso" params={{ slug: program.slug, n: String(idx + 2) }} className="btn">Próxima atividade liberada →</Link>
+    : <span className="btn next-locked" aria-disabled="true" title="Envie esta atividade para liberar a próxima">Próxima atividade não liberada</span>;
 }
