@@ -117,30 +117,23 @@ function Commercial() {
                 </select>
               </label>
             </div>
-            <div className="order-list">
-              {!orders.length && <p>Nenhum pedido encontrado.</p>}
-              {orders.map((o) => (
-                <article className="order-row" key={o.id}>
-                  <header>
-                    <h3>
-                      {data.profiles.find((p) => p.id === o.user_id)?.full_name ?? "Aluno"} ·{" "}
-                      {o.commerce_order_items.map((i) => i.title).join(" + ")}
-                    </h3>
-                    <b>{brl(o.total_cents / 100)}</b>
-                  </header>
-                  <span className="sig mid">{statusLabel[o.status]}</span>
-                  <p className="muted sm">
-                    {o.id} · {new Date(o.created_at).toLocaleString("pt-BR")} · Origem: {o.source}
-                  </p>
-                  <p className="muted sm">
-                    Aceite: {new Date(o.terms_accepted_at).toLocaleString("pt-BR")} · IP:{" "}
-                    {String(o.terms_ip ?? "Não disponível no ambiente local")} · E-mail: não
-                    configurado
-                  </p>
-                  {o.cancellation_reason && <p>Cancelamento: {o.cancellation_reason}</p>}
-                </article>
-              ))}
-            </div>
+            <section className="adm-chart order-table">
+              <div className="adm-chart-hd"><h3>Pedidos</h3><span>{orders.length} {orders.length === 1 ? "pedido" : "pedidos"}</span></div>
+              {!orders.length ? <p className="adm-empty">Nenhum pedido encontrado.</p> : (
+                <div className="people-table"><table className="rubric"><thead><tr><th>Aluno</th><th>Curso</th><th>Status</th><th>Valor</th><th>Data</th><th>Origem</th></tr></thead><tbody>
+                  {orders.map((o) => (
+                    <tr key={o.id} title={o.cancellation_reason ? `Cancelamento: ${o.cancellation_reason}` : o.id}>
+                      <td><b>{data.profiles.find((p) => p.id === o.user_id)?.full_name || "Aluno"}</b></td>
+                      <td>{o.commerce_order_items.map((i) => i.title).join(" + ")}</td>
+                      <td><span className="sig mid">{statusLabel[o.status]}</span></td>
+                      <td>{brl(o.total_cents / 100)}</td>
+                      <td>{new Date(o.created_at).toLocaleDateString("pt-BR")}</td>
+                      <td>{o.source || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody></table></div>
+              )}
+            </section>
           </>
         )}
         {tab === "products" && (
@@ -353,6 +346,7 @@ function download(name: string, csv: string) {
 function PeopleTab() {
   const { data } = useQuery(peopleOptions());
   const [view, setView] = useState<"all" | "nobuy" | "leads">("all");
+  const [openId, setOpenId] = useState<string | null>(null);
   if (!data) return <p className="muted">Carregando contatos…</p>;
   const nobuy = withoutPurchase(data.people, data.orders);
   const rows = view === "nobuy" ? nobuy : data.people;
@@ -370,7 +364,41 @@ function PeopleTab() {
     <Button className="btn" onClick={view === "leads" ? exportLeads : exportPeople}>Baixar planilha</Button>
     <div className="people-table"><table className="rubric"><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>{view === "leads" ? "Interesse" : "Cursos"}</th><th>Data</th></tr></thead><tbody>
       {view === "leads" ? data.leads.map((l, i) => <tr key={i}><td>{l.name}</td><td>{l.email}</td><td>{l.phone}</td><td>{l.interest}</td><td>{day(l.created_at)}</td></tr>)
-        : rows.map(p => <tr key={p.id}><td>{p.name || "—"}</td><td>{p.email}</td><td>{p.phone || "—"}</td><td>{p.courses.join(", ") || "Sem matrícula"}</td><td>{day(p.created_at)}</td></tr>)}
+        : rows.map(p => <tr key={p.id} className="people-row" tabIndex={0} onClick={() => setOpenId(p.id)} onKeyDown={e => { if (e.key === "Enter") setOpenId(p.id); }}><td>{p.name || "—"}</td><td>{p.email}</td><td>{p.phone || "—"}</td><td>{p.courses.join(", ") || "Sem matrícula"}</td><td>{day(p.created_at)}</td></tr>)}
     </tbody></table></div>
+    {view !== "leads" && <p className="muted sm">Clique em um aluno para ver o cadastro completo.</p>}
+    {(() => { const p = data.people.find(x => x.id === openId); return p ? <PersonCard p={p} close={() => setOpenId(null)} /> : null; })()}
   </>;
+}
+
+type PersonRow = Awaited<ReturnType<typeof adminPeople>>["people"][number];
+function PersonCard({ p, close }: { p: PersonRow; close: () => void }) {
+  const dt = (d: string | null | undefined) => (d ? new Date(d).toLocaleString("pt-BR") : "—");
+  const digits = p.phone.replace(/\D/g, "");
+  const wa = digits ? `https://wa.me/${digits.length <= 11 ? "55" + digits : digits}` : "";
+  return <div className="wb-modal" role="dialog" aria-modal="true" aria-label={`Cadastro de ${p.name || p.email}`} onClick={e => { if (e.target === e.currentTarget) close(); }}>
+    <div className="wb-modal-in person-card">
+      <header><div><div className="adm-eyebrow">Cadastro do aluno</div><h3>{p.name || "Sem nome"}</h3></div><Button variant="ghost" onClick={close} aria-label="Fechar">✕</Button></header>
+      <div className="person-contact">
+        <a className="btn" href={`mailto:${p.email}`}>Enviar e-mail</a>
+        {wa && <a className="btn ghost" href={wa} target="_blank" rel="noreferrer">WhatsApp</a>}
+        {digits && <a className="btn ghost" href={`tel:${digits}`}>Ligar</a>}
+      </div>
+      <dl className="person-dl">
+        <dt>E-mail</dt><dd>{p.email}</dd>
+        <dt>Telefone</dt><dd>{p.phone || "—"}</dd>
+        <dt>CPF</dt><dd>{p.tax_id || "—"}</dd>
+        <dt>Cadastro</dt><dd>{dt(p.created_at)}</dd>
+        <dt>E-mail confirmado</dt><dd>{p.confirmed_at ? dt(p.confirmed_at) : "Não"}</dd>
+        <dt>Último acesso</dt><dd>{dt(p.last_sign_in_at)}</dd>
+        <dt>Origem</dt><dd>{p.source || "—"}</dd>
+      </dl>
+      <h4>Matrículas</h4>
+      {p.enrollments.length ? <ul className="person-list">{p.enrollments.map((e, i) => <li key={i}><b>{e.course}</b><span>{e.status === "active" ? "Ativa" : e.status} · {dt(e.created_at)}</span></li>)}</ul> : <p className="muted sm">Sem matrícula.</p>}
+      <h4>Pedidos</h4>
+      {p.orders.length ? <ul className="person-list">{p.orders.map(o => <li key={o.id}><b>{o.items.join(" + ") || "Pedido"} · {brl(o.total_cents / 100)}</b><span>{statusLabel[o.status as keyof typeof statusLabel] ?? o.status} · {dt(o.created_at)}{o.source ? ` · ${o.source}` : ""}</span>{o.cancellation_reason && <span>Cancelamento: {o.cancellation_reason}</span>}</li>)}</ul> : <p className="muted sm">Nenhum pedido.</p>}
+      <h4>Formulários de interesse</h4>
+      {p.leads.length ? <ul className="person-list">{p.leads.map((l, i) => <li key={i}><b>{l.interest || "Interesse"}</b><span>{dt(l.created_at)} · {l.source || "—"}{l.campaign_path ? ` · ${l.campaign_path}` : ""} · Marketing: {l.marketing_opt_in ? "aceita" : "não aceita"}</span></li>)}</ul> : <p className="muted sm">Nenhum formulário com este e-mail.</p>}
+    </div>
+  </div>;
 }

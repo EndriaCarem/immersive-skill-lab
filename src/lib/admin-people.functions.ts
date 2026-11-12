@@ -14,17 +14,17 @@ export const adminPeople = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const users: { id: string; email: string; created_at: string }[] = [];
+    const users: { id: string; email: string; created_at: string; last_sign_in_at: string | null; confirmed_at: string | null }[] = [];
     for (let page = 1; page <= 20; page++) {
       const r = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
       if (r.error) throw new Error("Não foi possível carregar as contas.");
-      users.push(...r.data.users.map((u) => ({ id: u.id, email: u.email ?? "", created_at: u.created_at })));
+      users.push(...r.data.users.map((u) => ({ id: u.id, email: u.email ?? "", created_at: u.created_at, last_sign_in_at: u.last_sign_in_at ?? null, confirmed_at: u.email_confirmed_at ?? null })));
       if (r.data.users.length < 1000) break;
     }
     const [profiles, orders, enrollments, products, leads] = await Promise.all([
-      supabaseAdmin.from("profiles").select("id, full_name, phone"),
-      supabaseAdmin.from("commerce_orders").select("user_id, status, source"),
-      supabaseAdmin.from("commerce_enrollments").select("user_id, product_id, status"),
+      supabaseAdmin.from("profiles").select("id, full_name, phone, tax_id, updated_at"),
+      supabaseAdmin.from("commerce_orders").select("id, user_id, status, source, total_cents, created_at, terms_accepted_at, cancellation_reason, commerce_order_items(title)").order("created_at", { ascending: false }),
+      supabaseAdmin.from("commerce_enrollments").select("user_id, product_id, status, enrolled_at"),
       supabaseAdmin.from("commerce_products").select("id, title"),
       supabaseAdmin.from("interest_submissions").select("created_at, name, email, phone, interest, source, campaign_path, marketing_opt_in").order("created_at", { ascending: false }),
     ]);
@@ -36,6 +36,10 @@ export const adminPeople = createServerFn({ method: "GET" })
         id: u.id, email: u.email, created_at: u.created_at, name: p?.full_name ?? "", phone: p?.phone ?? "",
         courses: (enrollments.data ?? []).filter((e) => e.user_id === u.id && e.status === "active").map((e) => title.get(e.product_id) ?? e.product_id),
         source: (orders.data ?? []).find((o) => o.user_id === u.id)?.source ?? "",
+        tax_id: p?.tax_id ?? "", last_sign_in_at: u.last_sign_in_at, confirmed_at: u.confirmed_at,
+        orders: (orders.data ?? []).filter((o) => o.user_id === u.id).map((o) => ({ id: o.id, status: o.status, source: o.source, total_cents: o.total_cents, created_at: o.created_at, terms_accepted_at: o.terms_accepted_at, cancellation_reason: o.cancellation_reason, items: (o.commerce_order_items ?? []).map((i: { title: string }) => i.title) })),
+        enrollments: (enrollments.data ?? []).filter((e) => e.user_id === u.id).map((e) => ({ course: title.get(e.product_id) ?? e.product_id, status: e.status, created_at: e.enrolled_at })),
+        leads: (leads.data ?? []).filter((l) => l.email.trim().toLowerCase() === u.email.trim().toLowerCase()),
       };
     });
     return { people, orders: (orders.data ?? []).map((o) => ({ user_id: o.user_id, status: o.status })), leads: leads.data ?? [] };

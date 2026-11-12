@@ -2223,3 +2223,16 @@ button.adm-kpi:hover{transform:translateY(-2px);border-color:var(--plum-mid)}
 .adm-donut li em{font-style:normal;color:var(--slate);font-size:12px;text-align:right}
 .adm-page .tbl,.adm-page .actcard,.adm-page .prof-item,.adm-page .wb-admin-item,.adm-page .order-row{border-radius:12px}
 @media(max-width:900px){.adm-charts{grid-template-columns:minmax(0,1fr)}.adm-donut{grid-template-columns:minmax(0,1fr)}.adm-title h1{font-size:28px}.adm-nav a{flex:1 1 auto;justify-content:center}}
+.order-table{margin-top:16px}.order-table .people-table{overflow-x:auto}
+.people-row{cursor:pointer;transition:background .15s}.people-row:hover,.people-row:focus-visible{background:var(--plum-tint);outline:none}
+.person-card{max-width:620px}
+.person-card header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.person-card h3{margin:0;font:700 24px var(--font-brand)}
+.person-card h4{margin:22px 0 8px}
+.person-contact{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.person-dl{display:grid;grid-template-columns:150px 1fr;gap:8px 14px;margin:0;font-size:14px;background:var(--plum-tint);border-radius:10px;padding:16px}
+.person-dl dt{color:var(--slate)}.person-dl dd{margin:0;color:var(--ink);word-break:break-word}
+.person-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.person-list li{display:grid;gap:3px;border:1px solid var(--edge);border-radius:10px;padding:10px 14px;font-size:14px}
+.person-list li span{font-size:12px;color:var(--slate)}
+@media(max-width:540px){.person-dl{grid-template-columns:1fr}}
