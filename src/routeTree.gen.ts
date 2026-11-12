@@ -33,6 +33,7 @@ import { Route as WebinarsSlugRouteImport } from './routes/webinars.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminAtividadesRouteImport } from './routes/_authenticated/admin.atividades'
 import { Route as AuthenticatedAdminComercialRouteImport } from './routes/_authenticated/admin.comercial'
+import { Route as AuthenticatedAdminOrigensRouteImport } from './routes/_authenticated/admin.origens'
 import { Route as AuthenticatedAdminProfessoresRouteImport } from './routes/_authenticated/admin.professores'
 import { Route as AuthenticatedAdminWebinarsRouteImport } from './routes/_authenticated/admin.webinars'
 import { Route as ApiPublicAcessoRestritoRouteImport } from './routes/api/public/acesso-restrito'
@@ -165,6 +166,12 @@ const AuthenticatedAdminComercialRoute =
     path: '/admin/comercial',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminOrigensRoute =
+  AuthenticatedAdminOrigensRouteImport.update({
+    id: '/admin/origens',
+    path: '/admin/origens',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminProfessoresRoute =
   AuthenticatedAdminProfessoresRouteImport.update({
     id: '/admin/professores',
@@ -242,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/webinars/': typeof WebinarsIndexRoute
   '/admin/atividades': typeof AuthenticatedAdminAtividadesRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/origens': typeof AuthenticatedAdminOrigensRoute
   '/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
@@ -277,6 +285,7 @@ export interface FileRoutesByTo {
   '/webinars': typeof WebinarsIndexRoute
   '/admin/atividades': typeof AuthenticatedAdminAtividadesRoute
   '/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/admin/origens': typeof AuthenticatedAdminOrigensRoute
   '/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
@@ -314,6 +323,7 @@ export interface FileRoutesById {
   '/webinars/': typeof WebinarsIndexRoute
   '/_authenticated/admin/atividades': typeof AuthenticatedAdminAtividadesRoute
   '/_authenticated/admin/comercial': typeof AuthenticatedAdminComercialRoute
+  '/_authenticated/admin/origens': typeof AuthenticatedAdminOrigensRoute
   '/_authenticated/admin/professores': typeof AuthenticatedAdminProfessoresRoute
   '/_authenticated/admin/webinars': typeof AuthenticatedAdminWebinarsRoute
   '/api/public/acesso-restrito': typeof ApiPublicAcessoRestritoRoute
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/webinars/'
     | '/admin/atividades'
     | '/admin/comercial'
+    | '/admin/origens'
     | '/admin/professores'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
@@ -386,6 +397,7 @@ export interface FileRouteTypes {
     | '/webinars'
     | '/admin/atividades'
     | '/admin/comercial'
+    | '/admin/origens'
     | '/admin/professores'
     | '/admin/webinars'
     | '/api/public/acesso-restrito'
@@ -422,6 +434,7 @@ export interface FileRouteTypes {
     | '/webinars/'
     | '/_authenticated/admin/atividades'
     | '/_authenticated/admin/comercial'
+    | '/_authenticated/admin/origens'
     | '/_authenticated/admin/professores'
     | '/_authenticated/admin/webinars'
     | '/api/public/acesso-restrito'
@@ -634,6 +647,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminComercialRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/origens': {
+      id: '/_authenticated/admin/origens'
+      path: '/admin/origens'
+      fullPath: '/admin/origens'
+      preLoaderRoute: typeof AuthenticatedAdminOrigensRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/professores': {
       id: '/_authenticated/admin/professores'
       path: '/admin/professores'
@@ -712,6 +732,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
   AuthenticatedAdminAtividadesRoute: typeof AuthenticatedAdminAtividadesRoute
   AuthenticatedAdminComercialRoute: typeof AuthenticatedAdminComercialRoute
+  AuthenticatedAdminOrigensRoute: typeof AuthenticatedAdminOrigensRoute
   AuthenticatedAdminProfessoresRoute: typeof AuthenticatedAdminProfessoresRoute
   AuthenticatedAdminWebinarsRoute: typeof AuthenticatedAdminWebinarsRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -723,6 +744,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
   AuthenticatedAdminAtividadesRoute: AuthenticatedAdminAtividadesRoute,
   AuthenticatedAdminComercialRoute: AuthenticatedAdminComercialRoute,
+  AuthenticatedAdminOrigensRoute: AuthenticatedAdminOrigensRoute,
   AuthenticatedAdminProfessoresRoute: AuthenticatedAdminProfessoresRoute,
   AuthenticatedAdminWebinarsRoute: AuthenticatedAdminWebinarsRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,

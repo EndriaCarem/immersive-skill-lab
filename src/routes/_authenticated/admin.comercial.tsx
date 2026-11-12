@@ -393,6 +393,9 @@ function PersonCard({ p, close }: { p: PersonRow; close: () => void }) {
         <dt>Último acesso</dt><dd>{dt(p.last_sign_in_at)}</dd>
         <dt>Origem</dt><dd>{p.source || "—"}</dd>
       </dl>
+      {p.journey && <><h4>Como chegou</h4>
+        <p className="muted sm">Primeiro acesso em {dt(p.journey.firstAt)} · origem <b>{p.journey.source}</b>{p.journey.campaign ? ` · campanha ${p.journey.campaign}` : ""} · entrou por {p.journey.landing || "—"}</p>
+        <div className="journey-path">{p.journey.steps.map((s, i) => <span key={i}>{s}</span>)}</div></>}
       <h4>Matrículas</h4>
       {p.enrollments.length ? <ul className="person-list">{p.enrollments.map((e, i) => <li key={i}><b>{e.course}</b><span>{e.status === "active" ? "Ativa" : e.status} · {dt(e.created_at)}</span></li>)}</ul> : <p className="muted sm">Sem matrícula.</p>}
       <h4>Pedidos</h4>

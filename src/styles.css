@@ -2308,3 +2308,7 @@ button.adm-kpi:hover{transform:translateY(-2px);border-color:var(--plum-mid)}
 .lah-link{font:600 12px var(--font-brand);color:var(--plum);text-decoration:none;white-space:nowrap}
 .lah-link:hover{text-decoration:underline}
 .lah-cert{margin:14px 0 0;font-size:12px;line-height:1.5;color:var(--slate);background:var(--plum-tint);border-radius:10px;padding:12px 14px}
+.journey-path{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.journey-path span{font:600 11px var(--font-brand);padding:3px 8px;border-radius:999px;background:var(--plum-tint);color:var(--plum)}
+.journey-path span+span::before{content:"→ ";color:var(--slate);font-weight:400}
+.journey-path span.buy{background:var(--ok-bg);color:var(--ok)}

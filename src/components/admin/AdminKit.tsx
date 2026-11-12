@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { BookOpen, LayoutDashboard, Newspaper, ShoppingBag, Users } from "lucide-react";
+import { BookOpen, LayoutDashboard, Newspaper, Route as RouteIcon, ShoppingBag, Users } from "lucide-react";
 
 const NAV = [
   { to: "/admin", label: "Visão geral", icon: LayoutDashboard },
   { to: "/admin/comercial", label: "Operação comercial", icon: ShoppingBag },
+  { to: "/admin/origens", label: "Origens e jornadas", icon: RouteIcon },
   { to: "/admin/webinars", label: "Blogs", icon: Newspaper },
   { to: "/admin/professores", label: "Professores", icon: Users },
   { to: "/admin/atividades", label: "Conteúdo das atividades", icon: BookOpen },
@@ -34,7 +35,7 @@ export function AdminHeader({ title, text, actions }: { title: string; text?: st
   );
 }
 
-export function Kpi({ label, value, hint, onClick, alert }: { label: string; value: ReactNode; hint?: string; onClick?: () => void; alert?: boolean }) {
+export function Kpi({ label, value, hint, onClick, alert }: { label: string; value: ReactNode; hint?: string | undefined; onClick?: () => void; alert?: boolean }) {
   const body = <><small>{label}</small><b>{value}</b>{hint && <span>{hint}</span>}</>;
   return onClick
     ? <button type="button" className={`adm-kpi${alert ? " alert" : ""}`} onClick={onClick}>{body}</button>

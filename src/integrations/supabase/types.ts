@@ -1141,6 +1141,51 @@ export type Database = {
         }
         Relationships: []
       }
+      site_page_visits: {
+        Row: {
+          created_at: string
+          device: string
+          first_campaign: string
+          first_landing: string
+          first_medium: string
+          first_source: string
+          id: string
+          path: string
+          referrer_host: string
+          section: string
+          user_id: string | null
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          device?: string
+          first_campaign?: string
+          first_landing?: string
+          first_medium?: string
+          first_source?: string
+          id?: string
+          path: string
+          referrer_host?: string
+          section?: string
+          user_id?: string | null
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          device?: string
+          first_campaign?: string
+          first_landing?: string
+          first_medium?: string
+          first_source?: string
+          id?: string
+          path?: string
+          referrer_host?: string
+          section?: string
+          user_id?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
