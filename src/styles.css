@@ -2138,3 +2138,32 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 .demand-tabs button{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;font-weight:600;cursor:pointer}
 .demand-tabs button.on{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
 .answer-key-upload{cursor:pointer;display:inline-flex;align-items:center}
+
+/* Learner activity refinement */
+.learner-shell .proghead{background:linear-gradient(120deg,var(--learner-rail),color-mix(in oklch,var(--learner-rail) 78%,var(--plum-mid)));color:var(--learner-rail-ink);padding:30px 34px;border-bottom:0}
+.learner-shell .proghead .eyebrow{color:var(--learner-rail-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.learner-shell .proghead h2{color:var(--learner-rail-ink);font:700 25px/1.25 var(--font-brand);margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.proghead-num{font:500 13px/1 var(--font-doc);color:var(--learner-rail-muted)}
+.learner-shell .proghead .progress .lbl{color:var(--learner-rail-muted)}
+.learner-shell .proghead .progress .track{background:color-mix(in oklch,var(--learner-rail-ink) 18%,transparent)}
+.learner-shell .proghead .progress .track i{background:var(--learner-rail-ink)}
+.activity-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border-bottom:1px solid var(--edge)}
+.activity-steps a{display:flex;align-items:center;gap:10px;padding:15px 22px;text-decoration:none;color:var(--slate);font:600 13px var(--font-brand);border-bottom:2px solid transparent;transition:color .2s,border-color .2s,background .2s}
+.activity-steps a:hover{color:var(--ink);background:var(--plum-tint)}
+.activity-steps b{width:24px;height:24px;flex:none;display:grid;place-items:center;border-radius:50%;border:1px solid var(--edge);font-size:11px}
+.activity-steps a.past{color:var(--ink)}
+.activity-steps a.past b{background:var(--plum-tint);border-color:var(--plum-mid);color:var(--plum)}
+.activity-steps a.on{color:var(--plum);border-bottom-color:var(--plum)}
+.activity-steps a.on b{background:var(--plum);border-color:var(--plum);color:var(--paper)}
+.learner-shell .pane{padding:36px 40px 48px}
+.learner-shell .pane>*{max-width:900px}
+.learner-shell .mail,.learner-shell .panel{border-radius:12px;box-shadow:0 1px 2px color-mix(in oklch,var(--ink) 5%,transparent),0 10px 28px -18px color-mix(in oklch,var(--ink) 25%,transparent)}
+.learner-shell .rail{position:sticky;top:0;align-self:start}
+.learner-notes{margin-top:36px;border:1px solid var(--edge);border-radius:12px;background:var(--paper);padding:0 22px}
+.learner-notes summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;padding:18px 0;font:700 15px var(--font-brand);color:var(--ink)}
+.learner-notes summary::-webkit-details-marker{display:none}
+.learner-notes summary span{font:500 12px var(--font-doc);color:var(--slate)}
+.learner-notes[open]{padding-bottom:20px}
+.learner-notes>p{border-left:2px solid var(--plum-mid);padding:4px 0 4px 12px;margin:0 0 12px;font-size:14px}
+@media(max-width:800px){.activity-steps a{flex-direction:column;gap:5px;padding:12px 6px;font-size:11px;text-align:center}.learner-shell .pane{padding:26px 22px}.learner-shell .proghead{padding:24px 22px}.learner-shell .rail{position:static}}
+@media print{.activity-steps,.learner-notes{display:none!important}}

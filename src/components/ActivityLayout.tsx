@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { AppShell } from "./AppShell";
 import { LearnerShell } from "./LearnerShell";
@@ -84,6 +84,10 @@ export function ActivityLayout({
   const { data } = useLearning();
   const done = learningProgress(program, data?.submissions ?? []).done;
   const pct = program.activities.length ? (done / program.activities.length) * 100 : 0;
+  const path = useLocation({ select: l => l.pathname });
+  const stepKeys = ["caso", "demanda", "devolutiva", "gabarito"];
+  const step = Math.max(0, stepKeys.findIndex(k => path.endsWith(`/${k}`)));
+  const n = String(idx + 1);
   return (
     <LearnerShell sidebar={hideActivities ? undefined : <><div className="learner-sidebar-label">{program.title}</div><ActivityRail program={program} current={idx} /></>}>
       <div className="proghead">
@@ -92,7 +96,8 @@ export function ActivityLayout({
             {program.kind.split(" ")[0]} · {program.title}
           </div>
           <h2>
-            Atividade {idx + 1} — {activity.title}
+            <span className="proghead-num">Atividade {idx + 1}</span>
+            {activity.title}
           </h2>
         </div>
         <div className="progress">
@@ -104,6 +109,13 @@ export function ActivityLayout({
           </div>
         </div>
       </div>
+      <nav className="activity-steps" aria-label="Etapas da atividade">
+        {STEP_PATHS.map((to, i) => (
+          <Link key={to} to={to} params={{ slug: program.slug, n }} className={i === step ? "on" : i < step ? "past" : ""} aria-current={i === step ? "step" : undefined}>
+            <b>{i + 1}</b><span>{STEP_LABELS[i]}</span>
+          </Link>
+        ))}
+      </nav>
       <div className={`body${rail ? "" : " solo"}`}>
         {rail && <aside className="rail">{rail}</aside>}
         <main className="pane">{children}<LearningNotes program={program} activity={activity} /></main>
@@ -118,8 +130,8 @@ function LearningNotes({ program, activity }: { program: Program; activity: Acti
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
   const notes = learning.data?.notes.filter(n => n.program_id === program.id && n.activity_id === activity.id) ?? [];
-  return <section className="callout">
-    <h4>Minhas anotações</h4>
+  return <details className="learner-notes" open={notes.length > 0 || undefined}>
+    <summary>Minhas anotações <span>{notes.length ? `${notes.length} salva${notes.length > 1 ? "s" : ""}` : "Abrir"}</span></summary>
     {notes.map(n => <p key={n.id}>{n.text}</p>)}
     <label className="field"><span>Nova anotação</span><textarea value={text} onChange={e => setText(e.target.value)} rows={3} maxLength={10000} /></label>
     <Button className="btn ghost" disabled={!text.trim() || saving} onClick={async () => {
@@ -128,10 +140,11 @@ function LearningNotes({ program, activity }: { program: Program; activity: Acti
       catch { toast.error("Não foi possível salvar a anotação."); }
       finally { setSaving(false); }
     }}>{saving ? "Salvando…" : "Salvar anotação"}</Button>
-  </section>;
+  </details>;
 }
 
 const STEP_PATHS = ["/estagio/$slug/$n/caso", "/estagio/$slug/$n/demanda", "/estagio/$slug/$n/devolutiva", "/estagio/$slug/$n/gabarito"] as const;
+const STEP_LABELS = ["Caso", "Demanda", "Devolutiva", "Gabarito"];
 const STEP_NAMES = ["o caso", "a demanda", "a devolutiva", "o gabarito"];
 /** "Voltar" to the previous step of the same activity (step 1 returns to Meus programas). */
 export function BackStep({ step, slug, n }: { step: 1 | 2 | 3 | 4; slug: string; n: string }) {
