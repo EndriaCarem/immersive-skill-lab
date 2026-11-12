@@ -2312,3 +2312,4 @@ button.adm-kpi:hover{transform:translateY(-2px);border-color:var(--plum-mid)}
 .journey-path span{font:600 11px var(--font-brand);padding:3px 8px;border-radius:999px;background:var(--plum-tint);color:var(--plum)}
 .journey-path span+span::before{content:"→ ";color:var(--slate);font-weight:400}
 .journey-path span.buy{background:var(--ok-bg);color:var(--ok)}
+.adm-times{margin:28px 0 8px}.adm-times h2{margin:0 0 4px}

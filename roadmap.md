@@ -55,3 +55,8 @@
 - [x] Ajustes da sala prática e cadastro de professores (contraste, envio, progresso, vínculos, vídeo).
 - [ ] Cadastrar os professores reais pelo painel — aguardando fotos e autorização de exibição de cada um.
 - [ ] Etapas 2–7 — aguardando aprovação.
+
+# Pedidos pendentes da reunião (12/11)
+- [x] Seis meses de acesso em toda nova compra, com data em Minhas compras.
+- [x] Tempo médio por atividade na Visão geral da administração.
+- [x] Lista de compras não concluídas em Alunos e contatos, com planilha.

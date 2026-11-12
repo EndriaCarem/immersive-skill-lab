@@ -9,6 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAccount } from "@/lib/account";
 import { adminLearningData } from "@/lib/learning.functions";
+import { adminActivityTimes } from "@/lib/admin-people.functions";
+import { formatDuration } from "@/lib/admin-insights";
 import {
   actions,
   brl,
@@ -48,6 +50,8 @@ function Admin() {
   const { user } = useAccount();
   const fetchLearning = useServerFn(adminLearningData);
   const learning = useQuery({ queryKey: ["admin-learning", user?.id], queryFn: () => fetchLearning(), enabled: Boolean(user) });
+  const fetchTimes = useServerFn(adminActivityTimes);
+  const times = useQuery({ queryKey: ["admin-activity-times", user?.id], queryFn: () => fetchTimes(), enabled: Boolean(user) });
   const state = { ...local, submissions: learning.data?.submissions ?? [], enrollments: learning.data?.enrollments ?? [] };
   const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("programas");
@@ -123,6 +127,15 @@ function Admin() {
             <DonutChart data={[{ name: "Corrigidas", value: state.submissions.filter(s => s.grades).length }, { name: "Aguardando correção", value: pending }]} />
           </ChartCard>
         </ChartGrid>
+        <section className="adm-times">
+          <h2>Tempo médio por atividade</h2>
+          <p className="muted sm">Da primeira vez que o aluno abre a atividade até a primeira entrega.</p>
+          {times.isLoading ? <p className="muted sm">Carregando…</p> : times.error ? <p role="alert">Não foi possível carregar o tempo das atividades.</p> : (
+            <div className="people-table"><table className="rubric"><thead><tr><th>Curso</th><th>Atividade</th><th>Tempo médio</th><th>Alunos medidos</th></tr></thead><tbody>
+              {(times.data ?? []).map((t) => <tr key={`${t.programId}-${t.activity}`}><td>{t.program}</td><td>{t.activity}</td><td>{formatDuration(t.avgMs)}</td><td>{t.students}</td></tr>)}
+            </tbody></table></div>
+          )}
+        </section>
 
         <div className="chips">
           {(Object.keys(TAB_LABEL) as Tab[]).map((t) => (

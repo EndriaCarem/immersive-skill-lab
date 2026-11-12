@@ -176,6 +176,13 @@
       "when": 1794498995379,
       "tag": "0024_site_journeys",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794502315995,
+      "tag": "0025_six_month_access_for_purchases",
+      "breakpoints": true
     }
   ]
 }

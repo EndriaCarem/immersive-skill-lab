@@ -76,6 +76,9 @@ function Purchases() {
                 </div>
                 <div className="po-total"><small>Total</small><b>{o.total_cents ? brl(o.total_cents / 100) : "Gratuito"}</b></div>
               </header>
+              {data.enrollments.filter((e) => e.order_id === o.id && e.status === "active" && e.expires_at).map((e) => (
+                <p className="muted sm" key={e.id}>Acesso{e.commerce_products?.title ? ` a ${e.commerce_products.title}` : ""} até <b>{new Date(e.expires_at!).toLocaleDateString("pt-BR")}</b></p>
+              ))}
               {o.status === "awaiting_integration" && (
                 <p className="muted sm">
                   Aguardando pagamento.

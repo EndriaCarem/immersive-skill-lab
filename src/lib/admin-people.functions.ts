@@ -1,4 +1,5 @@
 import { isInternalVisit } from "./journey";
+import { abandonedOrders, activityTimes } from "./admin-insights";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -55,7 +56,12 @@ export const adminPeople = createServerFn({ method: "GET" })
         leads: (leads.data ?? []).filter((l) => l.email.trim().toLowerCase() === u.email.trim().toLowerCase()),
       };
     });
-    return { people, orders: (orders.data ?? []).map((o) => ({ user_id: o.user_id, status: o.status })), leads: leads.data ?? [] };
+    const orderRows = (orders.data ?? []).map((o) => ({ id: o.id, user_id: o.user_id, status: o.status, created_at: o.created_at, total_cents: o.total_cents, items: (o.commerce_order_items ?? []).map((i: { title: string }) => i.title) }));
+    const abandoned = abandonedOrders(orderRows).map((o) => {
+      const person = people.find((x) => x.id === o.user_id);
+      return { ...o, name: person?.name ?? "", email: person?.email ?? "", phone: person?.phone ?? "" };
+    });
+    return { people, orders: orderRows.map((o) => ({ user_id: o.user_id, status: o.status })), abandoned, leads: leads.data ?? [] };
   });
 
 export const assistantLimits = createServerFn({ method: "GET" })
@@ -81,4 +87,29 @@ export const saveAssistantLimit = createServerFn({ method: "POST" })
     );
     if (r.error) throw new Error("Não foi possível salvar o limite.");
     return { ok: true };
+  });
+
+/** Average time from first opening each activity to the first delivery. Admin only. */
+export const adminActivityTimes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [programs, products, visits, subs] = await Promise.all([
+      supabaseAdmin.from("learning_programs").select("id, content"),
+      supabaseAdmin.from("commerce_products").select("id, slug, title"),
+      supabaseAdmin.from("site_page_visits").select("visitor_id, user_id, path, first_source, referrer_host, created_at").like("path", "/estagio/%").order("created_at", { ascending: true }).limit(50000),
+      supabaseAdmin.from("learning_submissions").select("user_id, program_id, activity_id, submitted_at").is("voided_at", null),
+    ]);
+    for (const r of [programs, products, visits, subs]) if (r.error) throw new Error("Não foi possível carregar o tempo das atividades.");
+    const rows = (visits.data ?? []).filter((v) => !isInternalVisit(v));
+    const owner = new Map<string, string>();
+    rows.forEach((v) => { if (v.user_id) owner.set(v.visitor_id, v.user_id); });
+    const userVisits = rows.flatMap((v) => { const u = v.user_id ?? owner.get(v.visitor_id); return u ? [{ user_id: u, path: v.path, created_at: v.created_at }] : []; });
+    const progs = (programs.data ?? []).map((p) => {
+      const c = (p.content ?? {}) as { slug?: string; title?: string; activities?: { id: string; title?: string }[] };
+      const prod = products.data?.find((x) => x.id === p.id);
+      return { id: p.id, slug: c.slug || prod?.slug || p.id, title: prod?.title || c.title || p.id, activities: (c.activities ?? []).map((a) => ({ id: a.id, title: a.title ?? a.id })) };
+    });
+    return activityTimes(progs, userVisits, subs.data ?? []);
   });

@@ -345,13 +345,14 @@ function download(name: string, csv: string) {
 }
 function PeopleTab() {
   const { data } = useQuery(peopleOptions());
-  const [view, setView] = useState<"all" | "nobuy" | "leads">("all");
+  const [view, setView] = useState<"all" | "nobuy" | "gaveup" | "leads">("all");
   const [openId, setOpenId] = useState<string | null>(null);
   if (!data) return <p className="muted">Carregando contatos…</p>;
   const nobuy = withoutPurchase(data.people, data.orders);
   const rows = view === "nobuy" ? nobuy : data.people;
   const stamp = new Date().toISOString().slice(0, 10);
   const exportPeople = () => download(`empiria-${view === "nobuy" ? "cadastros-sem-compra" : "alunos"}-${stamp}.csv`, toCsv(["Nome", "Email", "Telefone", "Cadastro", "Cursos", "Origem"], rows.map(p => ({ Nome: p.name, Email: p.email, Telefone: p.phone, Cadastro: day(p.created_at), Cursos: p.courses.join(", "), Origem: p.source }))));
+  const exportGaveUp = () => download(`empiria-compras-nao-concluidas-${stamp}.csv`, toCsv(["Nome", "Email", "Telefone", "Curso", "Valor", "Situação", "Data"], data.abandoned.map(o => ({ Nome: o.name, Email: o.email, Telefone: o.phone, Curso: o.items.join(" + "), Valor: brl(o.total_cents / 100), "Situação": statusLabel[o.status as keyof typeof statusLabel] ?? o.status, Data: day(o.created_at) }))));
   const exportLeads = () => download(`empiria-leads-${stamp}.csv`, toCsv(["Nome", "Email", "Telefone", "Data", "Interesse", "Origem", "Página", "Aceita marketing"], data.leads.map(l => ({ Nome: l.name, Email: l.email, Telefone: l.phone, Data: day(l.created_at), Interesse: l.interest, Origem: l.source, "Página": l.campaign_path ?? "", "Aceita marketing": l.marketing_opt_in ? "Sim" : "Não" }))));
   return <>
     <h2>Alunos e contatos</h2>
@@ -359,11 +360,14 @@ function PeopleTab() {
     <nav className="commerce-actions">
       <Button className={view === "all" ? "btn" : "btn ghost"} onClick={() => setView("all")}>Contas ({data.people.length})</Button>
       <Button className={view === "nobuy" ? "btn" : "btn ghost"} onClick={() => setView("nobuy")}>Cadastro sem compra ({nobuy.length})</Button>
+      <Button className={view === "gaveup" ? "btn" : "btn ghost"} onClick={() => setView("gaveup")}>Compra não concluída ({data.abandoned.length})</Button>
       <Button className={view === "leads" ? "btn" : "btn ghost"} onClick={() => setView("leads")}>Formulários de interesse ({data.leads.length})</Button>
     </nav>
-    <Button className="btn" onClick={view === "leads" ? exportLeads : exportPeople}>Baixar planilha</Button>
-    <div className="people-table"><table className="rubric"><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>{view === "leads" ? "Interesse" : "Cursos"}</th><th>Data</th></tr></thead><tbody>
-      {view === "leads" ? data.leads.map((l, i) => <tr key={i}><td>{l.name}</td><td>{l.email}</td><td>{l.phone}</td><td>{l.interest}</td><td>{day(l.created_at)}</td></tr>)
+    {view === "gaveup" && <p className="muted sm">Pessoas que começaram a compra e não pagaram há mais de uma hora, sem ter comprado o mesmo curso depois.</p>}
+    <Button className="btn" onClick={view === "leads" ? exportLeads : view === "gaveup" ? exportGaveUp : exportPeople}>Baixar planilha</Button>
+    <div className="people-table"><table className="rubric"><thead><tr><th>Nome</th><th>Email</th><th>Telefone</th><th>{view === "leads" ? "Interesse" : view === "gaveup" ? "Curso" : "Cursos"}</th><th>Data</th></tr></thead><tbody>
+      {view === "gaveup" ? (data.abandoned.length ? data.abandoned.map(o => <tr key={o.id} className="people-row" tabIndex={0} onClick={() => setOpenId(o.user_id)} onKeyDown={e => { if (e.key === "Enter") setOpenId(o.user_id); }}><td>{o.name || "—"}</td><td>{o.email}</td><td>{o.phone || "—"}</td><td>{o.items.join(" + ")} · {statusLabel[o.status as keyof typeof statusLabel] ?? o.status}</td><td>{day(o.created_at)}</td></tr>) : <tr><td colSpan={5} className="muted">Ninguém desistiu de uma compra até agora.</td></tr>)
+      : view === "leads" ? data.leads.map((l, i) => <tr key={i}><td>{l.name}</td><td>{l.email}</td><td>{l.phone}</td><td>{l.interest}</td><td>{day(l.created_at)}</td></tr>)
         : rows.map(p => <tr key={p.id} className="people-row" tabIndex={0} onClick={() => setOpenId(p.id)} onKeyDown={e => { if (e.key === "Enter") setOpenId(p.id); }}><td>{p.name || "—"}</td><td>{p.email}</td><td>{p.phone || "—"}</td><td>{p.courses.join(", ") || "Sem matrícula"}</td><td>{day(p.created_at)}</td></tr>)}
     </tbody></table></div>
     {view !== "leads" && <p className="muted sm">Clique em um aluno para ver o cadastro completo.</p>}
