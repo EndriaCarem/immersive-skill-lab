@@ -242,15 +242,7 @@ export function AppShell({ children, className = "" }: { children: ReactNode; cl
   );
 }
 
-export function Steps({ current, done }: { current: 1 | 2 | 3 | 4; done: number }) {
-  return (
-    <div className="steps" aria-label="Etapas da atividade">
-      {[1, 2, 3, 4].map((n, i) => (
-        <span key={n} style={{ display: "contents" }}>
-          {i > 0 && <span className="sep">·</span>}
-          <span className={n === current ? "on" : n <= done ? "done" : ""}>{n}</span>
-        </span>
-      ))}
-    </div>
-  );
+/** Superseded by the clickable step bar in ActivityLayout; kept as a no-op for existing callers. */
+export function Steps(_props: { current: 1 | 2 | 3 | 4; done: number }) {
+  return null;
 }
