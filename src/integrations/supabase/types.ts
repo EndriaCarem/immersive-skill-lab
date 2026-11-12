@@ -465,6 +465,9 @@ export type Database = {
       learning_activity_staff: {
         Row: {
           activity_id: string
+          answer_key_name: string | null
+          answer_key_path: string | null
+          answer_key_uploaded_at: string | null
           demand_video_url: string
           feedback_professional_id: string | null
           mail_html: string
@@ -481,6 +484,9 @@ export type Database = {
         }
         Insert: {
           activity_id: string
+          answer_key_name?: string | null
+          answer_key_path?: string | null
+          answer_key_uploaded_at?: string | null
           demand_video_url?: string
           feedback_professional_id?: string | null
           mail_html?: string
@@ -497,6 +503,9 @@ export type Database = {
         }
         Update: {
           activity_id?: string
+          answer_key_name?: string | null
+          answer_key_path?: string | null
+          answer_key_uploaded_at?: string | null
           demand_video_url?: string
           feedback_professional_id?: string | null
           mail_html?: string

@@ -2134,3 +2134,7 @@ html.dark .learner-shell .score-top{background:var(--learner-rail);color:var(--l
 .step-back{margin-bottom:14px;display:inline-flex}
 .next-locked{opacity:.55;cursor:not-allowed;pointer-events:none}
 @media print{.learner-sidebar,.site-nav,footer,.feedback-actions,.step-back,.nidia-companion{display:none!important}}
+.demand-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:8px}
+.demand-tabs button{padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;font-weight:600;cursor:pointer}
+.demand-tabs button.on{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
+.answer-key-upload{cursor:pointer;display:inline-flex;align-items:center}

@@ -62,6 +62,7 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
   const [subject, setSubject] = useState(row?.mail_subject ?? "");
   const [html, setHtml] = useState(row?.mail_html ?? "");
   const [busy, setBusy] = useState(false);
+  const [tab, setTab] = useState<"email" | "video" | "docs">("email");
   const videoInput = useRef<HTMLInputElement>(null);
   const posterInput = useRef<HTMLInputElement>(null);
   const hasStoredVideo = Boolean(row?.video_path) && !dropVideo;
@@ -138,6 +139,13 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
           {target.supervisorName ? " (supervisor da atividade)" : " (texto do curso — defina um supervisor para vinculá-lo)"}
         </p>
 
+        <nav className="demand-tabs" role="tablist" aria-label="Partes da demanda">
+          {([["email", "1. E-mail da tarefa"], ["video", "2. Vídeo"], ["docs", "3. Documentos do caso"]] as const).map(([k, l]) => (
+            <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)}>{l}</button>
+          ))}
+        </nav>
+        {tab === "video" && <>
+        <p className="muted sm" style={{ margin: 0 }}>O vídeo em que o supervisor apresenta a tarefa ao aluno. Opcional.</p>
         <h4 style={{ margin: "8px 0 0" }}>Vídeo de apresentação</h4>
         <div className="prof-photo" style={{ alignItems: "center" }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
@@ -185,7 +193,10 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
           Descrição acessível do vídeo
           <textarea rows={2} maxLength={1000} value={description} placeholder="Ex.: a supervisora apresenta a demanda e o prazo do parecer." onChange={(e) => setDescription(e.target.value)} />
         </label>
+        </>}
 
+        {tab === "email" && <>
+        <p className="muted sm" style={{ margin: 0 }}>O texto que o aluno lê como se fosse o e-mail do escritório pedindo a tarefa.</p>
         <h4 style={{ margin: "8px 0 0" }}>E-mail da demanda</h4>
         <label>
           Assunto
@@ -197,12 +208,14 @@ export function DemandSetup({ target, row, onClose, onSaved }: { target: DemandT
         </div>
         <span className="muted sm">Este e-mail é simulado na sala; nada é enviado de verdade. Evite instruções que entreguem a solução.</span>
 
-        <MaterialsEditor target={target} />
+        </>}
+
+        {tab === "docs" && <MaterialsEditor target={target} />}
 
         <div className="wb-modal-actions">
           <span style={{ flex: 1 }} />
           <Button variant="ghost" onClick={onClose} disabled={busy}>Fechar</Button>
-          <Button onClick={save} disabled={busy}>{busy ? "Salvando…" : "Salvar demanda"}</Button>
+          {tab !== "docs" && <Button onClick={save} disabled={busy}>{busy ? "Salvando…" : tab === "email" ? "Salvar e-mail" : "Salvar vídeo"}</Button>}
         </div>
       </div>
     </div>
@@ -223,22 +236,26 @@ function MaterialsEditor({ target }: { target: DemandTarget }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, [target.programId, target.activityId]);
 
-  async function add(f: File | undefined) {
+  async function addMany(files: FileList | null) {
+    const list = Array.from(files ?? []);
+    for (const [i, f] of list.entries()) await add(f, (items?.length ?? 0) + i);
+    load();
+  }
+  async function add(f: File | undefined, position = items?.length ?? 0) {
     if (!f) return;
     const err = materialError(f);
-    if (err) { toast.error(err); return; }
+    if (err) { toast.error(`${f.name}: ${err}`); return; }
     setBusy(true);
     const p = mediaPath(target.programId, target.activityId, f.name);
     const up = await supabase.storage.from(BUCKET).upload(p, f, { contentType: f.type || "application/octet-stream", upsert: false });
     if (up.error) { setBusy(false); toast.error("Não foi possível enviar o material."); return; }
     const { error } = await supabase.from("learning_activity_materials").insert({
       program_id: target.programId, activity_id: target.activityId, title: f.name.replace(/\.[^.]+$/, "").slice(0, 200) || f.name,
-      category, file_path: p, file_name: f.name, file_size: f.size, position: items?.length ?? 0,
+      category, file_path: p, file_name: f.name, file_size: f.size, position,
     });
     if (error) { await supabase.storage.from(BUCKET).remove([p]); toast.error("Não foi possível registrar o material."); }
-    else toast.success("Material anexado.");
+    else toast.success(`${f.name} anexado.`);
     setBusy(false);
-    load();
   }
   async function update(m: Material, patch: Partial<Material>) {
     const { error } = await supabase.from("learning_activity_materials").update(patch).eq("id", m.id);
@@ -256,17 +273,17 @@ function MaterialsEditor({ target }: { target: DemandTarget }) {
 
   return (
     <section style={{ display: "grid", gap: 10 }}>
-      <h4 style={{ margin: "8px 0 0" }}>Materiais antes da entrega</h4>
-      <span className="muted sm">Documentos do caso, anexos e modelos de preenchimento. Gabaritos e respostas de referência ficam no editor do gabarito e só abrem depois da entrega.</span>
+      <h4 style={{ margin: "8px 0 0" }}>Documentos do caso</h4>
+      <span className="muted sm">Os arquivos que o aluno recebe junto com o e-mail (contrato, minuta, notificações…). Pode enviar vários de uma vez. O gabarito fica no botão "Gabarito", e o aluno só o vê depois da entrega.</span>
       {items === null ? <span className="muted sm">Carregando…</span> : items.length === 0 ? <span className="muted sm">Nenhum material anexado.</span> : null}
       {items?.map((m) => <MaterialItem key={m.id} m={m} onSave={(patch) => update(m, patch)} onRemove={() => remove(m)} />)}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         <select className="wb-select" aria-label="Categoria do novo material" value={category} onChange={(e) => setCategory(e.target.value as MaterialCategory)}>
           {(Object.keys(MATERIAL_CATEGORIES) as MaterialCategory[]).map((c) => <option key={c} value={c}>{MATERIAL_CATEGORIES[c]}</option>)}
         </select>
-        <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => input.current?.click()}>{busy ? "Enviando…" : "+ Anexar material"}</Button>
+        <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => input.current?.click()}>{busy ? "Enviando…" : "+ Anexar documentos"}</Button>
         <span className="muted sm">{MATERIAL_EXTENSIONS.join(", ").toUpperCase()} · até 25 MB</span>
-        <input ref={input} type="file" hidden aria-label="Arquivo do material" accept={MATERIAL_EXTENSIONS.map((e) => `.${e}`).join(",")} onChange={(e) => { add(e.target.files?.[0]); e.target.value = ""; }} />
+        <input ref={input} type="file" hidden multiple aria-label="Arquivos do material" accept={MATERIAL_EXTENSIONS.map((e) => `.${e}`).join(",")} onChange={(e) => { void addMany(e.target.files); e.target.value = ""; }} />
       </div>
     </section>
   );

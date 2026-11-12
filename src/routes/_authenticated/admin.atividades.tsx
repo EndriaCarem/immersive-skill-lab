@@ -51,7 +51,8 @@ function Activities() {
           <h3>{i + 1}. {a.title}</h3>
           <p className="muted sm">{complete ? "Rubrica completa" : "Rubrica com preenchimento pendente"} · {a.rubric.length} critérios</p>
           <div className="chips">
-            <Button variant="outline" onClick={() => setRubric(a)}>Editar rubrica</Button>
+            <AnswerKey programId={courseId} activityId={a.id} row={staff} saved={refresh} />
+            <Button variant="outline" onClick={() => setRubric(a)}>Pontos da ficha (opcional)</Button>
             <Button variant="outline" onClick={() => setDemand({ programId: courseId, activityId: a.id, title: a.title, index: i, contentFrom: a.demandFrom, contentSubject: a.demandSubject, supervisorName: null })}>E-mail, vídeo e materiais</Button>
           </div>
           <AssistantLimit programId={courseId} activityId={a.id} />
@@ -121,4 +122,28 @@ function AssistantLimit({ programId, activityId }: { programId: string; activity
     </label>
     <label className="muted sm"><input type="checkbox" checked={enabled} disabled={busy} onChange={e => void put({ limit, enabled: e.target.checked })} /> Assistente ativo</label>
   </div>;
+}
+
+function AnswerKey({ programId, activityId, row, saved }: { programId: string; activityId: string; row: { answer_key_path: string | null; answer_key_name: string | null; answer_key_uploaded_at: string | null } | undefined; saved: () => Promise<void> }) {
+  const [busy, setBusy] = useState(false);
+  const pick = async (f: File | undefined) => {
+    if (!f) return;
+    if (!/\.(pdf|docx?)$/i.test(f.name) || f.size > 25 * 1024 * 1024) { toast.error("Envie o gabarito em PDF, DOC ou DOCX, até 25 MB."); return; }
+    setBusy(true);
+    const { supabase } = await import("@/integrations/supabase/client");
+    const path = `${programId}/answer-keys/${activityId}/${crypto.randomUUID()}.${f.name.split(".").pop()!.toLowerCase()}`;
+    try {
+      const up = await supabase.storage.from("activity-media").upload(path, f, { upsert: false, contentType: f.type || "application/octet-stream" });
+      if (up.error) throw new Error("Não foi possível enviar o gabarito.");
+      const { error } = await supabase.from("learning_activity_staff").upsert({ program_id: programId, activity_id: activityId, answer_key_path: path, answer_key_name: f.name, answer_key_uploaded_at: new Date().toISOString() });
+      if (error) { await supabase.storage.from("activity-media").remove([path]); throw new Error("Não foi possível registrar o gabarito."); }
+      if (row?.answer_key_path) await supabase.storage.from("activity-media").remove([row.answer_key_path]);
+      await saved(); toast.success("Gabarito enviado. A correção automática passa a usá-lo nas próximas entregas.");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Erro ao enviar."); }
+    finally { setBusy(false); }
+  };
+  return <label className="btn answer-key-upload" aria-busy={busy}>
+    {busy ? "Enviando…" : row?.answer_key_path ? `Gabarito: ${row.answer_key_name} · trocar` : "Enviar gabarito completo"}
+    <input type="file" hidden accept=".pdf,.doc,.docx" disabled={busy} onChange={e => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
+  </label>;
 }

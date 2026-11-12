@@ -1,0 +1,2 @@
+ALTER TABLE public.learning_activity_staff ADD COLUMN IF NOT EXISTS answer_key_path text, ADD COLUMN IF NOT EXISTS answer_key_name text, ADD COLUMN IF NOT EXISTS answer_key_uploaded_at timestamptz;
+COMMENT ON COLUMN public.learning_activity_staff.answer_key_path IS 'Private teacher answer-key document (activity-media bucket); used only server-side as grading reference.';

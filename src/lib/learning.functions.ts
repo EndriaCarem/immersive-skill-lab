@@ -56,7 +56,7 @@ async function loadStaff(db: SupabaseClient<Database>, programIds: string[]) {
   const photoPaths = (people.data ?? []).map(p => p.photo_path).filter((p): p is string => Boolean(p));
   const mediaPaths = (rows.data ?? []).flatMap(r => [r.video_path, r.video_poster_path]).filter((p): p is string => Boolean(p));
   const [urls, media] = await Promise.all([import("@/integrations/supabase/client.server").then(m => signAll(m.supabaseAdmin, "professional-photos", photoPaths, 3600)), signAll(db, "activity-media", mediaPaths, 3 * 3600)]);
-  return { links: links.data ?? [], rows: rows.data ?? [], people: visiblePeople(people.data ?? [], urls), media, materials: materials.error ? [] : materials.data ?? [] };
+  return { links: links.data ?? [], rows: (rows.data ?? []).map(({ answer_key_path: _p, answer_key_name: _n, answer_key_uploaded_at: _u, ...r }) => r), people: visiblePeople(people.data ?? [], urls), media, materials: materials.error ? [] : materials.data ?? [] };
 }
 function material(m: MaterialRow) {
   return { id: m.id, title: m.title, docType: m.doc_type, description: m.description, category: m.category as "case" | "annex" | "template", version: m.version, fileName: m.file_name, fileSize: m.file_size };
