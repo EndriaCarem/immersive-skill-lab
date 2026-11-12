@@ -3,7 +3,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { LearnerShell } from "@/components/LearnerShell";
-import { UserRound, Save, LogOut, ArrowUpRight, ShieldCheck } from "lucide-react";
+import { UserRound, Save, LogOut, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { accountData, saveProfile } from "@/lib/commerce.functions";
 import { commerceHead } from "@/lib/commerce-schema";
@@ -58,11 +58,6 @@ function Account() {
           <strong>{data.profile?.full_name || "Sua conta Empiria"}</strong>
           <span className="learner-profile-caption"><ShieldCheck size={16} /> Conta Empiria</span>
           <nav className="learner-account-links" aria-label="Ações da conta">
-          {data.roles.some((x) => x.role === "admin") && (
-            <Link to="/admin" className="btn learner-admin-cta">
-              Ir para a administração <ArrowUpRight size={16} />
-            </Link>
-          )}
           <Button variant="ghost" onClick={logout}>
             <LogOut size={16} /> Sair da conta
           </Button>
