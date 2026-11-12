@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
-import { isTracked, sectionOf } from "./journey";
+import { isInternalHost, isTracked, sectionOf } from "./journey";
 
 const tag = z.string().trim().max(120).regex(/^[\w\-. /]*$/u).default("");
 const visitSchema = z.object({
@@ -16,7 +16,7 @@ const visitSchema = z.object({
 export const trackPageVisit = createServerFn({ method: "POST" })
   .inputValidator((x: unknown) => visitSchema.parse(x))
   .handler(async ({ data }) => {
-    if (!isTracked(data.path)) return { success: false };
+    if (!isTracked(data.path) || isInternalHost(data.source) || isInternalHost(data.referrerHost)) return { success: false };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let userId: string | null = null;
     const auth = getRequest()?.headers.get("authorization") ?? "";

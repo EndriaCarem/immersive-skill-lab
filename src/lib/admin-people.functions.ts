@@ -1,3 +1,4 @@
+import { isInternalVisit } from "./journey";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -27,11 +28,11 @@ export const adminPeople = createServerFn({ method: "GET" })
       supabaseAdmin.from("commerce_enrollments").select("user_id, product_id, status, enrolled_at"),
       supabaseAdmin.from("commerce_products").select("id, title"),
       supabaseAdmin.from("interest_submissions").select("created_at, name, email, phone, interest, source, campaign_path, marketing_opt_in").order("created_at", { ascending: false }),
-      supabaseAdmin.from("site_page_visits").select("visitor_id, user_id, section, first_source, first_campaign, first_landing, created_at").gte("created_at", new Date(Date.now() - 180 * 864e5).toISOString()).order("created_at", { ascending: true }).limit(20000),
+      supabaseAdmin.from("site_page_visits").select("visitor_id, user_id, section, first_source, referrer_host, first_campaign, first_landing, created_at").gte("created_at", new Date(Date.now() - 180 * 864e5).toISOString()).order("created_at", { ascending: true }).limit(20000),
     ]);
     for (const r of [profiles, orders, enrollments, products, leads, visits]) if (r.error) throw new Error("Não foi possível carregar os dados.");
     const title = new Map((products.data ?? []).map((p) => [p.id, p.title]));
-    const vrows = visits.data ?? [];
+    const vrows = (visits.data ?? []).filter((v) => !isInternalVisit(v));
     const visitorsOf = new Map<string, Set<string>>();
     vrows.forEach((v) => { if (v.user_id) { const s = visitorsOf.get(v.user_id) ?? new Set(); s.add(v.visitor_id); visitorsOf.set(v.user_id, s); } });
     const journeyOf = (id: string) => {

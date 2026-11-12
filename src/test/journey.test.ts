@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { firstTouch, funnelStage, isTracked, sectionOf } from "@/lib/journey";
+import { firstTouch, funnelStage, isInternalVisit, isTracked, sectionOf } from "@/lib/journey";
 
 describe("journey attribution", () => {
   it("prefers utm_source over referrer", () => {
@@ -16,5 +16,10 @@ describe("journey attribution", () => {
   it("a purchase is always the last funnel stage", () => {
     expect(funnelStage(new Set(["Início"]), true)).toBe(4);
     expect(funnelStage(new Set(["Início", "Cursos", "Entrar ou cadastrar"]), false)).toBe(2);
+  });
+  it("visits from lovable.dev are not counted", () => {
+    expect(isInternalVisit({ first_source: "lovable.dev", referrer_host: "lovable.dev" })).toBe(true);
+    expect(isInternalVisit({ first_source: "direto", referrer_host: "id-preview--x.lovable.app" })).toBe(true);
+    expect(isInternalVisit({ first_source: "google.com", referrer_host: "google.com" })).toBe(false);
   });
 });

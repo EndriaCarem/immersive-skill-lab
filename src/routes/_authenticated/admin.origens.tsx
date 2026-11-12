@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { adminGuard } from "@/lib/admin-guard";
 import { commerceHead } from "@/lib/commerce-schema";
 import { adminPeople } from "@/lib/admin-people.functions";
-import { FUNNEL, funnelStage } from "@/lib/journey";
+import { FUNNEL, funnelStage, isInternalVisit } from "@/lib/journey";
 
 const visitsOpts = () => queryOptions({
   queryKey: ["admin-site-visits"],
@@ -15,7 +15,7 @@ const visitsOpts = () => queryOptions({
     const since = new Date(Date.now() - 90 * 864e5).toISOString();
     const { data, error } = await supabase.from("site_page_visits").select("*").gte("created_at", since).order("created_at", { ascending: true }).limit(20000);
     if (error) throw new Error("Não foi possível carregar os acessos.");
-    return data ?? [];
+    return (data ?? []).filter((v) => !isInternalVisit(v));
   },
 });
 

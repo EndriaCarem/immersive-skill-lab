@@ -44,3 +44,9 @@ export function funnelStage(sections: Set<string>, purchased: boolean): number {
   if (purchased) stage = 4;
   return stage;
 }
+
+/** Visits that came from Lovable's own editor/preview are internal tests, never counted as real visitors. */
+const INTERNAL = /(^|\.)(lovable\.dev|lovable\.app|lovableproject\.com)$/i;
+export const isInternalHost = (host: string | null | undefined) => INTERNAL.test((host ?? "").trim());
+export const isInternalVisit = (v: { first_source?: string | null; referrer_host?: string | null }) =>
+  isInternalHost(v.first_source) || isInternalHost(v.referrer_host);
