@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS professional_photo_visible_read ON storage.objects;

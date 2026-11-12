@@ -148,6 +148,13 @@
       "when": 1794224596855,
       "tag": "0020_personal_material_originals_private",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1794494539998,
+      "tag": "0021_restrict_professional_photo_reads",
+      "breakpoints": true
     }
   ]
 }

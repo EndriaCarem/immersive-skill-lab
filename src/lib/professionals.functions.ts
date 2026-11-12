@@ -33,10 +33,11 @@ export const getCourseFaculty = createServerFn({ method: "GET" })
       .select("id, full_name, title, specialty, bio, photo_path, active, display_authorized")
       .in("id", ids);
     if (people.error) throw new Error("Não foi possível carregar os professores.");
-    const paths = (people.data ?? []).map((p) => p.photo_path).filter((p): p is string => Boolean(p));
+    const paths = (people.data ?? []).filter((p) => p.active && p.display_authorized).map((p) => p.photo_path).filter((p): p is string => Boolean(p));
     const urls = new Map<string, string>();
     if (paths.length) {
-      const signed = await db.storage.from("professional-photos").createSignedUrls(paths, 3600);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const signed = await supabaseAdmin.storage.from("professional-photos").createSignedUrls(paths, 3600);
       for (const s of signed.data ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
     }
     return courseFaculty(links.data ?? [], visiblePeople(people.data ?? [], urls));
