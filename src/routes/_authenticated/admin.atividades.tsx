@@ -59,28 +59,51 @@ function Activities() {
         </ChartGrid>
       </>;
     })()}
-    <div className="admbar">
-      <select className="wb-select" aria-label="Curso" value={courseId} onChange={e => setCourseId(e.target.value)}>
-        {data.programs.map(p => <option key={p.program.id} value={p.program.id}>{p.program.title}</option>)}
-      </select>
+    <div className="ac-courses" role="tablist" aria-label="Curso">
+      {data.programs.map(p => <button key={p.program.id} role="tab" aria-selected={p.program.id === courseId} className={p.program.id === courseId ? "on" : ""} onClick={() => setCourseId(p.program.id)}>
+        {p.program.title}<span>{p.program.activities.length} atividades</span>
+      </button>)}
     </div>
+    <div className="ac-list">
     {course?.program.activities.map((a, i) => {
       const complete = rubricCriteriaSchema.safeParse(a.rubric).success;
       const staff = data.staff.find(s => s.program_id === courseId && s.activity_id === a.id);
-      return <section className="actcard" key={a.id}>
-        <div className="ab">
-          <h3>{i + 1}. {a.title}</h3>
-          <p className="muted sm">{complete ? "Rubrica completa" : "Rubrica com preenchimento pendente"} · {a.rubric.length} critérios</p>
-          <div className="chips">
+      const openDemand = () => setDemand({ programId: courseId, activityId: a.id, title: a.title, index: i, contentFrom: a.demandFrom, contentSubject: a.demandSubject, supervisorName: null });
+      const checks = [
+        { label: "Gabarito", ok: Boolean(staff?.answer_key_path) },
+        { label: "E-mail", ok: Boolean(staff?.mail_subject) },
+        { label: "Vídeo", ok: Boolean(staff?.video_path || staff?.demand_video_url) },
+        { label: "Pontos da ficha", ok: complete },
+      ];
+      const ready = checks.filter(c => c.ok).length;
+      return <section className="ac-card" key={a.id}>
+        <header className="ac-hd">
+          <span className="ac-num">{String(i + 1).padStart(2, "0")}</span>
+          <div className="ac-ttl"><h3>{a.title}</h3><p>{staff?.mail_subject ? `Assunto: ${staff.mail_subject}` : "E-mail da tarefa ainda não escrito"}</p></div>
+          <div className="ac-ready" style={{ ["--p" as string]: `${(ready / checks.length) * 100}%` }}><b>{ready}/{checks.length}</b><span>pronto</span></div>
+        </header>
+        <ul className="ac-checks">{checks.map(c => <li key={c.label} className={c.ok ? "ok" : ""}>{c.ok ? "✓" : "○"} {c.label}</li>)}</ul>
+        <div className="ac-tiles">
+          <div className="ac-tile">
+            <div className="ac-tile-k">1 · Gabarito completo</div>
+            <p>{staff?.answer_key_path ? `${staff.answer_key_name}${staff.answer_key_uploaded_at ? ` · enviado em ${new Date(staff.answer_key_uploaded_at).toLocaleDateString("pt-BR")}` : ""}` : "Documento que a correção automática usa como referência."}</p>
             <AnswerKey programId={courseId} activityId={a.id} row={staff} saved={refresh} />
-            <Button variant="outline" onClick={() => setRubric(a)}>Pontos da ficha (opcional)</Button>
-            <Button variant="outline" onClick={() => setDemand({ programId: courseId, activityId: a.id, title: a.title, index: i, contentFrom: a.demandFrom, contentSubject: a.demandSubject, supervisorName: null })}>E-mail, vídeo e materiais</Button>
           </div>
-          <AssistantLimit programId={courseId} activityId={a.id} />
-          {staff?.mail_subject && <p className="muted sm">Assunto: {staff.mail_subject}</p>}
+          <div className="ac-tile">
+            <div className="ac-tile-k">2 · E-mail, vídeo e materiais</div>
+            <p>O que o aluno recebe ao abrir a demanda.</p>
+            <Button variant="outline" onClick={openDemand}>Editar conteúdo</Button>
+          </div>
+          <div className="ac-tile">
+            <div className="ac-tile-k">3 · Pontos da ficha <em>opcional</em></div>
+            <p>{a.rubric.length ? `${a.rubric.length} critérios${complete ? "" : " · preenchimento pendente"}` : "Nenhum critério definido."}</p>
+            <Button variant="outline" onClick={() => setRubric(a)}>Editar pontos</Button>
+          </div>
         </div>
+        <footer className="ac-ft"><AssistantLimit programId={courseId} activityId={a.id} /></footer>
       </section>;
     })}
+    </div>
     {!course && <p className="muted">Nenhum curso disponível.</p>}
     {rubric && course && <RubricEditor key={rubric.id} activity={rubric} programId={courseId} updatedAt={course.updatedAt} close={() => setRubric(null)} saved={refresh} />}
     {demand && <DemandSetup target={demand} row={data.staff.find(s => s.program_id === demand.programId && s.activity_id === demand.activityId)} onClose={() => setDemand(null)} onSaved={() => void refresh()} />}
@@ -164,7 +187,7 @@ function AnswerKey({ programId, activityId, row, saved }: { programId: string; a
     finally { setBusy(false); }
   };
   return <label className="btn answer-key-upload" aria-busy={busy}>
-    {busy ? "Enviando…" : row?.answer_key_path ? `Gabarito: ${row.answer_key_name} · trocar` : "Enviar gabarito completo"}
+    {busy ? "Enviando…" : row?.answer_key_path ? "Trocar gabarito" : "Enviar gabarito"}
     <input type="file" hidden accept=".pdf,.doc,.docx" disabled={busy} onChange={e => { void pick(e.target.files?.[0]); e.target.value = ""; }} />
   </label>;
 }
