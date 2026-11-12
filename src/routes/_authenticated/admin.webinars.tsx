@@ -1,3 +1,4 @@
+import { AdminHeader, ChartCard, ChartGrid, DonutChart, HBarChart, Kpi, KpiRow, TrendChart, countPoints, dailySeries } from "@/components/admin/AdminKit";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -30,7 +31,7 @@ const opts = () =>
 
 export const Route = createFileRoute("/_authenticated/admin/webinars")({
   beforeLoad: adminGuard,
-  head: () => commerceHead("Webinars", "Publique webinars, gere links rastreados e acompanhe os acessos."),
+  head: () => commerceHead("Blogs", "Publique posts, gere links rastreados e acompanhe os acessos."),
   loader: ({ context }) => context.queryClient.ensureQueryData(opts()),
   component: AdminWebinars,
 });
@@ -81,8 +82,8 @@ function AdminWebinars() {
     };
     const res = form.id ? await supabase.from("webinars").update(row).eq("id", form.id) : await supabase.from("webinars").insert(row);
     setBusy(false);
-    if (res.error) { toast.error(res.error.code === "23505" ? "Já existe um webinar com esse endereço." : "Não foi possível salvar."); return; }
-    toast.success(form.status === "published" ? "Webinar publicado." : "Rascunho salvo.");
+    if (res.error) { toast.error(res.error.code === "23505" ? "Já existe um post com esse endereço." : "Não foi possível salvar."); return; }
+    toast.success(form.status === "published" ? "Post publicado." : "Rascunho salvo.");
     setForm(null);
     qc.invalidateQueries({ queryKey: ["admin-webinars"] });
     qc.invalidateQueries({ queryKey: ["webinars"] });
@@ -91,7 +92,7 @@ function AdminWebinars() {
     if (!confirm(`Excluir "${w.title}"? Os acessos registrados também serão apagados.`)) return;
     const { error } = await supabase.from("webinars").delete().eq("id", w.id);
     if (error) { toast.error("Não foi possível excluir."); return; }
-    toast.success("Webinar excluído.");
+    toast.success("Post excluído.");
     qc.invalidateQueries({ queryKey: ["admin-webinars"] });
   }
   const focused = data.webinars.find((w) => w.id === focus);
@@ -99,33 +100,33 @@ function AdminWebinars() {
 
   return (
     <AppShell>
-      <main className="pane">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div><div className="eyebrow">Administração</div><h2 style={{ margin: 0 }}>Webinars</h2></div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link to="/admin" className="btn ghost">← Painel</Link>
-            <Button onClick={() => setForm({ ...empty })}>+ Novo webinar</Button>
-          </div>
-        </div>
-
+      <main className="pane adm-page">
+        <AdminHeader title="Blogs" text="Publique posts em texto e vídeo, gere links rastreados e acompanhe os acessos." actions={<Button onClick={() => setForm({ ...empty })}>+ Novo post</Button>} />
         <h4>Insights · últimos 90 dias</h4>
         <div style={{ marginBottom: 12 }}>
-          <select className="wb-select" value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Filtrar webinar">
-            <option value="all">Todos os webinars</option>
+          <select className="wb-select" value={focus} onChange={(e) => setFocus(e.target.value)} aria-label="Filtrar post">
+            <option value="all">Todos os posts</option>
             {data.webinars.map((w) => <option key={w.id} value={w.id}>{w.title}</option>)}
           </select>
         </div>
-        <div className="wb-kpis">
-          <div><b>{visits.length}</b><span>Acessos</span></div>
-          <div><b>{unique}</b><span>Visitantes únicos</span></div>
-          <div><b>{visits.length ? Math.round((tagged / visits.length) * 100) : 0}%</b><span>Via link rastreado</span></div>
-          <div><b>{byRef.filter(([k]) => k !== "(direto)").length}</b><span>Origens diferentes</span></div>
-        </div>
-        <div className="wb-panels">
-          <div className="wb-panel">
-            <div className="wb-ptitle">Acessos por dia (14 dias)</div>
-            <div className="wb-bars">{days.map(([d, n]) => <div key={d} title={`${d}: ${n}`}><i style={{ height: `${(n / max) * 100}%` }} /><span>{d.slice(8)}</span></div>)}</div>
-          </div>
+        <KpiRow>
+          <Kpi label="Acessos" value={visits.length} />
+          <Kpi label="Visitantes únicos" value={unique} />
+          <Kpi label="Via link rastreado" value={`${visits.length ? Math.round((tagged / visits.length) * 100) : 0}%`} />
+          <Kpi label="Origens diferentes" value={byRef.filter(([k]) => k !== "(direto)").length} />
+        </KpiRow>
+        <ChartGrid>
+          <ChartCard title="Acessos por dia" hint="últimos 30 dias" wide>
+            <TrendChart data={dailySeries(visits, (v) => v.created_at)} />
+          </ChartCard>
+          <ChartCard title="De onde vêm os visitantes">
+            <DonutChart data={byRef.slice(0, 6).map(([name, value]) => ({ name, value }))} />
+          </ChartCard>
+          <ChartCard title="Acessos por post">
+            <HBarChart data={byWebinar.slice(0, 8).map(([id, value]) => ({ name: title(id), value }))} />
+          </ChartCard>
+        </ChartGrid>
+        <div className="wb-panels" hidden>
           <div className="wb-panel">
             <div className="wb-ptitle">Quem está entrando (por tag)</div>
             {byRef.length === 0 ? <p className="muted sm">Sem acessos ainda.</p> : byRef.slice(0, 8).map(([k, n]) => (
@@ -154,12 +155,12 @@ function AdminWebinars() {
               <code>{generated}</code>
               <Button variant="outline" onClick={() => { navigator.clipboard.writeText(generated); toast.success("Link copiado."); }}>Copiar</Button>
             </div>
-            {focused.status !== "published" && <p className="muted sm">Este webinar ainda é rascunho: o link só abre depois de publicado.</p>}
+            {focused.status !== "published" && <p className="muted sm">Este post ainda é rascunho: o link só abre depois de publicado.</p>}
           </div>
         )}
 
-        <h4>Webinars</h4>
-        {data.webinars.length === 0 && <p className="muted">Nenhum webinar criado ainda.</p>}
+        <h4>Posts do blog</h4>
+        {data.webinars.length === 0 && <p className="muted">Nenhum post criado ainda.</p>}
         <div className="wb-admin-list">
           {data.webinars.map((w) => (
             <div key={w.id} className="wb-admin-item">
@@ -179,9 +180,9 @@ function AdminWebinars() {
         </div>
 
         {form && (
-          <div className="wb-modal" role="dialog" aria-modal="true" aria-label="Editar webinar">
+          <div className="wb-modal" role="dialog" aria-modal="true" aria-label="Editar post">
             <div className="wb-modal-in">
-              <h3 style={{ marginTop: 0 }}>{form.id ? "Editar webinar" : "Novo webinar"}</h3>
+              <h3 style={{ marginTop: 0 }}>{form.id ? "Editar post" : "Novo post"}</h3>
               <label>Título<input value={form.title} maxLength={200} onChange={(e) => setForm({ ...form, title: e.target.value, slug: form.id ? form.slug : slugify(e.target.value) })} /></label>
               <label>Endereço<input value={form.slug} maxLength={100} onChange={(e) => setForm({ ...form, slug: cleanTag(e.target.value) })} /></label>
               <label>Resumo<textarea rows={2} maxLength={400} value={form.summary} onChange={(e) => setForm({ ...form, summary: e.target.value })} /></label>

@@ -1,3 +1,4 @@
+import { AdminHeader, ChartCard, ChartGrid, DonutChart, HBarChart, Kpi, KpiRow, TrendChart, countPoints, dailySeries } from "@/components/admin/AdminKit";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -34,10 +35,30 @@ function Activities() {
   const refresh = async () => {
     await Promise.all([client.invalidateQueries({ queryKey: ["admin-activity-content"] }), client.invalidateQueries({ queryKey: ["learner-progress"] }), client.invalidateQueries({ queryKey: ["admin-learning"] })]);
   };
-  return <AppShell><main className="pane">
-    <div className="eyebrow">Administração</div>
-    <h1>Conteúdo das atividades</h1>
-    <Link to="/admin" className="btn ghost">← Painel</Link>
+  return <AppShell><main className="pane adm-page">
+    <AdminHeader title="Conteúdo das atividades" text="Gabaritos, pontos da ficha, e-mail, vídeo e materiais de cada atividade." />
+    {(() => {
+      const acts = data.programs.flatMap(p => p.program.activities.map(a => ({ p: p.program, a, staff: data.staff.find(s => s.program_id === p.program.id && s.activity_id === a.id) })));
+      const withKey = acts.filter(x => x.staff?.answer_key_path).length;
+      const withMail = acts.filter(x => x.staff?.mail_subject).length;
+      const rubricOk = acts.filter(x => rubricCriteriaSchema.safeParse(x.a.rubric).success).length;
+      return <>
+        <KpiRow>
+          <Kpi label="Atividades" value={acts.length} hint={`${data.programs.length} cursos`} />
+          <Kpi label="Com gabarito enviado" value={`${withKey}/${acts.length}`} alert={withKey < acts.length} />
+          <Kpi label="Com e-mail da tarefa" value={`${withMail}/${acts.length}`} />
+          <Kpi label="Pontos da ficha completos" value={`${rubricOk}/${acts.length}`} />
+        </KpiRow>
+        <ChartGrid>
+          <ChartCard title="Gabaritos enviados por curso">
+            <HBarChart data={data.programs.map(p => ({ name: p.program.title, value: acts.filter(x => x.p.id === p.program.id && x.staff?.answer_key_path).length }))} />
+          </ChartCard>
+          <ChartCard title="Preparação do conteúdo">
+            <DonutChart data={[{ name: "Com gabarito", value: withKey }, { name: "Sem gabarito", value: acts.length - withKey }]} />
+          </ChartCard>
+        </ChartGrid>
+      </>;
+    })()}
     <div className="admbar">
       <select className="wb-select" aria-label="Curso" value={courseId} onChange={e => setCourseId(e.target.value)}>
         {data.programs.map(p => <option key={p.program.id} value={p.program.id}>{p.program.title}</option>)}

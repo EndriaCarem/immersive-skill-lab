@@ -1,3 +1,4 @@
+import { AdminHeader, ChartCard, ChartGrid, DonutChart, HBarChart, Kpi, KpiRow, TrendChart, countPoints, dailySeries } from "@/components/admin/AdminKit";
 import { adminGuard } from "@/lib/admin-guard";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -101,57 +102,27 @@ function Admin() {
 
   return (
     <AppShell>
-      <main className="pane">
-        <Link to="/minha-conta" className="btn ghost">← Voltar para minha conta</Link>
-        <div className="eyebrow">Painel executivo</div>
-        <h1>Administração</h1>
-        <Link to="/admin/comercial" className="btn ghost">
-          Operação comercial
-        </Link>{" "}
-        <Link to="/admin/webinars" className="btn ghost">
-          Webinars
-        </Link>{" "}
-        <Link to="/admin/professores" className="btn ghost">
-          Professores
-        </Link>{" "}
-        <Link to="/admin/atividades" className="btn ghost">Conteúdo das atividades</Link>
-        <p className="muted sm">
-          Entregas, matrículas e correções vinculadas às contas dos alunos. O editor de conteúdo permanece demonstrativo.
-        </p>
+      <main className="pane adm-page">
+        <AdminHeader title="Visão geral" text="Entregas, matrículas e correções vinculadas às contas dos alunos." />
         {learning.isLoading && <p>Carregando alunos e entregas…</p>}
         {learning.error && <p role="alert">Não foi possível carregar alunos e entregas.</p>}
-
-        <div className="kpis">
-          <div className="kpi">
-            <small>Faturamento estimado</small>
-            <b>{brl(revenue)}</b>
-            <span>{state.enrollments.length} matrículas × preço atual</span>
-          </div>
-          <div className="kpi">
-            <small>Alunos ativos</small>
-            <b>{activeStudents}</b>
-            <span>com ao menos uma matrícula</span>
-          </div>
-          <button
-            className={`kpi ${pending ? "alert" : ""}`}
-            style={{ textAlign: "left", cursor: "pointer" }}
-            onClick={() => {
-              setTab("entregas");
-              setSubF("pending");
-            }}
-          >
-            <small>Peças a avaliar</small>
-            <b>{pending}</b>
-            <span>{pending ? "Abrir fila de correção →" : "Fila em dia"}</span>
-          </button>
-          <div className="kpi">
-            <small>Taxa de conclusão</small>
-            <b>{completion}%</b>
-            <span>
-              {doneActs} de {totalActs} atividades entregues
-            </span>
-          </div>
-        </div>
+        <KpiRow>
+          <Kpi label="Faturamento estimado" value={brl(revenue)} hint={`${state.enrollments.length} matrículas × preço atual`} />
+          <Kpi label="Alunos ativos" value={activeStudents} hint="com ao menos uma matrícula" />
+          <Kpi label="Peças a avaliar" value={pending} alert={pending > 0} hint={pending ? "Abrir fila de correção →" : "Fila em dia"} onClick={() => { setTab("entregas"); setSubF("pending"); }} />
+          <Kpi label="Taxa de conclusão" value={`${completion}%`} hint={`${doneActs} de ${totalActs} atividades entregues`} />
+        </KpiRow>
+        <ChartGrid>
+          <ChartCard title="Entregas por dia" hint="últimos 30 dias" wide>
+            <TrendChart data={dailySeries(state.submissions, s => s.submittedAt)} />
+          </ChartCard>
+          <ChartCard title="Matrículas por curso">
+            <HBarChart data={countPoints(state.enrollments, e => prog(e.programId)?.title ?? "Curso")} />
+          </ChartCard>
+          <ChartCard title="Situação das entregas">
+            <DonutChart data={[{ name: "Corrigidas", value: state.submissions.filter(s => s.grades).length }, { name: "Aguardando correção", value: pending }]} />
+          </ChartCard>
+        </ChartGrid>
 
         <div className="chips">
           {(Object.keys(TAB_LABEL) as Tab[]).map((t) => (

@@ -1,3 +1,4 @@
+import { AdminHeader, ChartCard, ChartGrid, DonutChart, HBarChart, Kpi, KpiRow, TrendChart, countPoints, dailySeries } from "@/components/admin/AdminKit";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -74,17 +75,22 @@ function AdminProfessionals() {
 
   return (
     <AppShell>
-      <main className="pane">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div>
-            <div className="eyebrow">Administração</div>
-            <h2 style={{ margin: 0 }}>Professores e profissionais</h2>
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <Link to="/admin" className="btn ghost">← Painel</Link>
-            <Button onClick={() => setForm({ ...empty })}>+ Novo profissional</Button>
-          </div>
-        </div>
+      <main className="pane adm-page">
+        <AdminHeader title="Professores" text="Professores e profissionais dos cursos e das atividades." actions={<Button onClick={() => setForm({ ...empty })}>+ Novo profissional</Button>} />
+        <KpiRow>
+          <Kpi label="Cadastrados" value={data.people.length} />
+          <Kpi label="Visíveis no site" value={data.people.filter((p) => p.active && p.display_authorized).length} hint="ativos e com exibição autorizada" />
+          <Kpi label="Sem foto" value={data.people.filter((p) => !p.photo_path).length} alert={data.people.some((p) => !p.photo_path)} />
+          <Kpi label="Vínculos com cursos" value={data.links.length} />
+        </KpiRow>
+        <ChartGrid>
+          <ChartCard title="Professores por curso">
+            <HBarChart data={countPoints(data.links, (l) => data.courses.find((c) => c.id === l.program_id)?.title ?? "Curso")} />
+          </ChartCard>
+          <ChartCard title="Situação dos cadastros">
+            <DonutChart data={[{ name: "Visíveis", value: data.people.filter((p) => p.active && p.display_authorized).length }, { name: "Ativos sem autorização", value: data.people.filter((p) => p.active && !p.display_authorized).length }, { name: "Inativos", value: data.people.filter((p) => !p.active).length }]} />
+          </ChartCard>
+        </ChartGrid>
         <p className="muted sm">
           Um único cadastro por pessoa, reaproveitado em quantos cursos e atividades for preciso. Só aparece para alunos e visitantes quem estiver
           <b> ativo</b> e com <b>exibição autorizada</b>.

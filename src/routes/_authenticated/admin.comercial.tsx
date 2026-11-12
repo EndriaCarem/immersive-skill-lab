@@ -1,3 +1,4 @@
+import { AdminHeader, ChartCard, ChartGrid, DonutChart, HBarChart, Kpi, KpiRow, TrendChart, countPoints, dailySeries } from "@/components/admin/AdminKit";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -61,34 +62,25 @@ function Commercial() {
   );
   return (
     <AppShell>
-      <main className="account-page commercial-page">
-        <div className="eyebrow">Administração</div>
-        <h1>Operação comercial</h1>
-        <Link to="/admin" className="btn ghost">← Painel</Link>
-        <div className="kpis">
-          <div className="kpi">
-            <small>Recebido</small>
-            <b>
-              {brl(
-                data.orders
-                  .filter((o) => o.status === "paid")
-                  .reduce((s, o) => s + o.total_cents, 0) / 100,
-              )}
-            </b>
-          </div>
-          <div className="kpi">
-            <small>Pedidos</small>
-            <b>{data.orders.length}</b>
-          </div>
-          <div className="kpi">
-            <small>Matrículas ativas</small>
-            <b>{data.enrollments.filter((e) => e.status === "active").length}</b>
-          </div>
-          <div className="kpi">
-            <small>Cancelamentos solicitados</small>
-            <b>{data.orders.filter((o) => o.status === "cancellation_requested").length}</b>
-          </div>
-        </div>
+      <main className="account-page commercial-page adm-page">
+        <AdminHeader title="Operação comercial" text="Pedidos, matrículas, produtos, cupons e termos da Empiria." />
+        <KpiRow>
+          <Kpi label="Recebido" value={brl(data.orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.total_cents, 0) / 100)} hint="pedidos pagos" />
+          <Kpi label="Pedidos" value={data.orders.length} hint="todos os status" />
+          <Kpi label="Matrículas ativas" value={data.enrollments.filter((e) => e.status === "active").length} />
+          <Kpi label="Cancelamentos solicitados" value={data.orders.filter((o) => o.status === "cancellation_requested").length} alert={data.orders.some((o) => o.status === "cancellation_requested")} />
+        </KpiRow>
+        <ChartGrid>
+          <ChartCard title="Receita recebida por dia" hint="últimos 30 dias" wide>
+            <TrendChart data={dailySeries(data.orders.filter((o) => o.status === "paid"), (o) => o.created_at, 30, (o) => o.total_cents / 100)} format={(n) => brl(n)} />
+          </ChartCard>
+          <ChartCard title="Pedidos por status">
+            <DonutChart data={countPoints(data.orders, (o) => statusLabel[o.status] ?? o.status)} />
+          </ChartCard>
+          <ChartCard title="Pedidos por curso">
+            <HBarChart data={countPoints(data.orders.flatMap((o) => o.commerce_order_items), (i) => i.title)} />
+          </ChartCard>
+        </ChartGrid>
         <nav className="commerce-actions">
           {(
             [
